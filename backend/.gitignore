@@ -1,0 +1,50 @@
+/.metadata/
+
+HELP.md
+target/
+!.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
+
+### package-lock.json ###
+package-lock.json
+
+### node ###
+node_modules/
+
+### GRADLE ###
+.gradle/
+gradle/
+gradlew*
+gradle.bat
+
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+build/
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+### VS Code ###
+.vscode/
+
+# Ignorar la carpeta documents dentro de tasks
+tasks/documents/
