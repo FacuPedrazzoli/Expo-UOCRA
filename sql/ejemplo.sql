@@ -1,0 +1,3 @@
+/*
+ esto es solamente un ejemplo de un archivo sql para que se guarde la carpeta en git
+ */

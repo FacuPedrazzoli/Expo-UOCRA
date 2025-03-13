@@ -1,5 +1,6 @@
 import 'dotenv/config'
 import { suma, resta, multiplicacion, division, potencia } from './00-cuentas'
+import httpserver from './http/server'
 
 switch (process.argv[2]) {
     case "suma":
@@ -15,7 +16,8 @@ switch (process.argv[2]) {
         break
     case "Archivo 4":
         break
-    case "Archivo 5":
+    case "servidor":
+        httpserver()
         break
     default:
         console.log('Atencion, se debe enviar un parametro con la accion a seguir')
