@@ -9,7 +9,7 @@
 
 .form-group {
     margin-bottom: 15px;
-    width: 100%; /* Asegura que todos los form-group ocupen el 100% del ancho */
+    width: 100%;
 }
 
 .form-group label {
@@ -20,20 +20,20 @@
 
 .form-group input,
 .form-group select {
-    width: 100%; /* Asegura que los inputs y selects ocupen el 100% del ancho del contenedor form-group */
+    width: 100%;
     padding: 10px;
     border: 1px solid #ccc;
     border-radius: 4px;
     font-size: 16px;
-    box-sizing: border-box; /* Asegura que el padding y el borde se incluyan en el ancho total */
+    box-sizing: border-box;
 }
 
 .form-group.select-group select {
-    appearance: none; /* Para eliminar el estilo predeterminado del navegador */
+    appearance: none;
     background: url('data:image/svg+xml;utf8,<svg fill="none" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5H7z" fill="%239b59b6"/></svg>') no-repeat right 10px center;
     background-color: #fff;
     background-size: 12px;
-    padding-right: 45px; /* Ajusta el padding para que el icono no se superponga con el borde */
+    padding-right: 45px;
     height: 45px;
     outline: none;
     border: 1px solid #ccc;
