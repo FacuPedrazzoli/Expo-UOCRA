@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Expo Formación: Sector construcciones</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;700&family=Roboto:wght@300;400;700&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="../css/estilos.css" />
+  <link rel="icon" href="../img/logo_expo.png">
+</head>
+
+<body>
+  <!-- Contenedor de notificaciones -->
+  <div class="notification-container" id="notification-container"></div>
+  
+  <!-- Encabezado con logo (clic para volver al Inicio) -->
+  <header>
+    <div class="header-container" data-seccion="inicio">
+      <img src="../img/logo-expo-formacion.png" alt="Logo Expo Formación">
+      <h1>Expo Formación</h1>
+    </div>
+
+    <!-- Menú -->
+    <div class="menu-toggle" id="toggle-menu">
+      <i class="fas fa-bars"></i>
+    </div>
+  </header>
+
+  <!-- Menú de navegación -->
+  <nav id="main-nav">
+    <div class="nav-container">
+      <a data-seccion="inicio"><i class="fas fa-home"></i> Inicio</a>
+      <a data-seccion="inscripcion"><i class="fas fa-clipboard-list"></i> Inscripción</a>
+      <a data-seccion="charlas"><i class="fas fa-chalkboard-teacher"></i> Charlas</a>
+      <a data-seccion="empresas"><i class="fas fa-building"></i> Empresas</a>
+      <a data-seccion="muestras"><i class="fas fa-map-marker-alt"></i> Muestras</a>
+      <a data-seccion="competiciones"><i class="fas fa-trophy"></i> Competiciones</a>
+    </div>
+  </nav>
+
+  <!-- Contenido Principal -->
+  <div class="main-content">
+    <!-- Sección Inicio -->
+    <section id="inicio" class="section activa">
+      <div class="section-header">
+        <h2>Bienvenido a Expo Formación</h2>
+      </div>
+      <div class="cta-container">
+        <p>¿Interesado en participar? ¡Inscríbete ahora!</p>
+        <button id="btn-inscribirme" class="btn-primary btn-highlighted">
+          <i class="fas fa-sign-in-alt"></i> Inscribirme Ahora
+        </button>
+      </div>
+
+      <div class="card">
+        <p>
+          La Expo Formación surgió de la iniciativa de unir a empresas líderes y trabajadores en el sector para crear un
+          espacio de diálogo, innovación y capacitación.
+          Inspirados por la necesidad de transformar el mercado laboral y promover el intercambio de conocimientos.
+        </p>
+      </div>
+
+      <div class="features-container">
+        <h3>¿Qué encontrarás?</h3>
+        <ul class="features-list">
+          <li>
+            <i class="fas fa-calendar-alt"></i>
+            <div>
+              <strong>Charlas</strong>
+              <p>Programación en formato calendario, con horarios, aula, inscriptos y estado dinámico.</p>
+            </div>
+          </li>
+          <li>
+            <i class="fas fa-industry"></i>
+            <div>
+              <strong>Empresas Participantes</strong>
+              <p>Información de empresas organizadas por categorías (Construcción, Sanitarias, Gas...).</p>
+            </div>
+          </li>
+          <li>
+            <i class="fas fa-user-plus"></i>
+            <div>
+              <strong>Inscripción</strong>
+              <p>Acceso a la plataforma y descarga de la oferta del cuatrimestre.</p>
+            </div>
+          </li>
+          <li>
+            <i class="fas fa-map"></i>
+            <div>
+              <strong>Muestras Abiertas</strong>
+              <p>Ubicación y stands de las empresas participantes.</p>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- Sección Inscripción -->
+    <section id="inscripcion" class="section">
+      <h2>Inscripción</h2>
+      <p>Completa el siguiente formulario para preinscribirte en las charlas o descarga la oferta del cuatrimestre.</p>
+
+      <div class="form-container">
+        <div class="form-header">
+          <i class="fas fa-user-plus"></i>
+          <h3>Formulario de Preinscripción</h3>
+        </div>
+        <form id="inscripcionForm">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="nombre">Nombre:</label>
+              <input type="text" id="nombre" required>
+            </div>
+            <div class="form-group">
+              <label for="apellido">Apellido:</label>
+              <input type="text" id="apellido" required>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="dni">DNI:</label>
+              <input type="text" id="dni" required>
+            </div>
+            <div class="form-group">
+              <label for="email">Email:</label>
+              <input type="email" id="email" required>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="como-te-enteraste">¿Cómo conociste la expo?:</label>
+              <select id="como-te-enteraste" name="como_te_enteraste" required>
+                <option value="">Selecciona una opción</option>
+                <!-- Opciones cargadas dinámicamente desde la base de datos -->
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="charla">Selecciona la charla:</label>
+              <select id="charla" name="charla" required>
+                <!-- Se cargará dinámicamente -->
+              </select>
+            </div>
+          </div>
+
+          <button type="submit" id="btn-formulario" class="btn-submit">Enviar</button>
+        </form>
+      </div>
+
+      <div class="links-container" style="margin-top: 2rem;">
+        <h3>Recursos adicionales</h3>
+        <a href="https://fundacion.uocra.org/" target="_blank" class="btn-link">
+          <i class="fas fa-external-link-alt"></i> Ir a la plataforma de Fundacion UOCRA
+        </a>
+        <a href="oferta_cuatrimestre.pdf" download class="btn-link">
+          <i class="fas fa-download"></i> Descargar Oferta del Cuatrimestre (PDF)
+        </a>
+      </div>
+
+      <button class="btn-volver" data-seccion="inicio">Volver al Inicio</button>
+    </section>
+
+    <!-- Sección Charlas -->
+    <section id="charlas" class="section">
+      <h2>Programación de Charlas</h2>
+      <div class="table-responsive">
+        <table class="charlas-table">
+          <thead>
+            <tr>
+              <th>Horario</th>
+              <th>Charla</th>
+              <th>Empresa</th>
+              <th>Ubicación</th>
+            </tr>
+          </thead>
+          <tbody id="charlas-lista">
+            <!-- Las charlas se cargarán dinámicamente -->
+          </tbody>
+        </table>
+      </div>
+      <button class="btn-volver" data-seccion="inicio">Volver al Inicio</button>
+    </section>
+
+    <!-- Sección Empresas Participantes -->
+    <section id="empresas" class="section">
+      <h2>Empresas Participantes</h2>
+      <p>Estas son todas las empresas que participarán en la exposición. Puedes filtrar por categoría:</p>
+      <div class="categorias-buttons">
+        <button class="btn-categoria active" data-categoria="todas">Todas</button>
+        <button class="btn-categoria" data-categoria="construccion">Construcción</button>
+        <button class="btn-categoria" data-categoria="sanitarias">Sanitarias</button>
+        <button class="btn-categoria" data-categoria="instituciones">Instituciones</button>
+        <button class="btn-categoria" data-categoria="electricidad">Electricidad</button>
+        <button class="btn-categoria" data-categoria="informatica">Informática</button>
+      </div>
+      <div id="empresas-lista" class="empresas-grid">
+        <!-- Las empresas se cargarán dinámicamente -->
+      </div>
+      <button class="btn-volver" data-seccion="inicio">Volver al Inicio</button>
+    </section>
+
+    <!-- Sección Muestras Abiertas -->
+    <section id="muestras" class="section">
+      <h2>Muestras Abiertas</h2>
+      <p>Consulta los stands y ubicaciones de los rubros participantes.</p>
+
+      <div id="stands-container" class="stands-grid">
+        <!-- Las muestras se cargarán dinámicamente desde el controlador -->
+      </div>
+
+      <button class="btn-volver" data-seccion="inicio">Volver al Inicio</button>
+    </section>
+
+    <!-- Sección Competiciones -->
+    <section id="competiciones" class="section">
+      <h2>Competiciones</h2>
+      <p>Conoce las competiciones que se llevarán a cabo durante el evento y sus horarios:</p>
+      
+      <div class="categorias-buttons">
+        <button class="btn-categoria active" data-categoria="todas" data-competicion="todas">Todas</button>
+        <button class="btn-categoria" data-categoria="construccion" data-competicion="construccion">Construcción</button>
+        <button class="btn-categoria" data-categoria="electricidad" data-competicion="electricidad">Electricidad</button>
+        <button class="btn-categoria" data-categoria="sanitarias" data-competicion="sanitarias">Sanitarias</button>
+      </div>
+      
+      <div id="competiciones-lista" class="competiciones-grid">
+        <!-- Las competiciones se cargarán dinámicamente -->
+      </div>
+      
+      <button class="btn-volver" data-seccion="inicio">Volver al Inicio</button>
+    </section>
+
+  </div>
+
+  <!-- Pie de Página con Redes Sociales -->
+  <footer>
+    <div class="footer-container">
+      <p>&copy; 2025 Expo Formación</p>
+      <div class="social-links">
+        <a href="https://www.facebook.com/CFP3UOCRA?locale=es_LA" target="_blank"><i class="fab fa-facebook-f"></i></a>
+        <a href="https://www.instagram.com/cific_3?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw=="
+          target="_blank"><i class="fab fa-instagram"></i></a>
+        <a href="https://wa.me/123456789" target="_blank"><i class="fab fa-whatsapp"></i></a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Al final del body: Asegura el orden de carga correcto -->
+  <script type="module" src="../js/utils/logger-init.js"></script>
+  <script type="module" src="../js/main.js"></script>
+  <script type="module" src="../js/inscriptos.js"></script>
+  <script type="module" src="../js/app.js"></script>
+</body>
+
+</html>

@@ -12,6 +12,9 @@ package-lock.json
 ### node ###
 node_modules/
 
+### Logs ###
+logs
+
 ### GRADLE ###
 .gradle/
 gradle/
