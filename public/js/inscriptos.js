@@ -25,83 +25,124 @@ const InscripcionesController = {
       
       // Recopilar los datos del formulario
       const formData = this.recopilarDatosFormulario();
-      if (!this.validarDatosFormulario(formData)) {
+      if (!formData) {
         this.procesando = false;
         return;
       }
       
       // Notificar generación de inscripción
-      EventBus.emit('inscripcion:generada', {
-        nombre: formData.nombre,
-        apellido: formData.apellido,
-        dni: formData.dni,
-        charla: formData.charla
-      });
+      if (window.EventBus) {
+        window.EventBus.emit('inscripcion:generada', {
+          nombre: formData.nombre,
+          apellido: formData.apellido,
+          dni: formData.dni,
+          charla: formData.charla
+        });
+      }
       
       // Mostrar indicador de carga
       this.actualizarEstadoBoton(true, 'Enviando...');
       
-      // Enviar al servidor
-      logger.info('Enviando datos de inscripción al servidor');
-      const { exito, mensaje, idCharla } = await this.enviarDatosAlServidor(formData);
+      // Llamamos directamente al fetch para procesar la respuesta en un solo lugar
+      const response = await fetch('/api/inscripcion', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData)
+      });
       
-      if (exito) {
-        // Procesar respuesta exitosa
-        logger.info('Inscripción completada exitosamente', { idCharla });
-        notifications.success(mensaje || '¡Inscripción exitosa! Tu registro ha sido confirmado.', {
-          title: '¡Enhorabuena!',
-          duration: 6000,
-          showConfirmButton: true,
-          confirmButtonText: 'Aceptar',
-          backdrop: true,
-          callback: () => {
-            // Volver a página de inicio cuando el usuario cierra la notificación
-            utilidades.obtenerElemento('#inicio')?.scrollIntoView({ behavior: 'smooth' });
-          }
+      // Registrar la petición
+      logger.httpRequest('POST', '/api/inscripcion', response.status, 0);
+      
+      if (!response.ok) {
+        // Si la respuesta no es exitosa, manejamos el error aquí
+        const errorData = await response.json();
+        const errorMsg = errorData.mensaje || errorData.error || 'Error en la inscripción';
+        
+        logger.error('Error en la respuesta del servidor', { 
+          status: response.status,
+          error: errorMsg 
         });
+
+        // Mostrar mensaje específico según el tipo de error
+        let tituloError = 'Error de inscripción';
+        let mensajeUsuario = errorMsg;
         
-        this.limpiarFormulario();
-        
-        // Actualizar charlas si es necesario
-        if (idCharla && typeof actualizarCharlas === 'function') {
-          logger.debug('Actualizando lista de charlas');
-          actualizarCharlas();
+        if (errorMsg.toLowerCase().includes('dni')) {
+          tituloError = 'DNI ya registrado';
+          mensajeUsuario = 'Este DNI ya está registrado en el sistema.';
+        } else if (errorMsg.toLowerCase().includes('email')) {
+          tituloError = 'Email ya registrado';
+          mensajeUsuario = 'Este email ya está registrado en el sistema.';
+        } else if (errorMsg.toLowerCase().includes('charla')) {
+          tituloError = 'Problema con la charla';
+          mensajeUsuario = 'La charla seleccionada no está disponible o ha alcanzado su capacidad máxima.';
         }
         
-        // Volver a página de inicio
-        utilidades.obtenerElemento('#inicio')?.scrollIntoView({ behavior: 'smooth' });
+        notifications.error(mensajeUsuario, {
+          duration: 8000,
+          title: tituloError,
+          showConfirmButton: true,
+          confirmButtonText: 'Entendido',
+          backdrop: true
+        });
+        
+        throw new Error('HANDLED_' + errorMsg); // Prefijo para identificar errores ya manejados
       }
-    } catch (error) {
-      // Registrar el error completo en el log para los desarrolladores
-      logger.error('Error al procesar la inscripción', { 
-        message: error.message, 
-        stack: error.stack 
+      
+      // Si llegamos aquí, la respuesta fue exitosa
+      const responseData = await response.json();
+      logger.info('Inscripción procesada correctamente por el servidor', { 
+        id: responseData.id,
+        idCharla: responseData.idCharla 
       });
-      console.error('Error:', error);
       
-      // Mostrar mensaje genérico al usuario sin detalles técnicos
-      let mensajeUsuario = 'No se pudo completar la inscripción. Por favor, inténtalo más tarde.';
-      
-      // Si es un error conocido relacionado con validación, mostrar ese mensaje
-      if (error.message && (
-          error.message.includes('DNI') || 
-          error.message.includes('email') || 
-          error.message.includes('campos') ||
-          error.message.includes('charla')
-      )) {
-        mensajeUsuario = 'Por favor verifica los datos ingresados e inténtalo nuevamente.';
-      }
-      
-      notifications.error(mensajeUsuario, {
-        duration: 8000, // Dar más tiempo para errores
-        title: 'Error en el formulario',
+      // Procesar respuesta exitosa
+      logger.info('Inscripción completada exitosamente', { idCharla: responseData.idCharla });
+      notifications.success('¡Inscripción exitosa! Tu registro ha sido confirmado.', {
+        title: '¡Enhorabuena!',
+        duration: 6000,
         showConfirmButton: true,
-        confirmButtonText: 'Entendido',
-        backdrop: true
+        confirmButtonText: 'Aceptar',
+        backdrop: true,
+        callback: () => {
+          // Volver a página de inicio cuando el usuario cierra la notificación
+          utilidades.obtenerElemento('#inicio')?.scrollIntoView({ behavior: 'smooth' });
+        }
       });
+      
+      this.limpiarFormulario();
+      
+      // Actualizar charlas si es necesario
+      if (responseData.idCharla && typeof actualizarCharlas === 'function') {
+        logger.debug('Actualizando lista de charlas');
+        actualizarCharlas();
+      }
+      
+      // Volver a página de inicio
+      utilidades.obtenerElemento('#inicio')?.scrollIntoView({ behavior: 'smooth' });
+      
+    } catch (error) {
+      // Solo registramos el error pero NO mostramos notificación
+      // si ya fue manejado (para evitar duplicación)
+      if (!error.message.startsWith('HANDLED_')) {
+        logger.error('Error al procesar la inscripción', { 
+          message: error.message, 
+          stack: error.stack 
+        });
+        console.error('Error:', error);
+        
+        // Error de conexión u otro error no manejado previamente
+        notifications.error('No se pudo procesar la inscripción. Comprueba tu conexión e inténtalo nuevamente.', {
+          title: 'Error de conexión',
+          duration: 8000,
+          showConfirmButton: true,
+          confirmButtonText: 'Entendido',
+          backdrop: true
+        });
+      }
     } finally {
       // Restaurar estado del botón
-      this.actualizarEstadoBoton(false, 'Enviar');
+      this.actualizarEstadoBoton(false, 'Inscribirme');
       this.procesando = false;
       logger.debug('Proceso de inscripción finalizado');
     }
@@ -169,62 +210,6 @@ const InscripcionesController = {
       charla: charlaId,
       fecha: new Date().toISOString()
     };
-  },
-  
-  /**
-   * Envía los datos al servidor
-   * @param {Object} datos - Datos a enviar
-   * @returns {Object} Resultado de la operación
-   */
-  async enviarDatosAlServidor(datos) {
-    logger.debug('Enviando datos al servidor', { 
-      charlaId: datos.charla, 
-      nombre: datos.nombre,
-      apellido: datos.apellido 
-    });
-    
-    const start = Date.now();
-    
-    try {
-      const response = await fetch('/api/inscripcion', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(datos)
-      });
-      
-      const duration = Date.now() - start;
-      logger.httpRequest('POST', '/api/inscripcion', response.status, duration);
-      
-      if (!response.ok) {
-        const errorData = await response.json();
-        const errorMsg = errorData.mensaje || errorData.error || 'Error en la inscripción';
-        
-        logger.error('Error en la respuesta del servidor', { 
-          status: response.status,
-          error: errorMsg 
-        });
-        
-        throw new Error(errorMsg);
-      }
-      
-      const responseData = await response.json();
-      logger.info('Inscripción procesada correctamente por el servidor', { 
-        id: responseData.id,
-        idCharla: responseData.idCharla 
-      });
-      
-      return { 
-        exito: true, 
-        mensaje: `¡Inscripción exitosa! Tu registro ha sido confirmado.`,
-        idCharla: responseData.idCharla 
-      };
-    } catch (error) {
-      // Si hubo un error de red, también lo registramos
-      if (error.name === 'TypeError') {
-        logger.error('Error de red al enviar inscripción', { error: error.message });
-      }
-      throw error;
-    }
   },
   
   /**

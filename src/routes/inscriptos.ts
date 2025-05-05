@@ -141,15 +141,26 @@ async function getValidComoTeEnterasteId(conexion: PoolConnection, como_te_enter
 
 // Verificar duplicados con mensaje claro
 async function checkExistingUser(conexion: PoolConnection, email: string, dni: string): Promise<void> {
-    // Verificar si el email o DNI ya existen en la tabla correcta (inscriptos)
-    const [usuariosExistentes] = await conexion.execute(
+    // Verificar si el email o DNI ya existen en la tabla inscriptos - Consulta por DNI
+    const [usuariosDNI] = await conexion.execute(
         "SELECT * FROM inscriptos WHERE dni = ?",
-        [email, dni]
+        [dni]
     ) as [RowDataPacket[], any];
 
-    if (usuariosExistentes.length > 0) {
-        logger.warn(`Intento de inscripción duplicada DNI: ${dni}`);
+    if (usuariosDNI.length > 0) {
+        logger.warn(`Intento de inscripción con DNI duplicado: ${dni}`);
         throw new Error("Ya existe un usuario registrado con este DNI");
+    }
+    
+    // Verificar si el email ya existe en la tabla inscriptos - Consulta separada
+    const [usuariosEmail] = await conexion.execute(
+        "SELECT * FROM inscriptos WHERE email = ?",
+        [email]
+    ) as [RowDataPacket[], any];
+
+    if (usuariosEmail.length > 0) {
+        logger.warn(`Intento de inscripción con email duplicado: ${email}`);
+        throw new Error("Ya existe un usuario registrado con este email");
     }
 }
 

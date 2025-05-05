@@ -568,9 +568,40 @@ export const controladorInscripciones = {
       
       if (!response.ok) {
         const errorData = await response.json();
-        // Registrar el error completo para análisis
+        // Obtener el mensaje de error específico del servidor
+        const mensajeError = errorData.mensaje || errorData.error || 'Error en la inscripción';
         console.error('Error del servidor:', errorData);
-        throw new Error('Error en la solicitud');
+        
+        // Determinar el tipo de error para mostrar un mensaje apropiado
+        let tituloError = 'Error de inscripción';
+        let mensajeUsuario = mensajeError;
+        
+        // Personalizar el mensaje según el tipo de error
+        if (mensajeError.toLowerCase().includes('dni')) {
+          tituloError = 'DNI ya registrado';
+          mensajeUsuario = 'Este DNI ya está registrado en el sistema.';
+        } else if (mensajeError.toLowerCase().includes('email')) {
+          tituloError = 'Email ya registrado';
+          mensajeUsuario = 'Este email ya está registrado en el sistema.';
+        } else if (mensajeError.toLowerCase().includes('charla')) {
+          tituloError = 'Problema con la charla';
+          mensajeUsuario = 'La charla seleccionada no está disponible o ha alcanzado su capacidad máxima.';
+        }
+        
+        notifications.error(mensajeUsuario, {
+          title: tituloError,
+          showConfirmButton: true,
+          confirmButtonText: 'Entendido',
+          backdrop: true
+        });
+        
+        if (btnSubmit) {
+          btnSubmit.disabled = false;
+          btnSubmit.textContent = 'Enviar';
+        }
+        
+        // Importante: retornamos aquí para evitar mostrar el segundo error
+        return;
       }
       
       const resultado = await response.json();
@@ -597,14 +628,16 @@ export const controladorInscripciones = {
       // Registrar el error completo en la consola para los desarrolladores
       console.error('Error al procesar la inscripción:', error);
       
-      // Mostrar mensaje genérico al usuario
-      notifications.error('No se pudo procesar la inscripción. Por favor, inténtalo más tarde.', {
-        title: 'Error de inscripción',
-        duration: 8000,
-        showConfirmButton: true,
-        confirmButtonText: 'Entendido',
-        backdrop: true
-      });
+      // Solo mostrar error de conexión si no se ha mostrado ya un error específico
+      if (error.name === 'TypeError') {
+        notifications.error('No se pudo procesar la inscripción. Comprueba tu conexión e inténtalo más tarde.', {
+          title: 'Error de conexión',
+          duration: 8000,
+          showConfirmButton: true,
+          confirmButtonText: 'Entendido',
+          backdrop: true
+        });
+      }
       
       EventBus.emit('inscripcion:error', error);
     } finally {
