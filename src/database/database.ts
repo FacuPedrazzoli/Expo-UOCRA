@@ -1,15 +1,20 @@
 import mysql from "mysql2/promise";
 import logger, { logDB, logError } from "../utils/logger";
 
-// Railway provee DATABASE_URL (mysql://user:pass@host:port/db)
-// Si existe, usarla. Si no, usar variables individuales (desarrollo local).
+// Soporta múltiples formas de configurar la BD:
+// 1. DATABASE_URL o MYSQL_URL (Railway URL completa)
+// 2. MYSQLHOST/MYSQLUSER/etc (Railway variables individuales)
+// 3. DB_HOST/DB_USER/etc (desarrollo local)
 function createPoolConfig(): mysql.PoolOptions {
-    if (process.env.DATABASE_URL) {
-        const url = new URL(process.env.DATABASE_URL);
+    // Opción 1: URL completa (Railway la provee como DATABASE_URL o MYSQL_URL)
+    const dbUrl = process.env.DATABASE_URL || process.env.MYSQL_URL;
+    if (dbUrl) {
+        logger.info("[DB Config] Usando DATABASE_URL/MYSQL_URL");
+        const url = new URL(dbUrl);
         return {
             host: url.hostname,
-            user: url.username,
-            password: url.password,
+            user: decodeURIComponent(url.username),
+            password: decodeURIComponent(url.password),
             database: url.pathname.slice(1),
             port: parseInt(url.port || "3306", 10),
             waitForConnections: true,
@@ -18,6 +23,23 @@ function createPoolConfig(): mysql.PoolOptions {
         };
     }
 
+    // Opción 2: Variables individuales de Railway (MYSQLHOST, MYSQLUSER, etc.)
+    if (process.env.MYSQLHOST) {
+        logger.info("[DB Config] Usando variables MYSQL* de Railway");
+        return {
+            host: process.env.MYSQLHOST,
+            user: process.env.MYSQLUSER || "root",
+            password: process.env.MYSQLPASSWORD || "",
+            database: process.env.MYSQLDATABASE || "railway",
+            port: parseInt(process.env.MYSQLPORT || "3306", 10),
+            waitForConnections: true,
+            connectionLimit: 10,
+            queueLimit: 0,
+        };
+    }
+
+    // Opción 3: Variables locales (DB_HOST, DB_USER, etc.)
+    logger.info("[DB Config] Usando variables DB_* locales");
     return {
         host: process.env.DB_HOST || "localhost",
         user: process.env.DB_USER || "root",
@@ -34,7 +56,7 @@ const poolConfig = createPoolConfig();
 const pool = mysql.createPool(poolConfig);
 
 // Verificar la conexión al iniciar la aplicación
-logger.info(`Intentando conectar a la base de datos: ${poolConfig.database}`);
+logger.info(`Intentando conectar a la base de datos: ${poolConfig.database} en ${poolConfig.host}:${poolConfig.port}`);
 
 pool.getConnection()
     .then((connection) => {
