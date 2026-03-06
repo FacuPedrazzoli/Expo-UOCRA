@@ -1,0 +1,337 @@
+/* 
+ * Estilos para la sección oculta de validación de inscriptos
+ * Usa la paleta de colores del proyecto: --color-primary (#124565), 
+ * --color-secondary (#25848d), --color-accent (#56bcb8)
+ * Fuentes: Montserrat (headings), Roboto (body)
+ */
+
+:root {
+  --v-primary: #124565;
+  --v-secondary: #25848d;
+  --v-accent: #56bcb8;
+  --v-accent-hover: #68caca;
+  --v-bg: #f0f8fa;
+  --v-card: #ffffff;
+  --v-text: #333333;
+  --v-text-light: #666666;
+  --v-success: #4CAF50;
+  --v-error: #f44336;
+  --v-warning: #ff9800;
+  --v-radius: 10px;
+  --v-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Roboto', Arial, sans-serif;
+  background-color: var(--v-bg);
+  color: var(--v-text);
+  line-height: 1.6;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 2rem 1rem;
+}
+
+h1, h2, h3 {
+  font-family: 'Montserrat', sans-serif;
+  color: var(--v-primary);
+}
+
+/* Container principal */
+.validacion-container {
+  width: 100%;
+  max-width: 520px;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+/* Header */
+.validacion-header {
+  text-align: center;
+  padding: 1.5rem 1rem 1rem;
+}
+
+.validacion-logo {
+  width: 64px;
+  height: 64px;
+  object-fit: contain;
+  margin-bottom: 0.75rem;
+}
+
+.validacion-header h1 {
+  font-size: 1.5rem;
+  margin-bottom: 0.25rem;
+}
+
+.validacion-subtitle {
+  color: var(--v-text-light);
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+/* Card base */
+.busqueda-card,
+.resultado-card,
+.no-encontrado-card,
+.error-card {
+  background: var(--v-card);
+  border-radius: var(--v-radius);
+  box-shadow: var(--v-shadow);
+  padding: 1.5rem;
+}
+
+/* Buscador */
+.busqueda-form {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.input-group {
+  flex: 1;
+  position: relative;
+}
+
+.input-icon {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--v-text-light);
+  font-size: 1rem;
+}
+
+#dni-input {
+  width: 100%;
+  padding: 0.85rem 0.85rem 0.85rem 2.75rem;
+  border: 2px solid #dde5e9;
+  border-radius: var(--v-radius);
+  font-size: 1rem;
+  font-family: 'Roboto', sans-serif;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+#dni-input:focus {
+  border-color: var(--v-accent);
+}
+
+#dni-input.input-error-border {
+  border-color: var(--v-error);
+}
+
+.input-error {
+  color: var(--v-error);
+  font-size: 0.82rem;
+  margin-top: 0.5rem;
+}
+
+/* Botón buscar */
+.btn-buscar {
+  padding: 0.85rem 1.5rem;
+  background-color: var(--v-primary);
+  color: white;
+  border: none;
+  border-radius: var(--v-radius);
+  font-size: 0.95rem;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.btn-buscar:hover {
+  background-color: var(--v-secondary);
+}
+
+.btn-buscar:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Loading */
+.loading {
+  text-align: center;
+  padding: 2rem 1rem;
+  color: var(--v-text-light);
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #dde5e9;
+  border-top-color: var(--v-accent);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin: 0 auto 0.75rem;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Resultado encontrado */
+.resultado-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+}
+
+.resultado-icon {
+  font-size: 1.75rem;
+  color: var(--v-secondary);
+}
+
+.resultado-header h2 {
+  font-size: 1.35rem;
+  margin: 0;
+}
+
+/* Badge ya validado */
+.badge-validado {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background-color: #e8f5e9;
+  color: var(--v-success);
+  padding: 0.65rem 1.1rem;
+  border-radius: var(--v-radius);
+  font-weight: 500;
+  font-size: 0.95rem;
+  border-left: 4px solid var(--v-success);
+}
+
+.fecha-validacion {
+  color: var(--v-text-light);
+  font-weight: 400;
+  font-size: 0.82rem;
+  margin-left: 0.25rem;
+}
+
+/* Botón validar */
+.btn-validar {
+  width: 100%;
+  padding: 1rem;
+  background-color: var(--v-success);
+  color: white;
+  border: none;
+  border-radius: var(--v-radius);
+  font-size: 1.1rem;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s, transform 0.1s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+}
+
+.btn-validar:hover {
+  background-color: #43a047;
+}
+
+.btn-validar:active {
+  transform: scale(0.98);
+}
+
+.btn-validar:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Confirmación post-validación */
+.confirmacion {
+  text-align: center;
+  padding: 1rem 0.5rem;
+}
+
+.confirmacion-icon {
+  font-size: 2.5rem;
+  color: var(--v-success);
+  display: block;
+  margin-bottom: 0.75rem;
+}
+
+.confirmacion p {
+  font-size: 1.05rem;
+  font-weight: 500;
+  color: var(--v-text);
+  margin: 0;
+}
+
+/* No encontrado */
+.no-encontrado-card {
+  text-align: center;
+  padding: 2rem 1.5rem;
+  border-left: 4px solid var(--v-warning);
+}
+
+.no-encontrado-icon {
+  font-size: 2rem;
+  color: var(--v-warning);
+  display: block;
+  margin-bottom: 0.75rem;
+}
+
+.no-encontrado-card p {
+  color: var(--v-text-light);
+  font-size: 1rem;
+  margin: 0;
+}
+
+/* Error de servidor */
+.error-card {
+  text-align: center;
+  padding: 2rem 1.5rem;
+  border-left: 4px solid var(--v-error);
+}
+
+.error-icon {
+  font-size: 2rem;
+  color: var(--v-error);
+  display: block;
+  margin-bottom: 0.75rem;
+}
+
+.error-card p {
+  color: var(--v-text-light);
+  font-size: 1rem;
+  margin: 0;
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+  body {
+    padding: 1rem 0.75rem;
+  }
+
+  .validacion-header h1 {
+    font-size: 1.25rem;
+  }
+
+  .busqueda-form {
+    flex-direction: column;
+  }
+
+  .btn-buscar {
+    justify-content: center;
+    padding: 0.85rem;
+  }
+
+  .resultado-header h2 {
+    font-size: 1.15rem;
+  }
+}

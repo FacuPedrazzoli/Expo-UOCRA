@@ -51,3 +51,8 @@ build/
 
 # Ignorar la carpeta documents dentro de tasks
 tasks/documents/
+
+# Variables de entorno (NUNCA subir credenciales al repositorio)
+.env
+.env.local
+.env.production

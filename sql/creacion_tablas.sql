@@ -1,9 +1,5 @@
 /*
-
-HTTP: http://159.89.185.31/phpmyadmin
-user: admin
-pass: bd99d7eed4d83d35c3c1a47a68fa0c7ee2df675d206b66cb
-
+Credenciales de acceso: ver archivo .env (NO commitear credenciales en el código fuente)
 */
 
 

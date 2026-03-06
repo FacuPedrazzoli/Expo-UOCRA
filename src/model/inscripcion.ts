@@ -6,6 +6,8 @@ export default interface Inscripcion {
     email: string;
     como_te_enteraste_fk: string;
     fecha_registro?: Date;
+    validado?: boolean;
+    validado_en?: Date | null;
 }
 
 /*

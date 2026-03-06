@@ -1,10 +1,8 @@
 import 'dotenv/config'
-import express from "express";
 import path from "path";
-import cors from "cors";
-import inscriptosRouter from "./routes/inscriptos";
 import { execSync } from 'child_process';
 import logger, { logError } from './utils/logger';
+import startServer from './server';
 
 // Get command line arguments
 const comando = process.argv[2] || 'servidor';
@@ -14,30 +12,7 @@ const parametros = process.argv.slice(3);
 switch (comando) {
   case 'servidor':
     logger.info('Iniciando el servidor HTTP...');
-    // Direct server initialization
-    const app = express();
-    const PORT = process.env.PORT || 3000;
-
-    // Middleware configuration - Eliminar log de peticiones HTTP
-    app.use(express.json());
-    app.use(express.urlencoded({ extended: true }));
-    app.use(cors());
-
-    // Static and API routes
-    app.use(express.static(path.join(__dirname, "../public")));
-    app.use("/api/inscripcion", inscriptosRouter);
-
-    app.get("/", (req, res) => {
-      res.sendFile(path.join(__dirname, "../public/html/index.html"));
-    });
-
-    // Start the server
-    app.listen(PORT, () => {
-      logger.info(`Servidor HTTP iniciado en http://localhost:${PORT}`);
-    }).on('error', (error) => {
-      logError('Error starting server', error);
-      process.exit(1);
-    });
+    startServer();
     break;
 
   case 'charlas':

@@ -1,13 +1,8 @@
 import { Router, Response } from "express";
-import { OkPacket, RowDataPacket, PoolConnection } from "mysql2/promise";
+import { RowDataPacket, PoolConnection } from "mysql2/promise";
 import pool from "../database/database";
-import dotenv from "dotenv";
-import path from "path";
 import { v4 as uuidv4 } from 'uuid';
 import logger, { logDB, logError } from "../utils/logger";
-
-// Cargar variables de entorno desde el archivo .env
-dotenv.config({ path: path.resolve(__dirname, "../../.env") });
 
 // Interfaces para los datos
 interface RequiredFields {
@@ -27,13 +22,12 @@ router.post("/", async (req, res) => {
     let conexion: PoolConnection | undefined;
     try {
         logger.info(`Nueva inscripción recibida: ${req.body.nombre} ${req.body.apellido}`);
-        logger.debug("Datos recibidos en el servidor:", req.body);
         
         const { nombre, apellido, dni, email, como_te_enteraste, charla} = req.body;
-        const id = req.body.id || generarUUID(); // Usar ID proporcionado o generar uno nuevo
+        const id = req.body.id || uuidv4(); // Usar ID proporcionado o generar uno nuevo
 
         // Validación mejorada
-        validateRequiredFields({ nombre, apellido, dni, email, como_te_enteraste, charla }, res);
+        validateRequiredFields({ nombre, apellido, dni, email, como_te_enteraste, charla });
 
         conexion = await pool.getConnection();
         await conexion.beginTransaction();
@@ -74,25 +68,24 @@ router.post("/", async (req, res) => {
             );
             logDB("Transacción cancelada por error");
         }
-        handleError(error as Error, res);
+        handleError(error, res);
     } finally {
         if (conexion) conexion.release();
     }
 });
 
 // Helper functions to make code more modular and readable
-function validateRequiredFields(fields: RequiredFields, res: Response): void {
+function validateRequiredFields(fields: RequiredFields): void {
     const camposFaltantes = Object.entries(fields)
         .filter(([_, valor]) => valor === undefined || valor === null || valor === "")
         .map(([clave]) => clave);
 
     if (camposFaltantes.length > 0) {
         logger.warn(`Campos faltantes en el formulario: ${camposFaltantes.join(', ')}`);
-        res.status(400).json({
-            error: "Campos obligatorios faltantes",
-            campos: camposFaltantes
-        });
-        throw new Error("Campos obligatorios faltantes");
+        const error: any = new Error("Campos obligatorios faltantes");
+        error.statusCode = 400;
+        error.campos = camposFaltantes;
+        throw error;
     }
 }
 
@@ -139,28 +132,23 @@ async function getValidComoTeEnterasteId(conexion: PoolConnection, como_te_enter
     return comoTeEnterasteId;
 }
 
-// Verificar duplicados con mensaje claro
+// Verificar duplicados con una sola consulta optimizada
 async function checkExistingUser(conexion: PoolConnection, email: string, dni: string): Promise<void> {
-    // Verificar si el email o DNI ya existen en la tabla inscriptos - Consulta por DNI
-    const [usuariosDNI] = await conexion.execute(
-        "SELECT * FROM inscriptos WHERE dni = ?",
-        [dni]
+    const [existentes] = await conexion.execute(
+        "SELECT dni, email FROM inscriptos WHERE dni = ? OR email = ? LIMIT 1",
+        [dni, email]
     ) as [RowDataPacket[], any];
 
-    if (usuariosDNI.length > 0) {
-        logger.warn(`Intento de inscripción con DNI duplicado: ${dni}`);
-        throw new Error("Ya existe un usuario registrado con este DNI");
-    }
-    
-    // Verificar si el email ya existe en la tabla inscriptos - Consulta separada
-    const [usuariosEmail] = await conexion.execute(
-        "SELECT * FROM inscriptos WHERE email = ?",
-        [email]
-    ) as [RowDataPacket[], any];
-
-    if (usuariosEmail.length > 0) {
-        logger.warn(`Intento de inscripción con email duplicado: ${email}`);
-        throw new Error("Ya existe un usuario registrado con este email");
+    if (existentes.length > 0) {
+        const duplicado = existentes[0];
+        if (duplicado.dni === dni) {
+            logger.warn(`Intento de inscripción con DNI duplicado: ${dni}`);
+            throw new Error("Ya existe un usuario registrado con este DNI");
+        }
+        if (duplicado.email === email) {
+            logger.warn(`Intento de inscripción con email duplicado: ${email}`);
+            throw new Error("Ya existe un usuario registrado con este email");
+        }
     }
 }
 
@@ -210,17 +198,22 @@ async function getValidCharlaId(conexion: PoolConnection, charla: string): Promi
     return idCharla;
 }
 
-// Generic error handler
-function handleError(error: Error, res: Response): void {
+// Generic error handler con soporte para status codes personalizados
+function handleError(error: any, res: Response): void {
     const message = error.message || "Error desconocido";
     logError("Error en endpoint de inscripción", error);
     
     // Solo enviar respuesta si no se ha enviado ya
     if (!res.headersSent) {
-        res.status(500).json({
+        const statusCode = error.statusCode || 500;
+        const responseBody: any = {
             error: "Error al procesar la solicitud",
             mensaje: message
-        });
+        };
+        if (error.campos) {
+            responseBody.campos = error.campos;
+        }
+        res.status(statusCode).json(responseBody);
     }
 }
 
@@ -228,24 +221,25 @@ function handleError(error: Error, res: Response): void {
 router.get("/charlas", async (req, res) => {
     try {
         logger.info("Solicitud de listado de charlas");
-        const conexion = await pool.getConnection();
-        try {
-            // Obtenemos las charlas según el esquema correcto
-            const [charlas] = await conexion.query<RowDataPacket[]>(`
-                SELECT 
-                    c.id as id, 
-                    c.titulo, 
-                    c.horario,
-                    c.empresa,
-                    c.ubicacion,
-                    (SELECT COUNT(*) FROM inscriptos_charlas WHERE charlas_id = c.id) as participantes
-                FROM charlas c
-            `);
+        // Usar pool directamente para queries de solo lectura (no requiere getConnection/release)
+        const [charlas] = await pool.query<RowDataPacket[]>(`
+            SELECT 
+                c.id as id, 
+                c.titulo, 
+                c.horario,
+                c.empresa,
+                c.ubicacion,
+                COUNT(ic.inscriptos_id) as participantes
+            FROM charlas c
+            LEFT JOIN inscriptos_charlas ic ON ic.charlas_id = c.id
+            GROUP BY c.id, c.titulo, c.horario, c.empresa, c.ubicacion
+            ORDER BY c.horario ASC
+        `);
             
-            logDB(`Se encontraron ${charlas.length} charlas en la base de datos`);
+        logDB(`Se encontraron ${charlas.length} charlas en la base de datos`);
 
-            // Transformamos el formato de las charlas para que coincida con lo esperado en el frontend
-            const charlasFormateadas = charlas.map(charla => {
+        // Transformamos el formato de las charlas para que coincida con lo esperado en el frontend
+        const charlasFormateadas = charlas.map(charla => {
                 // Dar formato a la fecha/hora
                 let horaInicio, horaFin;
 
@@ -288,11 +282,8 @@ router.get("/charlas", async (req, res) => {
                 };
             });
 
-            res.status(200).json(charlasFormateadas);
-            logger.debug(`Enviadas ${charlasFormateadas.length} charlas formateadas al cliente`);
-        } finally {
-            conexion.release();
-        }
+        res.status(200).json(charlasFormateadas);
+        logger.debug(`Enviadas ${charlasFormateadas.length} charlas formateadas al cliente`);
     } catch (error: any) {
         logError("Error al obtener charlas", error);
         res.status(500).json({
@@ -306,72 +297,57 @@ router.get("/charlas", async (req, res) => {
 router.get("/como-te-enteraste", async (req, res) => {
     try {
         logger.info("Solicitud de opciones de 'cómo te enteraste'");
-        const conexion = await pool.getConnection();
-        try {
-            // Obtenemos las opciones de "cómo te enteraste"
-            const [opciones] = await conexion.query<RowDataPacket[]>(`
-                SELECT 
-                    id, 
-                    descripcion 
-                FROM como_te_enteraste
-                ORDER BY descripcion
-            `);
+        // Usar pool directamente para queries de solo lectura
+        const [opciones] = await pool.query<RowDataPacket[]>(`
+            SELECT id, descripcion 
+            FROM como_te_enteraste
+            ORDER BY descripcion
+        `);
 
-            logger.debug(`Enviando ${opciones.length} opciones de 'cómo te enteraste'`);
-            res.json(opciones);
-        } catch (error: any) {
-            logError("Error al consultar las opciones", error);
-            res.status(500).json({
-                error: "Error al obtener las opciones",
-                mensaje: error.message
-            });
-        } finally {
-            conexion.release();
-        }
+        logger.debug(`Enviando ${opciones.length} opciones de 'cómo te enteraste'`);
+        res.json(opciones);
     } catch (error: any) {
-        logError("Error general en endpoint como-te-enteraste", error);
+        logError("Error al obtener opciones de 'cómo te enteraste'", error);
         res.status(500).json({
-            error: "Error al procesar la solicitud",
+            error: "Error al obtener las opciones",
             mensaje: error.message
         });
     }
 });
 
-// Endpoint para recibir logs del cliente
+// Endpoint para recibir logs del cliente (no loguear datos sensibles)
 router.post("/logs", (req, res) => {
     try {
-        const { level, message, timestamp, data } = req.body;
+        const { level, message } = req.body;
         
         // Validar los datos mínimos
         if (!level || !message) {
             return res.status(400).json({ error: "Faltan datos requeridos (level, message)" });
         }
+
+        // Truncar mensaje para evitar abuso
+        const safeMessage = String(message).substring(0, 500);
         
-        // Registrar según nivel
+        // Registrar según nivel (sin datos adicionales por seguridad)
         switch(level.toLowerCase()) {
             case 'error':
-                logger.error(`[Cliente] ${message}`, data);
+                logger.error(`[Cliente] ${safeMessage}`);
                 break;
             case 'warn':
-                logger.warn(`[Cliente] ${message}`, data);
+                logger.warn(`[Cliente] ${safeMessage}`);
                 break;
             case 'info':
-                logger.info(`[Cliente] ${message}`, data);
+                logger.info(`[Cliente] ${safeMessage}`);
                 break;
             default:
-                logger.debug(`[Cliente] ${message}`, data);
+                logger.debug(`[Cliente] ${safeMessage}`);
         }
         
-        res.status(202).end(); // Aceptado, sin contenido
+        res.status(202).end();
     } catch (error) {
-        logger.error("Error al procesar log del cliente", { error });
-        res.status(500).end(); // No enviamos detalles al cliente
+        logger.error("Error al procesar log del cliente");
+        res.status(500).end();
     }
 });
-
-// Función auxiliar para generar UUID
-function generarUUID(): string {
-    return uuidv4();
-}
 
 export default router;

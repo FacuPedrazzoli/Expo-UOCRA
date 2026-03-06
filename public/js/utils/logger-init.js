@@ -9,8 +9,8 @@ export function createLogger(options = {}) {
   const defaultOptions = {
     appName: 'Expo Formación',
     enableConsole: true,
-    enableRemoteLogging: process.env.NODE_ENV === 'production', // Solo en producción por defecto
-    logLevel: process.env.NODE_ENV === 'production' ? 'info' : 'debug',
+    enableRemoteLogging: window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1',
+    logLevel: (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') ? 'info' : 'debug',
     ...options
   };
 

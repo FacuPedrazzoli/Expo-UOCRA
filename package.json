@@ -2,14 +2,16 @@
     "name": "pagina_de_la_expo",
     "version": "1.0.0",
     "description": "En este repo vamos a poner todo lo de la expo",
-    "main": "index.js",
+    "main": "build/index.js",
     "scripts": {
         "test": "jest",
-        "compilar": ".\\node_modules\\.bin\\tsc --watch",
-        "compilar_sevidor": "./node_modules/.bin/tsc --watch",
-        "start": ".\\node_modules\\.bin\\ts-node-dev ./src/index.ts",
-        "start_sevidor": "./node_modules/.bin/ts-node-dev ./src/index.ts"
-        
+        "build": "tsc",
+        "start": "node build/index.js",
+        "dev": "ts-node-dev ./src/index.ts",
+        "compilar": "tsc --watch"
+    },
+    "engines": {
+        "node": ">=18.0.0"
     },
     "keywords": [],
     "author": "",
