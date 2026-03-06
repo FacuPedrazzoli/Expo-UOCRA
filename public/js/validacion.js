@@ -28,6 +28,8 @@
 
   // Estado actual del DNI buscado
   let dniActual = '';
+  let resetTimer = null;
+  const VALIDAR_BUTTON_HTML = '<i class="fas fa-clipboard-check"></i> VALIDAR';
 
   // Ocultar todas las secciones de resultado
   function resetResultados() {
@@ -40,6 +42,34 @@
     confirmacion.hidden = true;
     inputError.hidden = true;
     dniInput.classList.remove('input-error-border');
+    nombreCompleto.textContent = '';
+    fechaValidacion.textContent = '';
+    confirmacionTexto.textContent = '';
+    errorMensaje.textContent = 'Error al comunicarse con el servidor.';
+    btnValidar.disabled = false;
+    btnValidar.innerHTML = VALIDAR_BUTTON_HTML;
+  }
+
+  function limpiarResetPendiente() {
+    if (resetTimer) {
+      clearTimeout(resetTimer);
+      resetTimer = null;
+    }
+  }
+
+  function prepararSiguienteValidacion() {
+    limpiarResetPendiente();
+    dniActual = '';
+    dniInput.value = '';
+    resetResultados();
+    dniInput.focus();
+  }
+
+  function programarSiguienteValidacion() {
+    limpiarResetPendiente();
+    resetTimer = setTimeout(() => {
+      prepararSiguienteValidacion();
+    }, 5000);
   }
 
   // Formatear fecha/hora para mostrar
@@ -58,6 +88,8 @@
   // Buscar inscripto por DNI
   async function buscarPorDNI() {
     const dni = dniInput.value.trim();
+
+    limpiarResetPendiente();
 
     // Validación de campo vacío
     if (!dni) {
@@ -132,7 +164,9 @@
         // Éxito: ocultar botón, mostrar confirmación
         btnValidar.hidden = true;
 
-        confirmacionTexto.textContent = `${data.nombre} ${data.apellido} — Inscripción validada correctamente.`;
+        confirmacionTexto.textContent = data.ya_validado
+          ? `${data.nombre} ${data.apellido} — Ya estaba validado.`
+          : `${data.nombre} ${data.apellido} — Inscripción validada correctamente.`;
         confirmacion.hidden = false;
 
         // Mostrar badge con fecha
@@ -140,16 +174,18 @@
         fechaValidacion.textContent = data.validado_en
           ? `— ${formatearFecha(data.validado_en)}`
           : '';
+
+        programarSiguienteValidacion();
       } else {
         // Error
         btnValidar.disabled = false;
-        btnValidar.innerHTML = '<i class="fas fa-clipboard-check"></i> Validar inscripción';
+        btnValidar.innerHTML = VALIDAR_BUTTON_HTML;
         errorMensaje.textContent = data.error || 'Error al validar la inscripción.';
         errorServidor.hidden = false;
       }
     } catch (err) {
       btnValidar.disabled = false;
-      btnValidar.innerHTML = '<i class="fas fa-clipboard-check"></i> Validar inscripción';
+      btnValidar.innerHTML = VALIDAR_BUTTON_HTML;
       errorMensaje.textContent = 'No se pudo conectar con el servidor.';
       errorServidor.hidden = false;
     }
@@ -167,6 +203,9 @@
 
   // Limpiar error al escribir
   dniInput.addEventListener('input', function () {
+    limpiarResetPendiente();
+    dniInput.value = dniInput.value.replace(/\D+/g, '');
+
     if (inputError && !inputError.hidden) {
       inputError.hidden = true;
       dniInput.classList.remove('input-error-border');
