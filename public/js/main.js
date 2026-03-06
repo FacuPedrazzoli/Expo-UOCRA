@@ -295,7 +295,7 @@ export const controladorEmpresas = {
     tarjeta.className = "empresa-card";
 
     tarjeta.innerHTML = `
-      <img src="${empresa.logo || "img/placeholder-logo.png"}" alt="Logo de ${empresa.nombre}" class="empresa-logo" onerror="this.src='img/placeholder-logo.png'" />
+      <img src="${empresa.logo || "img/placeholder-logo.png"}" alt="Logo de ${empresa.nombre}" class="empresa-logo" loading="lazy" onerror="this.src='img/placeholder-logo.png'" />
       <p><strong>${empresa.nombre}</strong></p>
       <p>${empresa.descripcion || ""}</p>
       ${empresa.url ? `<a href="${empresa.url}" target="_blank" class="btn-visitar">Visitar sitio web</a>` : ""}
@@ -434,6 +434,7 @@ export const controladorCompeticiones = {
       <div class="competicion-imagen">
         <img src="${competicion.imagen || "img/placeholder-competicion.png"}" 
              alt="${competicion.titulo}" 
+             loading="lazy"
              onerror="this.src='../img/logo_expo.png'">
       </div>
       <div class="competicion-info">

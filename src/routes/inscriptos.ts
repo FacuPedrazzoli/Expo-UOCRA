@@ -17,6 +17,22 @@ interface RequiredFields {
 
 const router = Router();
 
+// Caché en memoria para datos que cambian poco (charlas, como-te-enteraste)
+// TTL: 5 minutos — evita queries repetitivas a la BD
+const cache = new Map<string, { data: any; expiry: number }>();
+const CACHE_TTL = 5 * 60 * 1000; // 5 minutos
+
+function getCached(key: string): any | null {
+    const entry = cache.get(key);
+    if (entry && Date.now() < entry.expiry) return entry.data;
+    cache.delete(key);
+    return null;
+}
+
+function setCache(key: string, data: any): void {
+    cache.set(key, { data, expiry: Date.now() + CACHE_TTL });
+}
+
 // Endpoint para registrar una inscripción
 router.post("/", async (req, res) => {
     let conexion: PoolConnection | undefined;
@@ -217,11 +233,19 @@ function handleError(error: any, res: Response): void {
     }
 }
 
-// Endpoint para obtener todas las charlas
+// Endpoint para obtener todas las charlas (con caché en memoria)
 router.get("/charlas", async (req, res) => {
     try {
-        logger.info("Solicitud de listado de charlas");
-        // Usar pool directamente para queries de solo lectura (no requiere getConnection/release)
+        res.setHeader('Cache-Control', 'no-store');
+
+        // Verificar caché en memoria
+        const cached = getCached('charlas');
+        if (cached) {
+            logger.debug('Charlas servidas desde caché en memoria');
+            return res.status(200).json(cached);
+        }
+
+        logger.info("Solicitud de listado de charlas (BD)");
         const [charlas] = await pool.query<RowDataPacket[]>(`
             SELECT 
                 c.id as id, 
@@ -282,6 +306,9 @@ router.get("/charlas", async (req, res) => {
                 };
             });
 
+        // Guardar en caché
+        setCache('charlas', charlasFormateadas);
+
         res.status(200).json(charlasFormateadas);
         logger.debug(`Enviadas ${charlasFormateadas.length} charlas formateadas al cliente`);
     } catch (error: any) {
@@ -293,17 +320,27 @@ router.get("/charlas", async (req, res) => {
     }
 });
 
-// Endpoint para obtener todas las opciones de "cómo te enteraste"
+// Endpoint para obtener todas las opciones de "cómo te enteraste" (con caché en memoria)
 router.get("/como-te-enteraste", async (req, res) => {
     try {
-        logger.info("Solicitud de opciones de 'cómo te enteraste'");
-        // Usar pool directamente para queries de solo lectura
+        res.setHeader('Cache-Control', 'no-store');
+
+        // Verificar caché en memoria
+        const cached = getCached('como-te-enteraste');
+        if (cached) {
+            logger.debug('Opciones como-te-enteraste servidas desde caché');
+            return res.json(cached);
+        }
+
+        logger.info("Solicitud de opciones de 'cómo te enteraste' (BD)");
         const [opciones] = await pool.query<RowDataPacket[]>(`
             SELECT id, descripcion 
             FROM como_te_enteraste
             ORDER BY descripcion
         `);
 
+        // Guardar en caché
+        setCache('como-te-enteraste', opciones);
         logger.debug(`Enviando ${opciones.length} opciones de 'cómo te enteraste'`);
         res.json(opciones);
     } catch (error: any) {
