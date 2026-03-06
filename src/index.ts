@@ -1,4 +1,5 @@
-import 'dotenv/config'
+// Importar configuración primero (valida variables de entorno)
+import './config/env';
 import path from "path";
 import { execSync } from 'child_process';
 import logger, { logError } from './utils/logger';

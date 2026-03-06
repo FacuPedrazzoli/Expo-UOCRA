@@ -1,390 +1,329 @@
-import { Router, Response } from "express";
-import { RowDataPacket, PoolConnection } from "mysql2/promise";
-import pool from "../database/database";
+import { Router, Response } from 'express';
+import { RowDataPacket, PoolConnection } from 'mysql2/promise';
 import { v4 as uuidv4 } from 'uuid';
-import logger, { logDB, logError } from "../utils/logger";
-
-// Interfaces para los datos
-interface RequiredFields {
-    nombre?: string;
-    apellido?: string;
-    dni?: string;
-    email?: string;
-    como_te_enteraste?: string;
-    charla?: string;
-    [key: string]: any;
-}
+import pool from '../database/database';
+import logger, { logDB, logError } from '../utils/logger';
+import { inscripcionRateLimit } from '../utils/middleware';
+import { sanitizeAndValidateInscripcion } from '../utils/sanitize';
 
 const router = Router();
 
-// Caché en memoria para datos que cambian poco (charlas, como-te-enteraste)
-// TTL: 5 minutos — evita queries repetitivas a la BD
-const cache = new Map<string, { data: any; expiry: number }>();
-const CACHE_TTL = 5 * 60 * 1000; // 5 minutos
-
-function getCached(key: string): any | null {
-    const entry = cache.get(key);
-    if (entry && Date.now() < entry.expiry) return entry.data;
-    cache.delete(key);
-    return null;
+// ── Caché en memoria con invalidación por prefijo ────────────────────────
+interface CacheEntry<T> {
+    data: T;
+    expiresAt: number;
 }
 
-function setCache(key: string, data: any): void {
-    cache.set(key, { data, expiry: Date.now() + CACHE_TTL });
+class SimpleCache {
+    private store = new Map<string, CacheEntry<any>>();
+
+    set<T>(key: string, data: T, ttlMs: number): void {
+        this.store.set(key, { data, expiresAt: Date.now() + ttlMs });
+    }
+
+    get<T>(key: string): T | null {
+        const entry = this.store.get(key);
+        if (!entry) return null;
+        if (Date.now() > entry.expiresAt) {
+            this.store.delete(key);
+            return null;
+        }
+        return entry.data as T;
+    }
+
+    invalidate(prefix?: string): void {
+        if (!prefix) {
+            this.store.clear();
+            return;
+        }
+        for (const key of this.store.keys()) {
+            if (key.startsWith(prefix)) this.store.delete(key);
+        }
+    }
 }
 
-// Endpoint para registrar una inscripción
-router.post("/", async (req, res) => {
-    let conexion: PoolConnection | undefined;
+const cache = new SimpleCache();
+
+// ── POST /api/inscripcion — Registrar inscripción (multi-charla) ─────────
+router.post('/', inscripcionRateLimit, async (req, res) => {
+    let conn: PoolConnection | undefined;
+    const t0 = Date.now();
+
     try {
-        logger.info(`Nueva inscripción recibida: ${req.body.nombre} ${req.body.apellido}`);
-        
-        const { nombre, apellido, dni, email, como_te_enteraste, charla} = req.body;
-        const id = req.body.id || uuidv4(); // Usar ID proporcionado o generar uno nuevo
+        // 1. Sanitizar y validar inputs
+        const input = sanitizeAndValidateInscripcion(req.body);
+        const id = uuidv4();
 
-        // Validación mejorada
-        validateRequiredFields({ nombre, apellido, dni, email, como_te_enteraste, charla });
+        logger.info(`Iniciando inscripción: ${input.nombre} ${input.apellido} (${input.dni})`);
 
-        conexion = await pool.getConnection();
-        await conexion.beginTransaction();
-        logDB(`Iniciando transacción para inscripción de ${nombre} ${apellido}`);
+        // 2. Obtener conexión y comenzar transacción
+        conn = await pool.getConnection();
+        await conn.beginTransaction();
 
-        // Obtener ID válido para como_te_enteraste con mejores mensajes de error
-        const comoTeEnterasteId = await getValidComoTeEnterasteId(conexion, como_te_enteraste);
+        // 3. Resolver como_te_enteraste
+        const comoTeEnterasteId = await resolveComoTeEnteraste(conn, input.como_te_enteraste);
 
-        // Verificar duplicados con mensaje claro
-        await checkExistingUser(conexion, email, dni);
+        // 4. Verificar duplicados (una sola query)
+        await assertNoDuplicateUser(conn, input.email, input.dni);
 
-        // Insertar usuario
-        await insertUser(conexion, id, nombre, apellido, dni, email, comoTeEnterasteId);
-
-        // Obtener ID válido de charla
-        const idCharla = await getValidCharlaId(conexion, charla);
-
-        // Relacionar usuario con charla
-        await conexion.execute(
-            "INSERT INTO inscriptos_charlas (inscriptos_id, charlas_id) VALUES (?, ?)",
-            [id, idCharla]
+        // 5. Insertar inscripto
+        await conn.execute(
+            'INSERT INTO inscriptos (id, nombre, apellido, dni, email, como_te_enteraste_fk) VALUES (?, ?, ?, ?, ?, ?)',
+            [id, input.nombre, input.apellido, input.dni, input.email, comoTeEnterasteId]
         );
-        logDB(`Usuario ${id} inscripto a charla ${idCharla}`);
+        logDB(`Inscripto insertado: ${id}`);
 
-        await conexion.commit();
-        logger.info(`Transacción completada exitosamente para ${nombre} ${apellido} (${dni})`);
+        // 6. Procesar charlas (soporta múltiples)
+        const charlasInscritas: string[] = [];
+        for (const charlaInput of input.charlas) {
+            const charlaId = await resolveCharla(conn, charlaInput);
+            charlasInscritas.push(charlaId);
+        }
+
+        // 7. Batch insert en inscriptos_charlas
+        if (charlasInscritas.length > 0) {
+            const valores = charlasInscritas.map(cid => [id, cid]);
+            await conn.query(
+                'INSERT INTO inscriptos_charlas (inscriptos_id, charlas_id) VALUES ?',
+                [valores]
+            );
+            logDB(`Charlas asignadas: [${charlasInscritas.join(', ')}] → inscripto ${id}`);
+        }
+
+        await conn.commit();
+
+        // Invalidar caché de charlas porque los participantes cambiaron
+        cache.invalidate('charlas');
+
+        const ms = Date.now() - t0;
+        logger.info(`Inscripción completada en ${ms}ms: ${id}`);
 
         res.status(201).json({
-            mensaje: "Inscripción guardada correctamente",
+            mensaje: 'Inscripción guardada correctamente',
             id,
-            idCharla
+            charlasInscritas,
+            // Compatibilidad con frontend legacy
+            idCharla: charlasInscritas[0] || null,
         });
 
-    } catch (error) {
-        if (conexion) {
-            await conexion.rollback().catch(err => 
-                logError("Error al hacer rollback", err)
-            );
-            logDB("Transacción cancelada por error");
+    } catch (err: any) {
+        if (conn) {
+            try { await conn.rollback(); } catch (_) {}
         }
-        handleError(error, res);
+
+        const ms = Date.now() - t0;
+        logger.warn(`Inscripción fallida en ${ms}ms: ${err.message}`);
+
+        if (!res.headersSent) {
+            res.status(determineStatusCode(err.message)).json({
+                error: categorizeError(err.message),
+                mensaje: err.message,
+            });
+        }
     } finally {
-        if (conexion) conexion.release();
+        conn?.release();
     }
 });
 
-// Helper functions to make code more modular and readable
-function validateRequiredFields(fields: RequiredFields): void {
-    const camposFaltantes = Object.entries(fields)
-        .filter(([_, valor]) => valor === undefined || valor === null || valor === "")
-        .map(([clave]) => clave);
-
-    if (camposFaltantes.length > 0) {
-        logger.warn(`Campos faltantes en el formulario: ${camposFaltantes.join(', ')}`);
-        const error: any = new Error("Campos obligatorios faltantes");
-        error.statusCode = 400;
-        error.campos = camposFaltantes;
-        throw error;
-    }
-}
-
-// Obtener ID válido para como_te_enteraste con mejores mensajes de error
-async function getValidComoTeEnterasteId(conexion: PoolConnection, como_te_enteraste: string): Promise<string> {
-    // Verificar si el valor de como_te_enteraste existe en la tabla como_te_enteraste
-    const [comoTeEnterasteCheck] = await conexion.execute(
-        "SELECT id FROM como_te_enteraste WHERE id = ?",
-        [como_te_enteraste]
-    ) as [RowDataPacket[], any];
-
-    let comoTeEnterasteId: string;
-
-    // Si existe el ID exacto, úsalo
-    if (comoTeEnterasteCheck.length > 0) {
-        comoTeEnterasteId = comoTeEnterasteCheck[0].id;
-        logDB(`Usando ID exacto para como_te_enteraste: ${comoTeEnterasteId}`);
-    } else {
-        // Si no existe, buscar por descripción como fallback
-        const [comoTeEnterasteResult] = await conexion.execute(
-            "SELECT id FROM como_te_enteraste WHERE descripcion LIKE ?",
-            [`%${como_te_enteraste}%`]
-        ) as [RowDataPacket[], any];
-
-        if (comoTeEnterasteResult.length > 0) {
-            comoTeEnterasteId = comoTeEnterasteResult[0].id;
-            logDB(`Usando ID por coincidencia para como_te_enteraste: ${comoTeEnterasteId}`);
-        } else {
-            // Si tampoco encontramos por descripción, obtener el primer ID válido como plan B
-            const [defaultOption] = await conexion.execute(
-                "SELECT id FROM como_te_enteraste LIMIT 1"
-            ) as [RowDataPacket[], any];
-
-            if (defaultOption.length > 0) {
-                comoTeEnterasteId = defaultOption[0].id;
-                logger.warn(`Usando ID predeterminado para como_te_enteraste: ${comoTeEnterasteId}`);
-            } else {
-                // Si no hay opciones en la tabla, registrar el error y fallar
-                logger.error("No hay opciones válidas en la tabla como_te_enteraste");
-                throw new Error("No hay opciones válidas en la tabla como_te_enteraste");
-            }
-        }
-    }
-    return comoTeEnterasteId;
-}
-
-// Verificar duplicados con una sola consulta optimizada
-async function checkExistingUser(conexion: PoolConnection, email: string, dni: string): Promise<void> {
-    const [existentes] = await conexion.execute(
-        "SELECT dni, email FROM inscriptos WHERE dni = ? OR email = ? LIMIT 1",
-        [dni, email]
-    ) as [RowDataPacket[], any];
-
-    if (existentes.length > 0) {
-        const duplicado = existentes[0];
-        if (duplicado.dni === dni) {
-            logger.warn(`Intento de inscripción con DNI duplicado: ${dni}`);
-            throw new Error("Ya existe un usuario registrado con este DNI");
-        }
-        if (duplicado.email === email) {
-            logger.warn(`Intento de inscripción con email duplicado: ${email}`);
-            throw new Error("Ya existe un usuario registrado con este email");
-        }
-    }
-}
-
-// Insertar usuario
-async function insertUser(
-    conexion: PoolConnection,
-    id: string,
-    nombre: string,
-    apellido: string,
-    dni: string,
-    email: string,
-    comoTeEnterasteId: string
-): Promise<void> {
-    // Insertar participante en la tabla correcta (inscriptos)
-    await conexion.execute(
-        "INSERT INTO inscriptos (id, nombre, apellido, dni, email, como_te_enteraste_fk) VALUES (?, ?, ?, ?, ?, ?)",
-        [id, nombre, apellido, dni, email, comoTeEnterasteId]
-    );
-    logDB(`Usuario insertado correctamente: ${id}, ${nombre} ${apellido}`);
-}
-
-// Obtener ID válido de charla
-async function getValidCharlaId(conexion: PoolConnection, charla: string): Promise<string> {
-    // Verificar si la charla existe por su ID
-    const [charlasExistentes] = await conexion.execute(
-        "SELECT id, titulo FROM charlas WHERE id = ?",
-        [charla]
-    ) as [RowDataPacket[], any];
-
-    let idCharla = charla;
-
-    if (charlasExistentes.length === 0) {
-        // La charla no existe, pero podemos intentar buscarla por su título
-        const [charlaPorTitulo] = await conexion.execute(
-            "SELECT id FROM charlas WHERE titulo LIKE ?",
-            [`%${charla}%`]
-        ) as [RowDataPacket[], any];
-
-        if (charlaPorTitulo.length > 0) {
-            idCharla = charlaPorTitulo[0].id;
-            logger.warn(`Usando ID de charla por coincidencia de título: ${idCharla}`);
-        } else {
-            logger.error(`La charla seleccionada no existe: ${charla}`);
-            throw new Error("La charla seleccionada no existe");
-        }
-    }
-    return idCharla;
-}
-
-// Generic error handler con soporte para status codes personalizados
-function handleError(error: any, res: Response): void {
-    const message = error.message || "Error desconocido";
-    logError("Error en endpoint de inscripción", error);
-    
-    // Solo enviar respuesta si no se ha enviado ya
-    if (!res.headersSent) {
-        const statusCode = error.statusCode || 500;
-        const responseBody: any = {
-            error: "Error al procesar la solicitud",
-            mensaje: message
-        };
-        if (error.campos) {
-            responseBody.campos = error.campos;
-        }
-        res.status(statusCode).json(responseBody);
-    }
-}
-
-// Endpoint para obtener todas las charlas (con caché en memoria)
-router.get("/charlas", async (req, res) => {
+// ── GET /api/inscripcion/charlas — Listado con participantes ─────────────
+router.get('/charlas', async (_req, res) => {
     try {
         res.setHeader('Cache-Control', 'no-store');
 
-        // Verificar caché en memoria
-        const cached = getCached('charlas');
+        const cached = cache.get<any[]>('charlas_list');
         if (cached) {
             logger.debug('Charlas servidas desde caché en memoria');
-            return res.status(200).json(cached);
+            return res.json(cached);
         }
 
-        logger.info("Solicitud de listado de charlas (BD)");
+        logger.info('Solicitud de listado de charlas (BD)');
         const [charlas] = await pool.query<RowDataPacket[]>(`
             SELECT 
-                c.id as id, 
+                c.id,
                 c.titulo, 
                 c.horario,
                 c.empresa,
                 c.ubicacion,
-                COUNT(ic.inscriptos_id) as participantes
+                COALESCE(ic.total_inscriptos, 0) AS participantes
             FROM charlas c
-            LEFT JOIN inscriptos_charlas ic ON ic.charlas_id = c.id
-            GROUP BY c.id, c.titulo, c.horario, c.empresa, c.ubicacion
-            ORDER BY c.horario ASC
+            LEFT JOIN (
+                SELECT charlas_id, COUNT(*) AS total_inscriptos
+                FROM inscriptos_charlas
+                GROUP BY charlas_id
+            ) ic ON c.id = ic.charlas_id
+            ORDER BY c.horario ASC, c.titulo ASC
         `);
             
         logDB(`Se encontraron ${charlas.length} charlas en la base de datos`);
 
-        // Transformamos el formato de las charlas para que coincida con lo esperado en el frontend
-        const charlasFormateadas = charlas.map(charla => {
-                // Dar formato a la fecha/hora
-                let horaInicio, horaFin;
+        const charlasFormateadas = charlas.map(charla => ({
+            id: charla.id,
+            horario: formatHorario(charla.horario),
+            titulo: charla.titulo || 'Charla sin título',
+            empresa: charla.empresa || 'UOCRA Formación',
+            ubicacion: charla.ubicacion || 'Aula Principal',
+            capacidad_maxima: 50,
+            participantes: charla.participantes || 0,
+            cupo_disponible: Math.max(0, 50 - (charla.participantes || 0)),
+            disponible: (charla.participantes || 0) < 50,
+        }));
 
-                // Verificar si horario es una fecha o un string de formato 'HH:MM'
-                if (charla.horario instanceof Date) {
-                    const horarioDate = new Date(charla.horario);
-                    horaInicio = horarioDate.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' });
-                    horaFin = new Date(horarioDate.getTime() + 45 * 60000)
-                        .toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' });
-                } else if (typeof charla.horario === 'string' && charla.horario.includes(':')) {
-                    // Si es un formato como '13:00'
-                    horaInicio = charla.horario;
+        // Caché de 2 minutos — balance entre frescura y carga en BD
+        cache.set('charlas_list', charlasFormateadas, 2 * 60 * 1000);
 
-                    // Calcular hora fin (sumando 45 minutos)
-                    const [horas, minutos] = charla.horario.split(':').map(Number);
-                    let horasFinales = horas;
-                    let minutosFinales = minutos + 45;
-
-                    if (minutosFinales >= 60) {
-                        horasFinales += 1;
-                        minutosFinales -= 60;
-                    }
-
-                    horaFin = `${horasFinales.toString().padStart(2, '0')}:${minutosFinales.toString().padStart(2, '0')}`;
-                } else {
-                    // Formato predeterminado si no podemos determinar
-                    horaInicio = '00:00';
-                    horaFin = '00:45';
-                }
-
-                return {
-                    id: charla.id,
-                    horario: `${horaInicio} - ${horaFin}`,
-                    titulo: charla.titulo || "Charla sin título",
-                    empresa: charla.empresa || "UOCRA Formación",
-                    ubicacion: charla.ubicacion || "Aula Principal",
-                    capacidad_maxima: 50,
-                    descripcion: charla.titulo || "Charla sin título",
-                    participantes: charla.participantes || 0
-                };
-            });
-
-        // Guardar en caché
-        setCache('charlas', charlasFormateadas);
-
-        res.status(200).json(charlasFormateadas);
-        logger.debug(`Enviadas ${charlasFormateadas.length} charlas formateadas al cliente`);
+        res.json(charlasFormateadas);
+        logger.debug(`Enviadas ${charlasFormateadas.length} charlas al cliente`);
     } catch (error: any) {
-        logError("Error al obtener charlas", error);
-        res.status(500).json({
-            error: "Error al obtener charlas",
-            mensaje: error.message
-        });
+        logError('Error al obtener charlas', error);
+        res.status(500).json({ error: 'Error al obtener charlas', mensaje: error.message });
     }
 });
 
-// Endpoint para obtener todas las opciones de "cómo te enteraste" (con caché en memoria)
-router.get("/como-te-enteraste", async (req, res) => {
+// ── GET /api/inscripcion/como-te-enteraste ────────────────────────────────
+router.get('/como-te-enteraste', async (_req, res) => {
     try {
         res.setHeader('Cache-Control', 'no-store');
 
-        // Verificar caché en memoria
-        const cached = getCached('como-te-enteraste');
+        const cached = cache.get<any[]>('como_te_enteraste');
         if (cached) {
             logger.debug('Opciones como-te-enteraste servidas desde caché');
             return res.json(cached);
         }
 
-        logger.info("Solicitud de opciones de 'cómo te enteraste' (BD)");
-        const [opciones] = await pool.query<RowDataPacket[]>(`
-            SELECT id, descripcion 
-            FROM como_te_enteraste
-            ORDER BY descripcion
-        `);
+        const [opciones] = await pool.query<RowDataPacket[]>(
+            'SELECT id, descripcion FROM como_te_enteraste ORDER BY descripcion'
+        );
 
-        // Guardar en caché
-        setCache('como-te-enteraste', opciones);
+        cache.set('como_te_enteraste', opciones, 10 * 60 * 1000); // 10 min
         logger.debug(`Enviando ${opciones.length} opciones de 'cómo te enteraste'`);
         res.json(opciones);
     } catch (error: any) {
         logError("Error al obtener opciones de 'cómo te enteraste'", error);
-        res.status(500).json({
-            error: "Error al obtener las opciones",
-            mensaje: error.message
-        });
+        res.status(500).json({ error: 'Error al obtener las opciones', mensaje: error.message });
     }
 });
 
-// Endpoint para recibir logs del cliente (no loguear datos sensibles)
-router.post("/logs", (req, res) => {
+// ── POST /api/inscripcion/cache/clear — Invalidar caché (admin) ──────────
+router.post('/cache/clear', (_req, res) => {
+    cache.invalidate();
+    logger.info('Caché invalidado manualmente');
+    res.json({ mensaje: 'Caché limpiado correctamente' });
+});
+
+// ── POST /api/inscripcion/logs — Recibir logs del cliente ────────────────
+router.post('/logs', (req, res) => {
     try {
         const { level, message } = req.body;
-        
-        // Validar los datos mínimos
         if (!level || !message) {
-            return res.status(400).json({ error: "Faltan datos requeridos (level, message)" });
+            return res.status(400).json({ error: 'Faltan datos requeridos (level, message)' });
         }
 
-        // Truncar mensaje para evitar abuso
         const safeMessage = String(message).substring(0, 500);
         
-        // Registrar según nivel (sin datos adicionales por seguridad)
-        switch(level.toLowerCase()) {
-            case 'error':
-                logger.error(`[Cliente] ${safeMessage}`);
-                break;
-            case 'warn':
-                logger.warn(`[Cliente] ${safeMessage}`);
-                break;
-            case 'info':
-                logger.info(`[Cliente] ${safeMessage}`);
-                break;
-            default:
-                logger.debug(`[Cliente] ${safeMessage}`);
+        switch (level.toLowerCase()) {
+            case 'error': logger.error(`[Cliente] ${safeMessage}`); break;
+            case 'warn':  logger.warn(`[Cliente] ${safeMessage}`);  break;
+            case 'info':  logger.info(`[Cliente] ${safeMessage}`);  break;
+            default:      logger.debug(`[Cliente] ${safeMessage}`);
         }
         
         res.status(202).end();
     } catch (error) {
-        logger.error("Error al procesar log del cliente");
+        logger.error('Error al procesar log del cliente');
         res.status(500).end();
     }
 });
+
+// ── Helpers ──────────────────────────────────────────────────────────────
+
+function formatHorario(raw: any): string {
+    if (!raw) return 'Sin horario';
+    if (raw instanceof Date) {
+        return raw.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' });
+    }
+    if (typeof raw === 'string' && raw.includes(':')) {
+        return raw.slice(0, 5); // 'HH:MM'
+    }
+    return String(raw);
+}
+
+async function resolveComoTeEnteraste(conn: PoolConnection, value: string): Promise<string> {
+    // Buscar por ID exacto primero
+    const [byId] = await conn.execute<RowDataPacket[]>(
+        'SELECT id FROM como_te_enteraste WHERE id = ?', [value]
+    );
+    if (byId.length) return byId[0].id;
+
+    // Fallback: buscar por descripción parcial
+    const [byDesc] = await conn.execute<RowDataPacket[]>(
+        'SELECT id FROM como_te_enteraste WHERE descripcion LIKE ?', [`%${value}%`]
+    );
+    if (byDesc.length) return byDesc[0].id;
+
+    // Último fallback: primer registro disponible
+    const [first] = await conn.execute<RowDataPacket[]>(
+        'SELECT id FROM como_te_enteraste LIMIT 1'
+    );
+    if (first.length) {
+        logger.warn(`como_te_enteraste '${value}' no encontrado, usando default: ${first[0].id}`);
+        return first[0].id;
+    }
+
+    throw new Error('No hay opciones válidas en la tabla como_te_enteraste');
+}
+
+async function assertNoDuplicateUser(conn: PoolConnection, email: string, dni: string): Promise<void> {
+    const [rows] = await conn.execute<RowDataPacket[]>(
+        'SELECT dni, email FROM inscriptos WHERE dni = ? OR email = ? LIMIT 1',
+        [dni, email]
+    );
+    if (!rows.length) return;
+
+    const found = rows[0];
+    if (found.dni === dni)     throw new Error('Ya existe un usuario registrado con este DNI');
+    if (found.email === email) throw new Error('Ya existe un usuario registrado con este email');
+}
+
+async function resolveCharla(conn: PoolConnection, charlaInput: string): Promise<string> {
+    if (charlaInput === 'no-charla') return 'N/A';
+
+    // Buscar charla por ID
+    const [rows] = await conn.execute<RowDataPacket[]>(
+        'SELECT id, titulo FROM charlas WHERE id = ?',
+        [charlaInput]
+    );
+
+    if (rows.length) return rows[0].id;
+
+    // Fallback: buscar por título
+    const [byTitle] = await conn.execute<RowDataPacket[]>(
+        'SELECT id FROM charlas WHERE titulo LIKE ?',
+        [`%${charlaInput}%`]
+    );
+    if (byTitle.length) {
+        logger.warn(`Charla resuelta por título: ${byTitle[0].id}`);
+        return byTitle[0].id;
+    }
+
+    throw new Error(`La charla seleccionada no existe (ID: ${charlaInput})`);
+}
+
+function determineStatusCode(message: string): number {
+    if (message.includes('obligatorio') || message.includes('válido') || message.includes('válida'))
+        return 400;
+    if (message.includes('ya existe') || message.includes('Ya existe') || message.includes('capacidad máxima'))
+        return 409;
+    if (message.includes('no existe'))
+        return 400;
+    return 500;
+}
+
+function categorizeError(message: string): string {
+    if (message.includes('DNI'))       return 'DNI ya registrado';
+    if (message.includes('email'))     return 'Email ya registrado';
+    if (message.includes('capacidad')) return 'Charla sin cupos disponibles';
+    if (message.includes('obligatorio') || message.includes('válido')) return 'Datos inválidos';
+    return 'Error al procesar la solicitud';
+}
 
 export default router;

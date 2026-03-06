@@ -4,106 +4,131 @@ import cors from 'cors';
 import compression from 'compression';
 import inscriptosRouter from './routes/inscriptos';
 import validacionRouter from './routes/validacion';
-import logger from './utils/logger';
-import { requestLogger, errorHandler, unknownEndpoint, rateLimiter, securityHeaders, inputSanitizer } from './utils/middleware';
+import logger, { logError } from './utils/logger';
+import { config } from './config/env';
+import {
+    requestLogger,
+    errorHandler,
+    unknownEndpoint,
+    securityHeaders,
+    requestTimeout,
+} from './utils/middleware';
 
 export default function startServer() {
     const app = express();
-    const port = process.env.PORT || 3000;
+    const port = config.server.port;
+    const isProd = config.server.isProd;
 
-    // Compresión gzip/brotli para todas las respuestas
-    app.use(compression());
-
-    // Seguridad: headers de protección
+    // ── Middlewares globales ────────────────────────────────────────────
+    app.use(compression({ level: 6, threshold: 1024 }));
     app.use(securityHeaders);
-
-    // CORS configurado desde variables de entorno
     app.use(cors({
         origin: process.env.CORS_ORIGIN || '*',
         methods: ['GET', 'POST', 'PATCH'],
         allowedHeaders: ['Content-Type'],
     }));
-
-    // Parseo de body con límite de tamaño
-    app.use(express.json({ limit: '1mb' }));
-    app.use(express.urlencoded({ extended: true, limit: '1mb' }));
-
-    // Sanitización de inputs
-    app.use(inputSanitizer);
-
-    // Rate limiting en endpoints de escritura
-    app.use('/api/inscripcion', rateLimiter);
-
-    // Middleware de logging para todas las peticiones
+    app.use(express.json({ limit: '512kb' }));
+    app.use(express.urlencoded({ extended: true, limit: '512kb' }));
     app.use(requestLogger);
+    app.use(requestTimeout(30_000));
 
-    // Archivos estáticos con caché granular por tipo
-    const isProduction = process.env.NODE_ENV === 'production';
-
-    // CSS/JS: caché larga (7 días en producción)
+    // ── Archivos estáticos con caché granular por tipo ──────────────────
+    // CSS/JS: 7 días en producción
     app.use('/css', express.static(path.join(__dirname, '../public/css'), {
         etag: true, lastModified: true,
-        maxAge: isProduction ? '7d' : 0,
-        setHeaders: (res) => { if (isProduction) res.setHeader('Cache-Control', 'public, max-age=604800'); }
+        maxAge: isProd ? '7d' : 0,
+        setHeaders: (res) => { if (isProd) res.setHeader('Cache-Control', 'public, max-age=604800'); }
     }));
     app.use('/js', express.static(path.join(__dirname, '../public/js'), {
         etag: true, lastModified: true,
-        maxAge: isProduction ? '7d' : 0,
-        setHeaders: (res) => { if (isProduction) res.setHeader('Cache-Control', 'public, max-age=604800'); }
+        maxAge: isProd ? '7d' : 0,
+        setHeaders: (res) => { if (isProd) res.setHeader('Cache-Control', 'public, max-age=604800'); }
     }));
-
-    // Imágenes: caché larga (7 días en producción)
+    // Imágenes: 7 días
     app.use('/img', express.static(path.join(__dirname, '../public/img'), {
         etag: true, lastModified: true,
-        maxAge: isProduction ? '7d' : 0,
-        setHeaders: (res) => { if (isProduction) res.setHeader('Cache-Control', 'public, max-age=604800'); }
+        maxAge: isProd ? '7d' : 0,
+        setHeaders: (res) => { if (isProd) res.setHeader('Cache-Control', 'public, max-age=604800'); }
     }));
-
-    // Resto de archivos estáticos (fallback)
+    // Fallback estático
     app.use(express.static(path.join(__dirname, '../public'), {
-        etag: true,
-        lastModified: true,
-        maxAge: isProduction ? '1d' : 0
+        etag: true, lastModified: true,
+        maxAge: isProd ? '1d' : 0,
     }));
 
-    // Rutas API
+    // ── Health check para Railway ──────────────────────────────────────
+    app.get('/health', (_req, res) => {
+        res.json({
+            status: 'ok',
+            env: config.server.nodeEnv,
+            uptime: Math.round(process.uptime()),
+        });
+    });
+
+    // ── Rutas API ──────────────────────────────────────────────────────
     app.use('/api/inscripcion', inscriptosRouter);
     app.use('/api/validacion', validacionRouter);
 
-    // HTML: no-cache para servir siempre la versión más reciente
-    app.get('/', (req, res) => {
+    // ── Rutas HTML (no-cache) ──────────────────────────────────────────
+    app.get('/', (_req, res) => {
         res.setHeader('Cache-Control', 'no-cache');
         res.sendFile(path.join(__dirname, '../public/html/index.html'));
     });
 
-    // Ruta oculta para validación de inscriptos (no aparece en menús ni navegación)
-    app.get('/admin-validacion', (req, res) => {
+    // Ruta oculta para validación de inscriptos
+    app.get('/admin-validacion', (_req, res) => {
         res.setHeader('Cache-Control', 'no-cache');
         res.sendFile(path.join(__dirname, '../public/html/validacion.html'));
     });
 
-    // También asegura que la carpeta html sea accesible
+    // Carpeta html accesible
     app.use('/html', express.static(path.join(__dirname, '../public/html'), {
-        etag: true,
-        lastModified: true,
-        maxAge: isProduction ? '1d' : 0
+        etag: true, lastModified: true,
+        maxAge: isProd ? '1d' : 0,
     }));
 
-    // Fallback: rutas no-API sirven el SPA, rutas API desconocidas retornan 404
-    app.use((req, res, next) => {
+    // ── Fallback: SPA para rutas desconocidas, 404 para API ────────────
+    app.use((req, res, _next) => {
         if (req.path.startsWith('/api/')) {
             return unknownEndpoint(req, res);
         }
+        res.setHeader('Cache-Control', 'no-cache');
         res.sendFile(path.join(__dirname, '../public/html/index.html'));
     });
-    
-    // Middleware para manejar errores debe ir al final
+
+    // ── Error handler (debe ir al final) ───────────────────────────────
     app.use(errorHandler);
 
-    // Iniciar el servidor
+    // ── Iniciar servidor con manejo de errores de puerto ───────────────
     const server = app.listen(port, () => {
-        logger.info(`Servidor corriendo en http://localhost:${port}`);
+        logger.info(`Servidor iniciado en http://localhost:${port} [${config.server.nodeEnv}]`);
     });
+
+    server.on('error', (err: any) => {
+        if (err.code === 'EADDRINUSE') {
+            logger.warn(`Puerto ${port} en uso, probando ${port + 1}...`);
+            server.close();
+            app.listen(port + 1, () => {
+                logger.info(`Servidor iniciado en http://localhost:${port + 1}`);
+            });
+        } else {
+            logError('Error crítico al iniciar servidor', err);
+            process.exit(1);
+        }
+    });
+
+    // ── Graceful shutdown ──────────────────────────────────────────────
+    const shutdown = (signal: string) => {
+        logger.info(`Señal ${signal} recibida. Cerrando servidor...`);
+        server.close(() => {
+            logger.info('Servidor cerrado correctamente.');
+            process.exit(0);
+        });
+        setTimeout(() => process.exit(1), 10_000);
+    };
+
+    process.on('SIGTERM', () => shutdown('SIGTERM'));
+    process.on('SIGINT', () => shutdown('SIGINT'));
 
     return server;
 }

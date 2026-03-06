@@ -116,54 +116,85 @@
 
     <!-- Sección Inscripción -->
     <section id="inscripcion" class="section">
-      <h2>Inscripción</h2>
-      <p>Completa el siguiente formulario para preinscribirte en las charlas o descarga la oferta del cuatrimestre.</p>
+      <div class="section-header">
+        <h2>Inscripción</h2>
+        <div class="section-divider"></div>
+      </div>
 
       <div class="form-container">
         <div class="form-header">
           <i class="fas fa-user-plus"></i>
           <h3>Formulario de Preinscripción</h3>
         </div>
-        <form id="inscripcionForm">
+        <form id="inscripcionForm" novalidate>
+          <!-- Datos personales -->
           <div class="form-row">
             <div class="form-group">
-              <label for="nombre">Nombre:</label>
-              <input type="text" id="nombre" required autocomplete="given-name" minlength="2" maxlength="50">
+              <label for="nombre">Nombre <span class="required">*</span></label>
+              <input type="text" id="nombre" name="nombre" required autocomplete="given-name" minlength="2" maxlength="50">
             </div>
             <div class="form-group">
-              <label for="apellido">Apellido:</label>
-              <input type="text" id="apellido" required autocomplete="family-name" minlength="2" maxlength="50">
+              <label for="apellido">Apellido <span class="required">*</span></label>
+              <input type="text" id="apellido" name="apellido" required autocomplete="family-name" minlength="2" maxlength="50">
             </div>
           </div>
 
           <div class="form-row">
             <div class="form-group">
-              <label for="dni">DNI:</label>
-              <input type="text" id="dni" required autocomplete="off" inputmode="numeric" pattern="[0-9]+" minlength="7" maxlength="20" title="Solo números, sin puntos ni espacios">
+              <label for="dni">DNI <span class="required">*</span></label>
+              <input type="text" id="dni" name="dni" required autocomplete="off" inputmode="numeric" pattern="\d{6,10}" minlength="6" maxlength="10" title="Solo números, entre 6 y 10 dígitos">
             </div>
             <div class="form-group">
-              <label for="email">Email:</label>
-              <input type="email" id="email" required autocomplete="email">
+              <label for="email">Email <span class="required">*</span></label>
+              <input type="email" id="email" name="email" required autocomplete="email">
             </div>
           </div>
 
-          <div class="form-row">
+          <div class="form-row-full">
             <div class="form-group">
-              <label for="como-te-enteraste">¿Cómo conociste la expo?:</label>
+              <label for="como-te-enteraste">¿Cómo conociste la expo? <span class="required">*</span></label>
               <select id="como-te-enteraste" name="como_te_enteraste" required>
-                <option value="">Selecciona una opción</option>
-                <!-- Opciones cargadas dinámicamente desde la base de datos -->
-              </select>
-            </div>
-            <div class="form-group">
-              <label for="charla">Selecciona la charla:</label>
-              <select id="charla" name="charla" required>
-                <!-- Se cargará dinámicamente -->
+                <option value="">Selecciona una opción...</option>
               </select>
             </div>
           </div>
 
-          <button type="submit" id="btn-formulario" class="btn-submit" aria-label="Enviar formulario de inscripción">Enviar</button>
+          <!-- Selección de charlas (multi-select con checkboxes) -->
+          <div class="form-row-full">
+            <div class="form-group">
+              <label>Charlas <span class="required">*</span></label>
+              <p class="form-hint">Podés seleccionar más de una charla.</p>
+
+              <!-- Resumen de charlas seleccionadas -->
+              <div id="charlas-seleccionadas" class="charlas-seleccionadas-container" aria-live="polite">
+                <span class="charlas-seleccionadas-texto">Charlas seleccionadas:</span>
+                <div id="charlas-badges" class="charlas-badges">
+                  <div class="charlas-badges-empty">Ninguna charla seleccionada</div>
+                </div>
+              </div>
+
+              <!-- Lista de charlas con checkboxes -->
+              <div id="charlas-container" class="charlas-checkbox-container" aria-label="Lista de charlas disponibles">
+                <div class="charlas-loading">
+                  <i class="fas fa-spinner fa-spin"></i> Cargando charlas...
+                </div>
+              </div>
+
+              <!-- Opción especial: no asistir a ninguna -->
+              <div class="charla-especial">
+                <label class="checkbox-label">
+                  <input type="checkbox" id="no-charla" name="charlas" value="no-charla">
+                  <span class="checkmark"></span>
+                  <span>No deseo asistir a ninguna charla</span>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <button type="submit" id="btn-formulario" class="btn-submit" aria-label="Enviar formulario de inscripción">
+            <span class="btn-text"><i class="fas fa-paper-plane"></i> Enviar inscripción</span>
+            <span class="btn-loading" style="display:none;"><i class="fas fa-spinner fa-spin"></i> Enviando...</span>
+          </button>
         </form>
       </div>
 
@@ -182,28 +213,28 @@
 
     <!-- Sección Charlas -->
     <section id="charlas" class="section">
-      <h2>Programación de Charlas</h2>
-      <div class="table-responsive">
-        <table class="charlas-table">
-          <thead>
-            <tr>
-              <th>Horario</th>
-              <th>Charla</th>
-              <th>Empresa</th>
-              <th>Ubicación</th>
-            </tr>
-          </thead>
-          <tbody id="charlas-lista">
-            <!-- Las charlas se cargarán dinámicamente -->
-          </tbody>
-        </table>
+      <div class="section-header">
+        <h2>Programación de Charlas</h2>
+        <div class="section-divider"></div>
       </div>
-      <button class="btn-volver" data-seccion="inicio" aria-label="Volver al Inicio">Volver al Inicio</button>
+
+      <div id="charlas-tabla-container" class="table-responsive">
+        <div class="charlas-loading">
+          <i class="fas fa-spinner fa-spin"></i> Cargando charlas...
+        </div>
+      </div>
+
+      <button class="btn-volver" data-seccion="inicio" aria-label="Volver al Inicio">
+        <i class="fas fa-arrow-left"></i> Volver al Inicio
+      </button>
     </section>
 
     <!-- Sección Empresas Participantes -->
     <section id="empresas" class="section">
-      <h2>Empresas Participantes</h2>
+      <div class="section-header">
+        <h2>Empresas Participantes</h2>
+        <div class="section-divider"></div>
+      </div>
       <p>Estas son todas las empresas que participarán en la exposición. Puedes filtrar por categoría:</p>
       <div class="categorias-buttons">
         <button class="btn-categoria active" data-categoria="todas" aria-label="Mostrar todas las empresas">Todas</button>
@@ -221,7 +252,10 @@
 
     <!-- Sección Muestras Abiertas -->
     <section id="muestras" class="section">
-      <h2>Muestras Abiertas</h2>
+      <div class="section-header">
+        <h2>Muestras Abiertas</h2>
+        <div class="section-divider"></div>
+      </div>
       <p>Consulta los stands y ubicaciones de los rubros participantes.</p>
 
       <div id="stands-container" class="stands-grid">
@@ -233,7 +267,10 @@
 
     <!-- Sección Competiciones -->
     <section id="competiciones" class="section">
-      <h2>Competiciones</h2>
+      <div class="section-header">
+        <h2>Competiciones</h2>
+        <div class="section-divider"></div>
+      </div>
       <p>Conoce las competiciones que se llevarán a cabo durante el evento y sus horarios:</p>
       
       <div class="categorias-buttons">
@@ -264,10 +301,7 @@
     </div>
   </footer>
 
-  <!-- Al final del body: Asegura el orden de carga correcto -->
-  <script type="module" src="../js/utils/logger-init.js"></script>
-  <script type="module" src="../js/main.js"></script>
-  <script type="module" src="../js/inscriptos.js"></script>
+  <!-- Script unificado -->
   <script type="module" src="../js/app.js"></script>
 </body>
 

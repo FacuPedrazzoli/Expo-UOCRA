@@ -56,3 +56,6 @@ tasks/documents/
 .env
 .env.local
 .env.production
+
+# Repo de Claude (ya unificado)
+expo-uocra/
