@@ -1,55 +1,58 @@
-import mysql from "mysql2/promise";
-import { config } from "../config/env";
-import logger, { logDB, logError } from "../utils/logger";
+import { Pool, PoolClient } from 'pg';
+import { config } from '../config/env';
+import logger from '../utils/logger';
 
-const pool = mysql.createPool({
-    host:     config.db.host,
-    user:     config.db.user,
+const isProd = config.server.isProd;
+
+const pool = new Pool({
+    host: config.db.host,
+    user: config.db.user,
     password: config.db.password,
     database: config.db.name,
-    port:     config.db.port,
-
-    // Pool settings
-    waitForConnections: true,
-    connectionLimit:    20,
-    queueLimit:         50,
-    idleTimeout:        60000,
-    enableKeepAlive:    true,
-    keepAliveInitialDelay: 30000,
-
-    // Encoding
-    charset:  'utf8mb4',
-    timezone: '+00:00',
-
-    // Timeouts
-    connectTimeout: 10000,
-
-    // Seguridad: prevenir SQL injection multi-statement
-    multipleStatements: false,
+    port: config.db.port,
+    max: 20,
+    idleTimeoutMillis: 30000,
+    connectionTimeoutMillis: 10000,
+    ssl: isProd ? { rejectUnauthorized: false } : false,
 });
 
-// Verificar conexión con reintentos
+pool.on('error', (err) => {
+    logger.error('[DB] Error inesperado en el pool', err);
+});
+
+pool.on('connect', () => {
+    logger.debug('[DB] Nueva conexión establecida');
+});
+
 async function testConnection(): Promise<void> {
-    let retries = 3;
+    let retries = 5;
+    const retryDelay = 3000;
+    
+    logger.info(`Intentando conectar a PostgreSQL: ${config.db.host}:${config.db.port}/${config.db.name}`);
+    
     while (retries > 0) {
         try {
-            const conn = await pool.getConnection();
-            logDB(`Conexión al pool de MySQL establecida: ${config.db.name}@${config.db.host}:${config.db.port}`);
-            conn.release();
+            const client = await pool.connect();
+            await client.query('SELECT NOW()');
+            client.release();
+            logger.debug(`[DB] Conexión establecida: ${config.db.name}@${config.db.host}:${config.db.port}`);
             return;
         } catch (err: any) {
             retries--;
-            logError(`Error al conectar con MySQL (intentos restantes: ${retries})`, err);
+            logger.error(`Error de conexión PostgreSQL (intentos restantes: ${retries}): ${err.message}`);
             if (retries === 0) {
-                logger.error('[DB] No se pudo conectar a la base de datos después de 3 intentos');
+                logger.error('[DB] No se pudo conectar después de 5 intentos. El servidor continuará.');
                 return;
             }
-            await new Promise(r => setTimeout(r, 2000));
+            await new Promise(r => setTimeout(r, retryDelay));
         }
     }
 }
 
-testConnection();
+testConnection().catch(() => undefined);
 
-// Exportación estándar para TypeScript
 export default pool;
+
+export async function getClient(): Promise<PoolClient> {
+    return await pool.connect();
+}

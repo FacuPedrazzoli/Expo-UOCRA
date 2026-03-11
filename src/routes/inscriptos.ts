@@ -1,14 +1,13 @@
 import { Router, Response } from 'express';
-import { RowDataPacket, PoolConnection } from 'mysql2/promise';
+import { PoolClient, QueryResultRow } from 'pg';
 import { v4 as uuidv4 } from 'uuid';
-import pool from '../database/database';
-import logger, { logDB, logError } from '../utils/logger';
+import pool, { getClient } from '../database/database';
+import logger from '../utils/logger';
 import { inscripcionRateLimit } from '../utils/middleware';
 import { sanitizeAndValidateInscripcion } from '../utils/sanitize';
 
 const router = Router();
 
-// ── Caché en memoria con invalidación por prefijo ────────────────────────
 interface CacheEntry<T> {
     data: T;
     expiresAt: number;
@@ -44,55 +43,55 @@ class SimpleCache {
 
 const cache = new SimpleCache();
 
-// ── POST /api/inscripcion — Registrar inscripción (multi-charla) ─────────
+async function dbQuery(text: string, params?: any[]): Promise<any> {
+    const start = Date.now();
+    const res = await pool.query(text, params);
+    const duration = Date.now() - start;
+    logger.debug('[DB] Executed query', { text: text.substring(0, 50), duration, rows: res.rowCount });
+    return res;
+}
+
 router.post('/', inscripcionRateLimit, async (req, res) => {
-    let conn: PoolConnection | undefined;
+    let client: PoolClient | undefined;
     const t0 = Date.now();
 
     try {
-        // 1. Sanitizar y validar inputs
         const input = sanitizeAndValidateInscripcion(req.body);
         const id = uuidv4();
 
         logger.info(`Iniciando inscripción: ${input.nombre} ${input.apellido} (${input.dni})`);
 
-        // 2. Obtener conexión y comenzar transacción
-        conn = await pool.getConnection();
-        await conn.beginTransaction();
+        client = await getClient();
+        await client.query('BEGIN');
 
-        // 3. Resolver como_te_enteraste
-        const comoTeEnterasteId = await resolveComoTeEnteraste(conn, input.como_te_enteraste);
+        const comoTeEnterasteId = await resolveComoTeEnteraste(client, input.como_te_enteraste);
 
-        // 4. Verificar duplicados (una sola query)
-        await assertNoDuplicateUser(conn, input.email, input.dni);
+        await assertNoDuplicateUser(client, input.email, input.dni);
 
-        // 5. Insertar inscripto
-        await conn.execute(
-            'INSERT INTO inscriptos (id, nombre, apellido, dni, email, como_te_enteraste_fk) VALUES (?, ?, ?, ?, ?, ?)',
+        await client.query(
+            'INSERT INTO inscriptos (id, nombre, apellido, dni, email, como_te_enteraste_fk) VALUES ($1, $2, $3, $4, $5, $6)',
             [id, input.nombre, input.apellido, input.dni, input.email, comoTeEnterasteId]
         );
-        logDB(`Inscripto insertado: ${id}`);
+        logger.debug(`[DB] Inscripto insertado: ${id}`);
 
-        // 6. Procesar charlas (soporta múltiples)
         const charlasInscritas: string[] = [];
         for (const charlaInput of input.charlas) {
-            const charlaId = await resolveCharla(conn, charlaInput);
+            const charlaId = await resolveCharla(client, charlaInput);
             charlasInscritas.push(charlaId);
         }
 
-        // 7. Batch insert en inscriptos_charlas
         if (charlasInscritas.length > 0) {
-            const valores = charlasInscritas.map(cid => [id, cid]);
-            await conn.query(
-                'INSERT INTO inscriptos_charlas (inscriptos_id, charlas_id) VALUES ?',
-                [valores]
-            );
-            logDB(`Charlas asignadas: [${charlasInscritas.join(', ')}] → inscripto ${id}`);
+            for (const cid of charlasInscritas) {
+                await client.query(
+                    'INSERT INTO inscriptos_charlas (inscriptos_id, charlas_id) VALUES ($1, $2)',
+                    [id, cid]
+                );
+            }
+            logger.debug(`[DB] Charlas asignadas: [${charlasInscritas.join(', ')}] → inscripto ${id}`);
         }
 
-        await conn.commit();
+        await client.query('COMMIT');
 
-        // Invalidar caché de charlas porque los participantes cambiaron
         cache.invalidate('charlas');
 
         const ms = Date.now() - t0;
@@ -102,13 +101,12 @@ router.post('/', inscripcionRateLimit, async (req, res) => {
             mensaje: 'Inscripción guardada correctamente',
             id,
             charlasInscritas,
-            // Compatibilidad con frontend legacy
             idCharla: charlasInscritas[0] || null,
         });
 
     } catch (err: any) {
-        if (conn) {
-            try { await conn.rollback(); } catch (_) {}
+        if (client) {
+            try { await client.query('ROLLBACK'); } catch (_) {}
         }
 
         const ms = Date.now() - t0;
@@ -121,11 +119,10 @@ router.post('/', inscripcionRateLimit, async (req, res) => {
             });
         }
     } finally {
-        conn?.release();
+        client?.release();
     }
 });
 
-// ── GET /api/inscripcion/charlas — Listado con participantes ─────────────
 router.get('/charlas', async (_req, res) => {
     try {
         res.setHeader('Cache-Control', 'no-store');
@@ -137,7 +134,8 @@ router.get('/charlas', async (_req, res) => {
         }
 
         logger.info('Solicitud de listado de charlas (BD)');
-        const [charlas] = await pool.query<RowDataPacket[]>(`
+        
+        const result = await dbQuery(`
             SELECT 
                 c.id,
                 c.titulo, 
@@ -154,32 +152,30 @@ router.get('/charlas', async (_req, res) => {
             ORDER BY c.horario ASC, c.titulo ASC
         `);
             
-        logDB(`Se encontraron ${charlas.length} charlas en la base de datos`);
+        logger.debug(`[DB] Se encontraron ${result.rowCount} charlas en la base de datos`);
 
-        const charlasFormateadas = charlas.map(charla => ({
+        const charlasFormateadas = result.rows.map((charla: any) => ({
             id: charla.id,
             horario: formatHorario(charla.horario),
             titulo: charla.titulo || 'Charla sin título',
             empresa: charla.empresa || 'UOCRA Formación',
             ubicacion: charla.ubicacion || 'Aula Principal',
             capacidad_maxima: 50,
-            participantes: charla.participantes || 0,
-            cupo_disponible: Math.max(0, 50 - (charla.participantes || 0)),
-            disponible: (charla.participantes || 0) < 50,
+            participantes: parseInt(charla.participantes) || 0,
+            cupo_disponible: Math.max(0, 50 - (parseInt(charla.participantes) || 0)),
+            disponible: (parseInt(charla.participantes) || 0) < 50,
         }));
 
-        // Caché de 2 minutos — balance entre frescura y carga en BD
         cache.set('charlas_list', charlasFormateadas, 2 * 60 * 1000);
 
         res.json(charlasFormateadas);
         logger.debug(`Enviadas ${charlasFormateadas.length} charlas al cliente`);
     } catch (error: any) {
-        logError('Error al obtener charlas', error);
+        logger.error('Error al obtener charlas', error);
         res.status(500).json({ error: 'Error al obtener charlas', mensaje: error.message });
     }
 });
 
-// ── GET /api/inscripcion/como-te-enteraste ────────────────────────────────
 router.get('/como-te-enteraste', async (_req, res) => {
     try {
         res.setHeader('Cache-Control', 'no-store');
@@ -190,27 +186,25 @@ router.get('/como-te-enteraste', async (_req, res) => {
             return res.json(cached);
         }
 
-        const [opciones] = await pool.query<RowDataPacket[]>(
+        const result = await dbQuery(
             'SELECT id, descripcion FROM como_te_enteraste ORDER BY descripcion'
         );
 
-        cache.set('como_te_enteraste', opciones, 10 * 60 * 1000); // 10 min
-        logger.debug(`Enviando ${opciones.length} opciones de 'cómo te enteraste'`);
-        res.json(opciones);
+        cache.set('como_te_enteraste', result.rows, 10 * 60 * 1000);
+        logger.debug(`Enviando ${result.rows.length} opciones de 'cómo te enteraste'`);
+        res.json(result.rows);
     } catch (error: any) {
-        logError("Error al obtener opciones de 'cómo te enteraste'", error);
+        logger.error("Error al obtener opciones de 'cómo te enteraste'", error);
         res.status(500).json({ error: 'Error al obtener las opciones', mensaje: error.message });
     }
 });
 
-// ── POST /api/inscripcion/cache/clear — Invalidar caché (admin) ──────────
 router.post('/cache/clear', (_req, res) => {
     cache.invalidate();
     logger.info('Caché invalidado manualmente');
     res.json({ mensaje: 'Caché limpiado correctamente' });
 });
 
-// ── POST /api/inscripcion/logs — Recibir logs del cliente ────────────────
 router.post('/logs', (req, res) => {
     try {
         const { level, message } = req.body;
@@ -234,75 +228,68 @@ router.post('/logs', (req, res) => {
     }
 });
 
-// ── Helpers ──────────────────────────────────────────────────────────────
-
 function formatHorario(raw: any): string {
     if (!raw) return 'Sin horario';
     if (raw instanceof Date) {
         return raw.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' });
     }
     if (typeof raw === 'string' && raw.includes(':')) {
-        return raw.slice(0, 5); // 'HH:MM'
+        return raw.slice(0, 5);
     }
     return String(raw);
 }
 
-async function resolveComoTeEnteraste(conn: PoolConnection, value: string): Promise<string> {
-    // Buscar por ID exacto primero
-    const [byId] = await conn.execute<RowDataPacket[]>(
-        'SELECT id FROM como_te_enteraste WHERE id = ?', [value]
+async function resolveComoTeEnteraste(client: PoolClient, value: string): Promise<string> {
+    const byIdResult = await client.query(
+        'SELECT id FROM como_te_enteraste WHERE id = $1', [value]
     );
-    if (byId.length) return byId[0].id;
+    if (byIdResult.rowCount && byIdResult.rowCount > 0) return byIdResult.rows[0].id;
 
-    // Fallback: buscar por descripción parcial
-    const [byDesc] = await conn.execute<RowDataPacket[]>(
-        'SELECT id FROM como_te_enteraste WHERE descripcion LIKE ?', [`%${value}%`]
+    const byDescResult = await client.query(
+        'SELECT id FROM como_te_enteraste WHERE descripcion ILIKE $1', [`%${value}%`]
     );
-    if (byDesc.length) return byDesc[0].id;
+    if (byDescResult.rowCount && byDescResult.rowCount > 0) return byDescResult.rows[0].id;
 
-    // Último fallback: primer registro disponible
-    const [first] = await conn.execute<RowDataPacket[]>(
+    const firstResult = await client.query(
         'SELECT id FROM como_te_enteraste LIMIT 1'
     );
-    if (first.length) {
-        logger.warn(`como_te_enteraste '${value}' no encontrado, usando default: ${first[0].id}`);
-        return first[0].id;
+    if (firstResult.rowCount && firstResult.rowCount > 0) {
+        logger.warn(`como_te_enteraste '${value}' no encontrado, usando default: ${firstResult.rows[0].id}`);
+        return firstResult.rows[0].id;
     }
 
     throw new Error('No hay opciones válidas en la tabla como_te_enteraste');
 }
 
-async function assertNoDuplicateUser(conn: PoolConnection, email: string, dni: string): Promise<void> {
-    const [rows] = await conn.execute<RowDataPacket[]>(
-        'SELECT dni, email FROM inscriptos WHERE dni = ? OR email = ? LIMIT 1',
+async function assertNoDuplicateUser(client: PoolClient, email: string, dni: string): Promise<void> {
+    const result = await client.query(
+        'SELECT dni, email FROM inscriptos WHERE dni = $1 OR email = $2 LIMIT 1',
         [dni, email]
     );
-    if (!rows.length) return;
+    if (!result.rowCount || result.rowCount === 0) return;
 
-    const found = rows[0];
-    if (found.dni === dni)     throw new Error('Ya existe un usuario registrado con este DNI');
+    const found = result.rows[0];
+    if (found.dni === dni) throw new Error('Ya existe un usuario registrado con este DNI');
     if (found.email === email) throw new Error('Ya existe un usuario registrado con este email');
 }
 
-async function resolveCharla(conn: PoolConnection, charlaInput: string): Promise<string> {
+async function resolveCharla(client: PoolClient, charlaInput: string): Promise<string> {
     if (charlaInput === 'no-charla') return 'N/A';
 
-    // Buscar charla por ID
-    const [rows] = await conn.execute<RowDataPacket[]>(
-        'SELECT id, titulo FROM charlas WHERE id = ?',
+    const rows = await client.query(
+        'SELECT id, titulo FROM charlas WHERE id = $1',
         [charlaInput]
     );
 
-    if (rows.length) return rows[0].id;
+    if (rows.rowCount && rows.rowCount > 0) return rows.rows[0].id;
 
-    // Fallback: buscar por título
-    const [byTitle] = await conn.execute<RowDataPacket[]>(
-        'SELECT id FROM charlas WHERE titulo LIKE ?',
+    const byTitle = await client.query(
+        'SELECT id FROM charlas WHERE titulo ILIKE $1',
         [`%${charlaInput}%`]
     );
-    if (byTitle.length) {
-        logger.warn(`Charla resuelta por título: ${byTitle[0].id}`);
-        return byTitle[0].id;
+    if (byTitle.rowCount && byTitle.rowCount > 0) {
+        logger.warn(`Charla resuelta por título: ${byTitle.rows[0].id}`);
+        return byTitle.rows[0].id;
     }
 
     throw new Error(`La charla seleccionada no existe (ID: ${charlaInput})`);
@@ -319,8 +306,8 @@ function determineStatusCode(message: string): number {
 }
 
 function categorizeError(message: string): string {
-    if (message.includes('DNI'))       return 'DNI ya registrado';
-    if (message.includes('email'))     return 'Email ya registrado';
+    if (message.includes('DNI')) return 'DNI ya registrado';
+    if (message.includes('email')) return 'Email ya registrado';
     if (message.includes('capacidad')) return 'Charla sin cupos disponibles';
     if (message.includes('obligatorio') || message.includes('válido')) return 'Datos inválidos';
     return 'Error al procesar la solicitud';

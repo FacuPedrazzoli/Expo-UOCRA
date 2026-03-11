@@ -14,6 +14,9 @@ import {
     requestTimeout,
 } from './utils/middleware';
 
+const PUBLIC_PATH = path.join(__dirname, '../public');
+const HTML_PATH = path.join(PUBLIC_PATH, 'html');
+
 export default function startServer() {
     const app = express();
     const port = config.server.port;
@@ -32,68 +35,69 @@ export default function startServer() {
     app.use(requestLogger);
     app.use(requestTimeout(30_000));
 
-    // ── Archivos estáticos con caché granular por tipo ──────────────────
+    // ── Archivos estáticos con caché ─────────────────────────────────────
     // CSS/JS: 7 días en producción
-    app.use('/css', express.static(path.join(__dirname, '../public/css'), {
-        etag: true, lastModified: true,
+    app.use('/css', express.static(path.join(PUBLIC_PATH, 'css'), {
+        etag: true,
+        lastModified: true,
         maxAge: isProd ? '7d' : 0,
         setHeaders: (res) => { if (isProd) res.setHeader('Cache-Control', 'public, max-age=604800'); }
     }));
-    app.use('/js', express.static(path.join(__dirname, '../public/js'), {
-        etag: true, lastModified: true,
+    
+    app.use('/js', express.static(path.join(PUBLIC_PATH, 'js'), {
+        etag: true,
+        lastModified: true,
         maxAge: isProd ? '7d' : 0,
         setHeaders: (res) => { if (isProd) res.setHeader('Cache-Control', 'public, max-age=604800'); }
     }));
+    
     // Imágenes: 7 días
-    app.use('/img', express.static(path.join(__dirname, '../public/img'), {
-        etag: true, lastModified: true,
+    app.use('/img', express.static(path.join(PUBLIC_PATH, 'img'), {
+        etag: true,
+        lastModified: true,
         maxAge: isProd ? '7d' : 0,
         setHeaders: (res) => { if (isProd) res.setHeader('Cache-Control', 'public, max-age=604800'); }
-    }));
-    // Fallback estático
-    app.use(express.static(path.join(__dirname, '../public'), {
-        etag: true, lastModified: true,
-        maxAge: isProd ? '1d' : 0,
     }));
 
-    // ── Health check para Railway ──────────────────────────────────────
+    // ── Health check para Railway (sin middleware de logging) ────────────
     app.get('/health', (_req, res) => {
         res.json({
             status: 'ok',
             env: config.server.nodeEnv,
             uptime: Math.round(process.uptime()),
+            timestamp: new Date().toISOString(),
         });
     });
 
-    // ── Rutas API ──────────────────────────────────────────────────────
+    // ── Rutas API ────────────────────────────────────────────────────────
     app.use('/api/inscripcion', inscriptosRouter);
     app.use('/api/validacion', validacionRouter);
 
-    // ── Rutas HTML (no-cache) ──────────────────────────────────────────
+    // ── Rutas principales del frontend ─────────────────────────────────
     app.get('/', (_req, res) => {
-        res.setHeader('Cache-Control', 'no-cache');
-        res.sendFile(path.join(__dirname, '../public/html/index.html'));
+        res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+        res.sendFile(path.join(HTML_PATH, 'index.html'));
     });
 
-    // Ruta oculta para validación de inscriptos
     app.get('/admin-validacion', (_req, res) => {
-        res.setHeader('Cache-Control', 'no-cache');
-        res.sendFile(path.join(__dirname, '../public/html/validacion.html'));
+        res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+        res.sendFile(path.join(HTML_PATH, 'validacion.html'));
     });
 
-    // Carpeta html accesible
-    app.use('/html', express.static(path.join(__dirname, '../public/html'), {
-        etag: true, lastModified: true,
+    // ── Carpeta html accesible ──────────────────────────────────────────
+    app.use('/html', express.static(HTML_PATH, {
+        etag: true,
+        lastModified: true,
         maxAge: isProd ? '1d' : 0,
     }));
 
-    // ── Fallback: SPA para rutas desconocidas, 404 para API ────────────
+    // ── Fallback: SPA para rutas del frontend, 404 para API ────────────
     app.use((req, res, _next) => {
         if (req.path.startsWith('/api/')) {
             return unknownEndpoint(req, res);
         }
-        res.setHeader('Cache-Control', 'no-cache');
-        res.sendFile(path.join(__dirname, '../public/html/index.html'));
+        res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+        res.sendFile(path.join(HTML_PATH, 'index.html'));
     });
 
     // ── Error handler (debe ir al final) ───────────────────────────────
@@ -102,6 +106,7 @@ export default function startServer() {
     // ── Iniciar servidor con manejo de errores de puerto ───────────────
     const server = app.listen(port, () => {
         logger.info(`Servidor iniciado en http://localhost:${port} [${config.server.nodeEnv}]`);
+        logger.info(`Path público: ${PUBLIC_PATH}`);
     });
 
     server.on('error', (err: any) => {
@@ -133,7 +138,6 @@ export default function startServer() {
     return server;
 }
 
-// Permitir ejecutar el archivo directamente
 if (require.main === module) {
     startServer();
 }

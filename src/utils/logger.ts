@@ -2,13 +2,19 @@ import winston from 'winston';
 import path from 'path';
 import fs from 'fs';
 
-// Asegurar que existe el directorio para logs
-const logDir = path.join(process.cwd(), 'logs');
-if (!fs.existsSync(logDir)) {
-  fs.mkdirSync(logDir, { recursive: true });
-}
-
 const isProd = process.env.NODE_ENV === 'production';
+
+// Asegurar que existe el directorio para logs (solo en desarrollo)
+let logDir: string;
+try {
+  logDir = path.join(process.cwd(), 'logs');
+  if (!fs.existsSync(logDir)) {
+    fs.mkdirSync(logDir, { recursive: true });
+  }
+} catch {
+  logDir = '/tmp/logs';
+  try { fs.mkdirSync(logDir, { recursive: true }); } catch { logDir = ''; }
+}
 
 // Definir niveles de log personalizados y colores
 const levels = {

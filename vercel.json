@@ -1,0 +1,54 @@
+{
+    "version": 2,
+    "builds": [
+        {
+            "src": "package.json",
+            "use": "@vercel/node",
+            "config": {
+                "installCommand": "npm install",
+                "buildCommand": "npm run build"
+            }
+        },
+        {
+            "src": "public/**",
+            "use": "@vercel/static"
+        }
+    ],
+    "routes": [
+        {
+            "src": "/api/(.*)",
+            "dest": "/build/index.js"
+        },
+        {
+            "src": "/js/(.*)",
+            "dest": "/public/js/$1"
+        },
+        {
+            "src": "/css/(.*)",
+            "dest": "/public/css/$1"
+        },
+        {
+            "src": "/img/(.*)",
+            "dest": "/public/img/$1"
+        },
+        {
+            "src": "/html/(.*)",
+            "dest": "/public/html/$1"
+        },
+        {
+            "src": "/",
+            "dest": "/public/html/index.html"
+        },
+        {
+            "src": "/admin-validacion",
+            "dest": "/public/html/validacion.html"
+        },
+        {
+            "src": "/(.*)",
+            "dest": "/public/html/index.html"
+        }
+    ],
+    "env": {
+        "NODE_ENV": "production"
+    }
+}

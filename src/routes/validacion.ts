@@ -1,21 +1,7 @@
-/**
- * Rutas de validación de inscriptos — Sección oculta /admin-validacion
- * 
- * Hallazgos del análisis de BD:
- *   - Tabla: inscriptos
- *   - DNI: campo `dni` VARCHAR(20) UNIQUE NOT NULL (string, exact match)
- *   - Nombre: separado en `nombre` VARCHAR(50) + `apellido` VARCHAR(50)
- *   - Validación: campos `validado` BOOLEAN + `validado_en` DATETIME (agregados por migración)
- * 
- * Endpoints:
- *   GET  /api/validacion/buscar?dni=XXXXXXXX  — Buscar inscripto por DNI
- *   PATCH /api/validacion/validar              — Marcar inscripto como validado
- */
-
 import { Router } from "express";
-import { PoolConnection, RowDataPacket } from "mysql2/promise";
-import pool from "../database/database";
-import logger, { logDB, logError } from "../utils/logger";
+import { PoolClient } from "pg";
+import pool, { getClient } from "../database/database";
+import logger from "../utils/logger";
 
 const router = Router();
 
@@ -26,34 +12,40 @@ function normalizeDni(value: unknown): string {
     return String(value || "").replace(/\D+/g, "").trim();
 }
 
-async function resolveValidationUser(connection: PoolConnection): Promise<string> {
+async function dbQuery(text: string, params?: any[]): Promise<any> {
+    const start = Date.now();
+    const res = await pool.query(text, params);
+    const duration = Date.now() - start;
+    logger.debug('[DB] Executed query', { text: text.substring(0, 50), duration, rows: res.rowCount });
+    return res;
+}
+
+async function resolveValidationUser(client: PoolClient): Promise<string> {
     const configuredUserId = String(process.env.VALIDACION_USUARIO_ID || "").trim();
 
     if (configuredUserId) {
-        const [configuredRows] = await connection.query<RowDataPacket[]>(
-            "SELECT id FROM usuarios WHERE id = ? LIMIT 1",
+        const configuredRows = await client.query(
+            "SELECT id FROM usuarios WHERE id = $1 LIMIT 1",
             [configuredUserId]
         );
 
-        if (configuredRows.length > 0) {
-            return String(configuredRows[0].id);
+        if (configuredRows.rowCount && configuredRows.rowCount > 0) {
+            return String(configuredRows.rows[0].id);
         }
     }
 
-    const [existingRows] = await connection.query<RowDataPacket[]>(
+    const existingRows = await client.query(
         "SELECT id FROM usuarios ORDER BY nom_usuario ASC LIMIT 1"
     );
 
-    if (existingRows.length > 0) {
-        return String(existingRows[0].id);
+    if (existingRows.rowCount && existingRows.rowCount > 0) {
+        return String(existingRows.rows[0].id);
     }
 
-    await connection.query(
+    await client.query(
         `INSERT INTO usuarios (id, nombre, apellido, nom_usuario, password, salt)
-         SELECT ?, ?, ?, ?, ?, ?
-         WHERE NOT EXISTS (
-             SELECT 1 FROM usuarios WHERE id = ? OR nom_usuario = ?
-         )`,
+         VALUES ($1, $2, $3, $4, $5, $6)
+         ON CONFLICT (id) DO NOTHING`,
         [
             DEFAULT_VALIDATION_USER_ID,
             "Sistema",
@@ -61,24 +53,21 @@ async function resolveValidationUser(connection: PoolConnection): Promise<string
             DEFAULT_VALIDATION_USERNAME,
             "NO_LOGIN",
             "SYSTEM_VALIDATION_SALT",
-            DEFAULT_VALIDATION_USER_ID,
-            DEFAULT_VALIDATION_USERNAME,
         ]
     );
 
-    const [systemRows] = await connection.query<RowDataPacket[]>(
-        "SELECT id FROM usuarios WHERE id = ? OR nom_usuario = ? LIMIT 1",
+    const systemRows = await client.query(
+        "SELECT id FROM usuarios WHERE id = $1 OR nom_usuario = $2 LIMIT 1",
         [DEFAULT_VALIDATION_USER_ID, DEFAULT_VALIDATION_USERNAME]
     );
 
-    if (systemRows.length === 0) {
+    if (!systemRows.rowCount || systemRows.rowCount === 0) {
         throw new Error("No se pudo resolver el usuario habilitante para registrar el ingreso");
     }
 
-    return String(systemRows[0].id);
+    return String(systemRows.rows[0].id);
 }
 
-// GET /buscar?dni=XXXXXXXX — Buscar inscripto por DNI
 router.get("/buscar", async (req, res) => {
     try {
         const dni = normalizeDni(req.query.dni);
@@ -92,18 +81,17 @@ router.get("/buscar", async (req, res) => {
 
         logger.info(`[Validación] Búsqueda de inscripto por DNI: ${dni}`);
 
-        const [rows] = await pool.query<RowDataPacket[]>(
-            `SELECT i.id, i.nombre, i.apellido,
+        const rows = await dbQuery(`
+            SELECT i.id, i.nombre, i.apellido,
                     MAX(ii.fecha_ingreso) AS fecha_ingreso
-             FROM inscriptos i
-             LEFT JOIN inscriptos_ingresos ii ON ii.inscriptos_id = i.id
-             WHERE i.dni = ?
-             GROUP BY i.id, i.nombre, i.apellido
-             LIMIT 1`,
-            [dni]
-        );
+            FROM inscriptos i
+            LEFT JOIN inscriptos_ingresos ii ON ii.inscriptos_id = i.id
+            WHERE i.dni = $1
+            GROUP BY i.id, i.nombre, i.apellido
+            LIMIT 1
+        `, [dni]);
 
-        if (rows.length === 0) {
+        if (!rows.rowCount || rows.rowCount === 0) {
             logger.info(`[Validación] DNI no encontrado: ${dni}`);
             return res.status(404).json({
                 encontrado: false,
@@ -111,10 +99,10 @@ router.get("/buscar", async (req, res) => {
             });
         }
 
-        const inscripto = rows[0];
+        const inscripto = rows.rows[0];
         const validadoEn = inscripto.fecha_ingreso || null;
         const validado = Boolean(inscripto.fecha_ingreso);
-        logDB(`[Validación] Inscripto encontrado: ${inscripto.nombre} ${inscripto.apellido}`);
+        logger.debug(`[DB] [Validación] Inscripto encontrado: ${inscripto.nombre} ${inscripto.apellido}`);
 
         res.json({
             encontrado: true,
@@ -126,7 +114,7 @@ router.get("/buscar", async (req, res) => {
         });
 
     } catch (error: any) {
-        logError("[Validación] Error al buscar inscripto", error);
+        logger.error("[Validación] Error al buscar inscripto", error);
         res.status(500).json({
             encontrado: false,
             error: "Error interno al buscar el inscripto"
@@ -134,9 +122,8 @@ router.get("/buscar", async (req, res) => {
     }
 });
 
-// PATCH /validar — Marcar inscripto como validado
 router.patch("/validar", async (req, res) => {
-    let connection: PoolConnection | undefined;
+    let client: PoolClient | undefined;
     try {
         const dni = normalizeDni(req.body.dni);
 
@@ -149,33 +136,35 @@ router.patch("/validar", async (req, res) => {
 
         logger.info(`[Validación] Intento de validar inscripto con DNI: ${dni}`);
 
-        connection = await pool.getConnection();
-        await connection.beginTransaction();
+        client = await getClient();
+        await client.query('BEGIN');
 
-        const [rows] = await connection.query<RowDataPacket[]>(
-            "SELECT id, nombre, apellido FROM inscriptos WHERE dni = ? LIMIT 1 FOR UPDATE",
+        const rows = await client.query(
+            "SELECT id, nombre, apellido FROM inscriptos WHERE dni = $1 LIMIT 1",
             [dni]
         );
 
-        if (rows.length === 0) {
-            await connection.rollback();
+        if (!rows.rowCount || rows.rowCount === 0) {
+            await client.query('ROLLBACK');
             return res.status(404).json({
                 ok: false,
                 error: "No se encontró ningún inscripto con ese DNI"
             });
         }
 
-        const inscripto = rows[0];
-        const [ingresoRows] = await connection.query<RowDataPacket[]>(
-            "SELECT MAX(fecha_ingreso) AS fecha_ingreso FROM inscriptos_ingresos WHERE inscriptos_id = ?",
+        const inscripto = rows.rows[0];
+        
+        const ingresoRows = await client.query(
+            "SELECT MAX(fecha_ingreso) AS fecha_ingreso FROM inscriptos_ingresos WHERE inscriptos_id = $1",
             [inscripto.id]
         );
-        const fechaIngreso = ingresoRows[0]?.fecha_ingreso || null;
+        
+        const fechaIngreso = ingresoRows.rows[0]?.fecha_ingreso || null;
         const validadoEn = fechaIngreso || null;
         const yaValidado = Boolean(fechaIngreso);
 
         if (yaValidado) {
-            await connection.commit();
+            await client.query('COMMIT');
             logger.info(`[Validación] Inscripto ya validado previamente: ${inscripto.nombre} ${inscripto.apellido}`);
             return res.json({
                 ok: true,
@@ -186,16 +175,17 @@ router.patch("/validar", async (req, res) => {
             });
         }
 
-        const usuarioHabilitante = await resolveValidationUser(connection);
+        const usuarioHabilitante = await resolveValidationUser(client);
         const ahora = new Date();
-        await connection.query(
-            "INSERT INTO inscriptos_ingresos (inscriptos_id, fecha_ingreso, usuario_habilitante) VALUES (?, ?, ?)",
+        
+        await client.query(
+            "INSERT INTO inscriptos_ingresos (inscriptos_id, fecha_ingreso, usuario_habilitante) VALUES ($1, $2, $3)",
             [inscripto.id, ahora, usuarioHabilitante]
         );
 
-        await connection.commit();
+        await client.query('COMMIT');
 
-        logDB(`[Validación] Inscripto validado: ${inscripto.nombre} ${inscripto.apellido} (DNI: ${dni})`);
+        logger.debug(`[Validación] Inscripto validado: ${inscripto.nombre} ${inscripto.apellido} (DNI: ${dni})`);
 
         res.json({
             ok: true,
@@ -205,19 +195,19 @@ router.patch("/validar", async (req, res) => {
         });
 
     } catch (error: any) {
-        if (connection) {
+        if (client) {
             try {
-                await connection.rollback();
+                await client.query('ROLLBACK');
             } catch {
             }
         }
-        logError("[Validación] Error al validar inscripto", error);
+        logger.error("[Validación] Error al validar inscripto", error);
         res.status(500).json({
             ok: false,
             error: "Error interno al validar el inscripto"
         });
     } finally {
-        connection?.release();
+        client?.release();
     }
 });
 
