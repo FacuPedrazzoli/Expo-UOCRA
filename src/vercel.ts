@@ -1,12 +1,19 @@
 import express, { Request, Response, NextFunction } from 'express';
+import cors from 'cors';
 import inscriptosRouter from './routes/inscriptos';
 import validacionRouter from './routes/validacion';
 import { config } from './config/env';
 
 const app = express();
 
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(cors({
+    origin: '*',
+    methods: ['GET', 'POST', 'PATCH'],
+    allowedHeaders: ['Content-Type'],
+}));
+
+app.use(express.json({ limit: '512kb' }));
+app.use(express.urlencoded({ extended: true, limit: '512kb' }));
 
 // Health check
 app.get('/health', (_req, res) => {
