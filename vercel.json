@@ -2,18 +2,18 @@
     "version": 2,
     "builds": [
         {
-            "src": "src/index.ts",
+            "src": "package.json",
             "use": "@vercel/node"
         }
     ],
     "routes": [
         {
-            "src": "/health",
-            "dest": "/src/index.ts"
+            "src": "/api/(.*)",
+            "dest": "/build/index.js"
         },
         {
-            "src": "/api/(.*)",
-            "dest": "/src/index.ts"
+            "src": "/health",
+            "dest": "/build/index.js"
         },
         {
             "src": "/js/(.*)",
@@ -26,10 +26,6 @@
         {
             "src": "/img/(.*)",
             "dest": "/public/img/$1"
-        },
-        {
-            "src": "/html/(.*)",
-            "dest": "/public/html/$1"
         },
         {
             "src": "/admin-validacion",
