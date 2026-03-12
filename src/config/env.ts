@@ -6,20 +6,25 @@ if (process.env.NODE_ENV !== 'production') {
 }
 
 function resolveDbConfig() {
-    // Opción 1: DATABASE_URL (Vercel/Supabase)
     const dbUrl = process.env.DATABASE_URL;
+    console.log('[ENV] DATABASE_URL:', dbUrl ? '**** (configured)' : 'NOT SET');
+    
     if (dbUrl) {
-        const url = new URL(dbUrl);
-        return {
-            host: url.hostname,
-            user: decodeURIComponent(url.username),
-            password: decodeURIComponent(url.password),
-            name: url.pathname.slice(1),
-            port: parseInt(url.port || '5432', 10),
-        };
+        try {
+            const url = new URL(dbUrl);
+            console.log('[ENV] DB Host parsed:', url.hostname);
+            return {
+                host: url.hostname,
+                user: decodeURIComponent(url.username),
+                password: decodeURIComponent(url.password),
+                name: url.pathname.slice(1),
+                port: parseInt(url.port || '5432', 10),
+            };
+        } catch (e) {
+            console.error('[ENV] Error parsing DATABASE_URL:', e);
+        }
     }
 
-    // Opción 2: Variables individuales
     if (process.env.PGHOST) {
         return {
             host: process.env.PGHOST,
@@ -30,7 +35,6 @@ function resolveDbConfig() {
         };
     }
 
-    // Default para desarrollo local
     return {
         host: process.env.DB_HOST || 'localhost',
         user: process.env.DB_USER || 'postgres',
