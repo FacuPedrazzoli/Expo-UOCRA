@@ -4106,83 +4106,176 @@ svg {
 }
 
 /* ══════════════════════════════════════════════════════════════════
-   WAVES — Sistema de transición entre secciones (CORREGIDO)
+   SEPARADORES DIAGONALES — Sistema de transición entre secciones
+   Reemplaza el sistema SVG wave anterior.
+   Usa clip-path CSS puro: 100% responsive, sin distorsión en mobile.
    ══════════════════════════════════════════════════════════════════ */
 
-.section-wave {
-  position: relative;
-  height: 120px;
-  overflow: hidden;
-  line-height: 0;
-  display: block;
-  z-index: 1;
-}
-
-.section-wave svg {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  display: block;
-}
-
-/*
-  CONVENCIÓN DE PATHS:
-  - section-wave-down: el path tiene forma CÓNCAVA (U). 
-    Con rotate(180deg) el SVG se voltea y la curva queda cóncava hacia abajo,
-    lo que visualmente "mordisquea" la sección anterior y deja ver la siguiente.
-  - section-wave-up: el path tiene forma CONVEXA (∩).
-    Sin rotación, la curva sube en el centro.
-*/
-.section-wave-down svg {
-  transform: rotate(180deg);
-}
-
-.section-wave-up svg {
-  transform: rotate(0deg);
-}
-
-@media (max-width: 767px) {
-  .section-wave {
-    height: 70px;
-  }
-}
-
-@media (max-width: 374px) {
-  .section-wave {
-    height: 50px;
-  }
-}
-
-/* ── Fusión hero → stats (oscuro a oscuro) ─────────────────────── */
+/* ── Hero: sin separador, fusión directa con stats (ambos oscuros) ── */
 .hero {
-  padding-bottom: 0;
+  padding-bottom: 5rem;
   margin-bottom: 0;
-  border-bottom: 3px solid #1a1a2e;
 }
 
 .stats-section {
   margin-top: 0;
-  padding-top: 4rem;
-  border-top: none;
 }
 
-/* ── Fusión charlas → galería (claro a claro, gradiente suave) ──── */
+/* ── Stats → Bienvenida: diagonal izquierda baja ────────────────── */
+.stats-section {
+  clip-path: polygon(0 0, 100% 0, 100% 88%, 0 100%);
+  padding-bottom: 140px;
+}
+
+/* ── Bienvenida → Empresas: diagonal derecha baja ───────────────── */
+.bienvenida-section {
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 0 90%);
+  padding-bottom: 130px;
+  margin-top: -2px;
+}
+
+/* ── Empresas → Charlas: diagonal izquierda baja ────────────────── */
+.empresas-section-nueva {
+  clip-path: polygon(0 0, 100% 0, 100% 90%, 0 100%);
+  padding-bottom: 140px;
+  margin-top: -2px;
+}
+
+/* ── Charlas → Galería: sin separador (colores similares) ───────── */
 .charlas-section {
-  padding-bottom: 3rem;
+  margin-bottom: 0;
+  padding-bottom: 4rem;
 }
 
 .galeria-section {
-  background: linear-gradient(180deg, #f0f8fa 0%, #ffffff 30%);
-  padding-top: 3rem;
+  background: linear-gradient(180deg, #f0f8fa 0%, #ffffff 25%);
+  margin-top: 0;
+  padding-top: 4rem;
 }
 
-/* ── Fusión competiciones → inscripcion (claro a claro) ────────── */
+/* ── Galería → Muestras: diagonal derecha baja ──────────────────── */
+.galeria-section {
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 0 92%);
+  padding-bottom: 120px;
+}
+
+/* ── Muestras → Competiciones: diagonal izquierda baja ─────────── */
+.muestras-section {
+  clip-path: polygon(0 0, 100% 0, 100% 90%, 0 100%);
+  padding-bottom: 140px;
+  margin-top: -2px;
+}
+
+/* ── Competiciones → Inscripción: sin separador (mismo color) ───── */
 .competiciones-section {
-  padding-bottom: 0;
+  padding-bottom: 4rem;
 }
 
 .inscripcion-section {
   padding-top: 4rem;
+}
+
+/* ── Solapamiento entre secciones para evitar gaps ──────────────── */
+#bienvenida {
+  margin-top: -60px;
+  position: relative;
+  z-index: 2;
+}
+
+#charlas {
+  margin-top: -60px;
+  position: relative;
+  z-index: 2;
+}
+
+#muestras {
+  margin-top: -60px;
+  position: relative;
+  z-index: 2;
+}
+
+#competiciones {
+  margin-top: -60px;
+  position: relative;
+  z-index: 2;
+}
+
+/* ── z-index para mantener orden correcto de apilamiento ─────────── */
+#hero            { position: relative; z-index: 1; }
+#stats           { position: relative; z-index: 1; }
+#bienvenida      { position: relative; z-index: 2; }
+#empresas        { position: relative; z-index: 1; }
+#charlas         { position: relative; z-index: 2; }
+#galeria         { position: relative; z-index: 2; }
+#muestras        { position: relative; z-index: 1; }
+#competiciones   { position: relative; z-index: 2; }
+#inscripcion     { position: relative; z-index: 2; }
+
+/* ── Responsive ajustes para clip-path ──────────────────────────── */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .stats-section,
+  .empresas-section-nueva,
+  .muestras-section {
+    padding-bottom: 120px;
+  }
+  
+  .bienvenida-section,
+  .galeria-section {
+    padding-bottom: 110px;
+  }
+}
+
+@media (max-width: 767px) {
+  .stats-section {
+    clip-path: polygon(0 0, 100% 0, 100% 92%, 0 100%);
+    padding-bottom: 90px;
+  }
+
+  .bienvenida-section {
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 0 94%);
+    padding-bottom: 90px;
+  }
+
+  .empresas-section-nueva {
+    clip-path: polygon(0 0, 100% 0, 100% 93%, 0 100%);
+    padding-bottom: 90px;
+  }
+
+  .galeria-section {
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 0 95%);
+    padding-bottom: 80px;
+  }
+
+  .muestras-section {
+    clip-path: polygon(0 0, 100% 0, 100% 93%, 0 100%);
+    padding-bottom: 90px;
+  }
+
+  #bienvenida,
+  #charlas,
+  #muestras,
+  #competiciones {
+    margin-top: -40px;
+  }
+}
+
+@media (max-width: 374px) {
+  .stats-section,
+  .bienvenida-section,
+  .empresas-section-nueva,
+  .galeria-section,
+  .muestras-section {
+    clip-path: polygon(0 0, 100% 0, 100% 95%, 0 100%);
+    padding-bottom: 70px;
+  }
+
+  #bienvenida,
+  #charlas,
+  #muestras,
+  #competiciones {
+    margin-top: -30px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
 }
