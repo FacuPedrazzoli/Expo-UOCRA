@@ -2823,3 +2823,233 @@ header {
 .foto-item:hover::before {
   opacity: 1;
 }
+
+/* ══════════════════════════════════════════════════════════════════
+   SECCIÓN EMPRESAS — Estilo Sponsors expoconstruir.com
+   ══════════════════════════════════════════════════════════════════ */
+
+.empresas-section-nueva {
+  background: linear-gradient(180deg, #0d1b2a 0%, #1a1a2e 60%, #0d1b2a 100%);
+  padding: 5rem 0 4rem;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Efecto de textura sutil en el fondo */
+.empresas-section-nueva::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-image: radial-gradient(
+    circle at 50% 0%,
+    rgba(86, 188, 184, 0.06) 0%,
+    transparent 60%
+  );
+  pointer-events: none;
+}
+
+.empresas-section-inner {
+  max-width: 1300px;
+  margin: 0 auto;
+  padding: 0 2rem;
+  position: relative;
+  z-index: 1;
+}
+
+/* Bloque de título */
+.empresas-titulo-bloque {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.empresas-antetitulo {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 600;
+  letter-spacing: 0.4em;
+  color: #56bcb8;
+  text-transform: uppercase;
+  margin-bottom: 0.75rem;
+}
+
+.empresas-titulo-principal {
+  font-family: 'Montserrat', sans-serif;
+  font-size: clamp(1.8rem, 4vw, 3rem);
+  font-weight: 800;
+  color: #ffffff;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  line-height: 1.1;
+  margin-bottom: 1.25rem;
+}
+
+.empresas-titulo-principal::after {
+  display: none; /* Eliminar el subrayado automático de h2 */
+}
+
+.empresas-titulo-linea {
+  width: 80px;
+  height: 4px;
+  background: linear-gradient(90deg, #124565, #56bcb8, #124565);
+  margin: 0 auto;
+  border-radius: 2px;
+}
+
+/* Filtros */
+.empresas-filtros {
+  margin-bottom: 3rem;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.empresas-filtros .btn-categoria {
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.75);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  padding: 0.5rem 1.25rem;
+  border-radius: 50px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.empresas-filtros .btn-categoria:hover {
+  background: rgba(86, 188, 184, 0.2);
+  border-color: #56bcb8;
+  color: #ffffff;
+}
+
+.empresas-filtros .btn-categoria.active {
+  background: #124565 !important;
+  border-color: #56bcb8 !important;
+  color: #ffffff !important;
+  font-weight: 600;
+}
+
+/* Wrapper general de logos */
+.empresas-logos-wrapper {
+  width: 100%;
+}
+
+/* Grupo por categoría */
+.empresas-categoria-grupo {
+  margin-bottom: 3.5rem;
+}
+
+.empresas-categoria-label {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.35em;
+  color: #56bcb8;
+  text-transform: uppercase;
+  margin-bottom: 0.5rem;
+}
+
+.empresas-categoria-sep {
+  height: 1px;
+  background: linear-gradient(90deg, rgba(86,188,184,0.5), transparent);
+  margin-bottom: 1.5rem;
+}
+
+/* Fila de logos */
+.empresas-logos-fila {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  align-items: center;
+}
+
+/* Cada tarjeta de logo — estilo sponsor */
+.empresa-logo-card {
+  background: rgba(255, 255, 255, 0.97);
+  border-radius: 8px;
+  padding: 18px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 180px;
+  height: 100px;
+  transition: all 0.25s ease;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  flex-shrink: 0;
+}
+
+.empresa-logo-card:hover {
+  transform: translateY(-4px) scale(1.03);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4),
+              0 0 0 2px rgba(86, 188, 184, 0.4);
+  background: #ffffff;
+}
+
+.empresa-logo-img {
+  max-width: 100%;
+  max-height: 64px;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  display: block;
+  filter: none;
+  transition: filter 0.25s ease;
+}
+
+/* Iniciales cuando no hay logo */
+.empresa-initials-badge {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: #124565;
+  letter-spacing: 0.05em;
+}
+
+/* ── Responsive ──────────────────────────────────────────────────── */
+@media (max-width: 1023px) {
+  .empresa-logo-card {
+    width: 155px;
+    height: 88px;
+    padding: 14px 18px;
+  }
+}
+
+@media (max-width: 767px) {
+  .empresas-section-nueva {
+    padding: 3.5rem 0 3rem;
+  }
+
+  .empresas-logos-fila {
+    gap: 12px;
+    justify-content: center;
+  }
+
+  .empresa-logo-card {
+    width: calc(50% - 6px);
+    height: 80px;
+    padding: 12px 14px;
+    flex-shrink: unset;
+  }
+
+  .empresas-titulo-principal {
+    font-size: 1.6rem;
+  }
+
+  .empresas-antetitulo {
+    font-size: 0.8rem;
+  }
+}
+
+@media (max-width: 420px) {
+  .empresa-logo-card {
+    width: calc(50% - 6px);
+    height: 72px;
+  }
+}
+
+/* Accesibilidad */
+@media (prefers-reduced-motion: reduce) {
+  .empresa-logo-card {
+    transition: none;
+  }
+}

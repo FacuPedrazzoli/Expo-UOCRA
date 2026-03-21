@@ -403,47 +403,94 @@ function renderEmpresas(categoria = 'todas') {
         return;
     }
 
-    let lista = [];
+    const ordenCategorias = ['construccion', 'sanitarias', 'electricidad', 'informatica', 'instituciones'];
+
     if (categoria === 'todas') {
-        Object.values(state.empresas).forEach(arr => {
-            if (Array.isArray(arr)) lista.push(...arr);
+        const frag = document.createDocumentFragment();
+        
+        ordenCategorias.forEach(cat => {
+            const empresasCat = state.empresas[cat];
+            if (!empresasCat || !empresasCat.length) return;
+
+            const grupo = document.createElement('div');
+            grupo.className = 'empresas-categoria-grupo';
+
+            const label = document.createElement('h3');
+            label.className = 'empresas-categoria-label';
+            label.textContent = cat.charAt(0).toUpperCase() + cat.slice(1);
+
+            const sep = document.createElement('div');
+            sep.className = 'empresas-categoria-sep';
+
+            const fila = document.createElement('div');
+            fila.className = 'empresas-logos-fila';
+            empresasCat.forEach(emp => fila.appendChild(crearTarjetaEmpresa(emp)));
+
+            grupo.appendChild(label);
+            grupo.appendChild(sep);
+            grupo.appendChild(fila);
+            frag.appendChild(grupo);
         });
+
+        container.innerHTML = '';
+        container.appendChild(frag);
     } else {
-        lista = state.empresas[categoria] || [];
+        const lista = state.empresas[categoria] || [];
+        
+        if (!lista.length) {
+            container.innerHTML = '<p style="grid-column:1/-1; text-align:center; padding:2rem;">Cargando empresas...</p>';
+            return;
+        }
+
+        const frag = document.createDocumentFragment();
+        const fila = document.createElement('div');
+        fila.className = 'empresas-logos-fila';
+        
+        lista.forEach(emp => frag.appendChild(crearTarjetaEmpresa(emp)));
+        fila.appendChild(frag);
+        
+        container.innerHTML = '';
+        container.appendChild(fila);
     }
 
-    log(`Renderizando ${lista.length} empresas para categoría: ${categoria}`);
-
-    if (!lista.length) {
-        container.innerHTML = '<p style="grid-column:1/-1; text-align:center; padding:2rem;">Cargando empresas...</p>';
-        return;
-    }
-
-    const frag = document.createDocumentFragment();
-    lista.forEach(emp => frag.appendChild(crearTarjetaEmpresa(emp)));
-    container.innerHTML = '';
-    container.appendChild(frag);
-    log(`Empresas renderizadas: ${lista.length}`);
+    log(`Empresas renderizadas para categoría: ${categoria}`);
 }
 
 function crearTarjetaEmpresa(emp) {
     const card = document.createElement('div');
-    card.className = 'empresa-card';
-    
-    // Solo mostrar el logo, sin texto ni botones
+    card.className = 'empresa-logo-card';
+
     if (emp.logo) {
-        card.innerHTML = `<img src="${emp.logo}" alt="${emp.nombre}" class="empresa-logo" loading="lazy" onerror="this.style.display='none'; this.parentElement.innerHTML=getInitials('${emp.nombre.replace(/'/g, "\\'")}')" />`;
+        const img = document.createElement('img');
+        img.src = emp.logo;
+        img.alt = emp.nombre;
+        img.className = 'empresa-logo-img';
+        img.loading = 'lazy';
+        img.onerror = function() {
+            this.style.display = 'none';
+            const span = document.createElement('span');
+            span.className = 'empresa-initials-badge';
+            span.textContent = emp.nombre.trim().split(' ')
+                .slice(0,2).map(p => p[0]).join('').toUpperCase();
+            card.appendChild(span);
+        };
+        card.appendChild(img);
     } else {
-        card.innerHTML = getInitials(emp.nombre);
+        const span = document.createElement('span');
+        span.className = 'empresa-initials-badge';
+        span.textContent = emp.nombre.trim().split(' ')
+            .slice(0,2).map(p => p[0]).join('').toUpperCase();
+        card.appendChild(span);
     }
-    
+
     if (emp.url) {
         card.style.cursor = 'pointer';
+        card.title = emp.nombre;
         card.addEventListener('click', () => {
             window.open(emp.url, '_blank', 'noopener');
         });
     }
-    
+
     return card;
 }
 

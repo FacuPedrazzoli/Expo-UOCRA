@@ -444,27 +444,33 @@
   </div>
 
   <!-- ══════════════════════════════════════════════════════════════════
-       8. EMPRESAS PARTICIPANTES
-       ══════════════════════════════════════════════════════════════════ -->
-  <section id="empresas" class="empresas-section section-animated">
-    <div class="section-container">
-      <div class="section-header">
-        <h2>Empresas Participantes</h2>
-        <div class="section-divider"></div>
+        8. EMPRESAS PARTICIPANTES
+        ══════════════════════════════════════════════════════════════════ -->
+  <section id="empresas" class="empresas-section-nueva">
+    <div class="empresas-section-inner">
+
+      <!-- Título impactante estilo sponsors -->
+      <div class="empresas-titulo-bloque">
+        <p class="empresas-antetitulo">CONOCÉ A LAS</p>
+        <h2 class="empresas-titulo-principal">EMPRESAS PARTICIPANTES 2026</h2>
+        <div class="empresas-titulo-linea"></div>
       </div>
-      <p class="empresas-intro">Las empresas m&aacute;s importantes del sector</p>
-      <p>Estas son todas las empresas que participar&aacute;n en la exposici&oacute;n. Puedes filtrar por categor&iacute;a:</p>
-      <div class="categorias-buttons">
-        <button class="btn-categoria active" data-categoria="todas" aria-label="Mostrar todas las empresas">Todas</button>
-        <button class="btn-categoria" data-categoria="construccion" aria-label="Mostrar empresas de construcci&oacute;n">Construcci&oacute;n</button>
-        <button class="btn-categoria" data-categoria="sanitarias" aria-label="Mostrar empresas de sanitarias">Sanitarias</button>
-        <button class="btn-categoria" data-categoria="instituciones" aria-label="Mostrar empresas de instituciones">Instituciones</button>
-        <button class="btn-categoria" data-categoria="electricidad" aria-label="Mostrar empresas de electricidad">Electricidad</button>
-        <button class="btn-categoria" data-categoria="informatica" aria-label="Mostrar empresas de inform&aacute;tica">Inform&aacute;tica</button>
+
+      <!-- Filtros por categoría -->
+      <div class="categorias-buttons empresas-filtros">
+        <button class="btn-categoria active" data-categoria="todas">Todas</button>
+        <button class="btn-categoria" data-categoria="construccion">Construcción</button>
+        <button class="btn-categoria" data-categoria="sanitarias">Sanitarias</button>
+        <button class="btn-categoria" data-categoria="instituciones">Instituciones</button>
+        <button class="btn-categoria" data-categoria="electricidad">Electricidad</button>
+        <button class="btn-categoria" data-categoria="informatica">Informática</button>
       </div>
-      <div id="empresas-lista" class="empresas-grid">
-        <!-- Las empresas se cargar&aacute;n din&aacute;micamente -->
+
+      <!-- Contenedor de logos — se rellena desde app.js -->
+      <div id="empresas-lista" class="empresas-logos-wrapper">
+        <!-- renderizado dinámico -->
       </div>
+
     </div>
   </section>
 
