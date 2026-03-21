@@ -3509,3 +3509,552 @@ header {
     transform: none;
   }
 }
+
+/* ══════════════════════════════════════════════════════════════════
+   CORRECCIONES RESPONSIVE MOBILE-FIRST
+   ══════════════════════════════════════════════════════════════════ */
+
+/* ── GLOBAL: Prevenir overflow horizontal ─────────────────────────── */
+html,
+body {
+  overflow-x: hidden;
+  max-width: 100%;
+}
+
+img,
+video,
+iframe,
+svg {
+  max-width: 100%;
+}
+
+/* ── SECCIONES GENERALES ────────────────────────────────────────── */
+@media (max-width: 374px) {
+  .section-header h2 {
+    font-size: 1.4rem;
+  }
+  .section-container {
+    padding: 2.5rem 0.75rem;
+  }
+}
+
+@media (max-width: 767px) {
+  .section-container {
+    padding: 3rem 1rem;
+  }
+  .section-header h2 {
+    font-size: 1.6rem;
+  }
+  .section-antetitulo {
+    font-size: 0.65rem;
+    letter-spacing: 0.35em;
+  }
+
+  /* Desactivar transform en hover para evitar overflow */
+  .features-list li:hover,
+  .beneficios-list li:hover,
+  .stand-item:hover,
+  .competicion-card:hover,
+  .chip:hover {
+    transform: none !important;
+  }
+}
+
+/* ── NAV ──────────────────────────────────────────────────────────── */
+@media (max-width: 1023px) {
+  #main-nav {
+    padding: 0.6rem 1rem;
+  }
+  #main-nav .menu-toggle {
+    min-width: 44px;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  #main-nav .nav-container {
+    padding: 0.5rem 0;
+  }
+  .nav-link {
+    padding: 0.85rem 1rem;
+    font-size: 0.9rem;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    text-align: left;
+  }
+  .nav-link:last-child {
+    border-bottom: none;
+  }
+}
+
+/* ── HERO ────────────────────────────────────────────────────────── */
+@media (max-width: 374px) {
+  .hero-title {
+    font-size: 1.6rem;
+  }
+  .hero-logo {
+    width: 160px;
+  }
+  .btn-inscribirme-hero {
+    padding: 14px 24px;
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 767px) {
+  .hero {
+    padding: 5rem 1.25rem 4rem;
+  }
+  .hero-info {
+    flex-direction: column;
+    gap: 0.75rem;
+    align-items: center;
+  }
+  .hero-info-item {
+    width: 100%;
+    max-width: 280px;
+    justify-content: center;
+    padding: 0.5rem 1.25rem;
+    font-size: 1rem;
+  }
+  .hero-antetitulo {
+    font-size: 0.7rem;
+    letter-spacing: 0.3em;
+  }
+  .hero-title {
+    font-size: clamp(1.6rem, 8vw, 2.2rem);
+  }
+  .btn-inscribirme-hero {
+    width: 100%;
+    max-width: 320px;
+    padding: 16px 24px;
+    font-size: 1.1rem;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1023px) {
+  .hero-title {
+    font-size: clamp(2rem, 4vw, 3rem);
+  }
+  .hero-info {
+    gap: 1.25rem;
+  }
+}
+
+/* ── STATS ──────────────────────────────────────────────────────── */
+@media (max-width: 374px) {
+  .stat-number {
+    font-size: 2rem;
+  }
+  .stat-icon {
+    font-size: 1.5rem;
+  }
+  .stats-title {
+    font-size: 1.4rem;
+  }
+}
+
+@media (max-width: 767px) {
+  .stats-section {
+    padding: 3rem 1rem;
+  }
+  .stats-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 1.25rem;
+  }
+  .stat-item {
+    padding: 1.25rem 0.5rem;
+  }
+  .stat-number {
+    font-size: 2.2rem;
+  }
+  .stats-title {
+    font-size: 1.6rem;
+    margin-bottom: 2rem;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1023px) {
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+  }
+}
+
+/* ── PARTICIPAR ──────────────────────────────────────────────────── */
+@media (max-width: 767px) {
+  .participar-section {
+    padding: 3rem 1rem;
+  }
+  .participar-grid {
+    grid-template-columns: 1fr !important;
+    gap: 2.5rem;
+  }
+  .participar-title {
+    font-size: 1.6rem;
+    margin-bottom: 2rem;
+  }
+  .participar-column h3 {
+    font-size: 1.2rem;
+    justify-content: center;
+  }
+  .chips-container {
+    justify-content: center;
+  }
+  .chip {
+    padding: 0.6rem 1.25rem;
+    font-size: 0.85rem;
+  }
+  .beneficios-list li {
+    padding: 0.85rem 1rem;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1023px) {
+  .participar-grid {
+    grid-template-columns: 1fr 1fr !important;
+    gap: 2rem;
+  }
+}
+
+/* ── GALERÍA ────────────────────────────────────────────────────── */
+@media (max-width: 374px) {
+  .galeria-title {
+    font-size: 1.4rem;
+  }
+  .fotos-grid {
+    grid-template-columns: 1fr;
+  }
+  .foto-item {
+    height: 180px;
+  }
+}
+
+@media (max-width: 767px) {
+  .galeria-section {
+    padding: 3rem 1rem;
+  }
+  .galeria-title {
+    font-size: 1.6rem;
+  }
+  .fotos-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+  }
+  .foto-item {
+    height: 160px;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1023px) {
+  .fotos-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+  }
+  .foto-item {
+    height: 200px;
+  }
+}
+
+/* ── BIENVENIDA ─────────────────────────────────────────────────── */
+@media (max-width: 374px) {
+  .bienvenida-card h2 {
+    font-size: 1.3rem;
+  }
+  .bienvenida-badge {
+    font-size: 0.6rem;
+    letter-spacing: 0.15em;
+    padding: 0.3rem 0.75rem;
+  }
+}
+
+@media (max-width: 767px) {
+  .bienvenida-section {
+    padding: 3rem 1rem;
+  }
+  .bienvenida-card {
+    padding: 1.75rem 1.25rem;
+  }
+  .bienvenida-card h2 {
+    font-size: 1.5rem;
+  }
+  .bienvenida-texto {
+    font-size: 1rem;
+    line-height: 1.7;
+  }
+  .btn-inscribirme-destacado {
+    width: 100%;
+    text-align: center;
+    padding: 14px 20px;
+    font-size: 1.05rem;
+  }
+  .features-list li {
+    flex-direction: row;
+    align-items: flex-start;
+  }
+  .features-list li i {
+    margin-bottom: 0;
+    margin-right: 12px;
+    padding: 8px;
+    font-size: 1.1rem;
+    flex-shrink: 0;
+  }
+}
+
+/* ── CHARLAS ─────────────────────────────────────────────────────── */
+@media (max-width: 767px) {
+  .charlas-section .section-container {
+    padding: 3rem 0.75rem;
+  }
+  .table-responsive {
+    -webkit-overflow-scrolling: touch;
+    border-radius: 8px;
+    box-shadow: inset -4px 0 8px rgba(0,0,0,0.05);
+  }
+  .charlas-table {
+    min-width: 500px;
+  }
+  .charlas-table th,
+  .charlas-table td {
+    padding: 10px 8px;
+    font-size: 0.85rem;
+    white-space: nowrap;
+  }
+}
+
+@media (max-width: 480px) {
+  .charlas-table th:nth-child(3),
+  .charlas-table td:nth-child(3),
+  .charlas-table th:nth-child(4),
+  .charlas-table td:nth-child(4) {
+    display: none;
+  }
+  .charlas-table {
+    min-width: 320px;
+  }
+}
+
+@media (max-width: 767px) {
+  .charlas-nota {
+    font-size: 0.8rem;
+    padding: 0 0.5rem;
+  }
+}
+
+/* ── INSCRIPCIÓN ────────────────────────────────────────────────── */
+@media (max-width: 374px) {
+  .form-container {
+    padding: 1rem 0.75rem;
+  }
+}
+
+@media (max-width: 767px) {
+  .inscripcion-section .section-container {
+    padding: 3rem 0.75rem;
+  }
+  .form-container {
+    width: 100%;
+    margin: 0;
+    border-radius: 8px;
+  }
+  .form-group input,
+  .form-group select {
+    min-height: 48px;
+    font-size: 16px !important;
+    padding: 12px 10px;
+  }
+  .charlas-checkbox-container {
+    max-height: 250px;
+  }
+  .btn-submit-action {
+    min-height: 52px;
+    font-size: 1.05rem;
+  }
+  .links-container {
+    padding: 0 0.25rem;
+  }
+  .btn-link {
+    font-size: 0.9rem;
+    padding: 10px 12px;
+  }
+  input,
+  select,
+  textarea {
+    font-size: 16px !important;
+  }
+}
+
+/* ── EMPRESAS ──────────────────────────────────────────────────── */
+@media (max-width: 374px) {
+  .empresa-logo-card {
+    width: calc(50% - 6px);
+    height: 68px;
+    padding: 10px 8px;
+  }
+  .empresas-titulo-principal {
+    font-size: 1.3rem;
+    letter-spacing: 0.02em;
+  }
+}
+
+@media (max-width: 767px) {
+  .empresas-section-nueva {
+    padding: 3rem 0;
+  }
+  .empresas-section-inner {
+    padding: 0 1rem;
+  }
+  .empresas-logos-fila {
+    justify-content: center;
+    gap: 10px;
+  }
+  .empresa-logo-card {
+    width: calc(50% - 5px);
+    height: 75px;
+    padding: 10px 12px;
+  }
+  .empresa-logo-img {
+    max-height: 50px;
+  }
+  .empresas-titulo-principal {
+    font-size: 1.4rem;
+  }
+  .empresas-antetitulo {
+    font-size: 0.7rem;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1023px) {
+  .empresa-logo-card {
+    width: 155px;
+    height: 90px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .empresa-logo-card {
+    width: 180px;
+    height: 100px;
+  }
+  .empresas-logos-fila {
+    justify-content: flex-start;
+  }
+}
+
+/* ── MUESTRAS ──────────────────────────────────────────────────── */
+@media (max-width: 767px) {
+  .muestras-section {
+    padding: 3rem 1rem;
+  }
+  .stands-grid {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+  .stand-item {
+    padding: 0.85rem;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1023px) {
+  .stands-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* ── COMPETICIONES ──────────────────────────────────────────────── */
+@media (max-width: 767px) {
+  .competiciones-section {
+    padding: 3rem 1rem;
+  }
+  .competiciones-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  .competicion-imagen {
+    height: 160px;
+  }
+  .categorias-buttons {
+    gap: 0.4rem;
+  }
+  .btn-categoria {
+    margin: 0.2rem;
+    padding: 8px 14px;
+    font-size: 0.85rem;
+  }
+  .competicion-info {
+    padding: 14px;
+  }
+  .competicion-info h3 {
+    font-size: 1.05rem;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1023px) {
+  .competiciones-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* ── SEPARADORES WAVE ───────────────────────────────────────────── */
+@media (max-width: 767px) {
+  .section-wave {
+    height: 50px;
+  }
+}
+
+/* ── CTA STICKY ─────────────────────────────────────────────────── */
+@media (max-width: 374px) {
+  .cta-sticky {
+    padding: 0.75rem;
+    gap: 0.5rem;
+  }
+  .cta-sticky-text {
+    font-size: 0.85rem;
+  }
+}
+
+@media (max-width: 767px) {
+  .cta-sticky-btn {
+    min-height: 48px;
+    font-size: 1rem;
+  }
+  .cta-sticky-close {
+    min-width: 44px;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.3rem;
+  }
+}
+
+/* ── FOOTER ────────────────────────────────────────────────────── */
+@media (max-width: 374px) {
+  .footer-logo {
+    width: 180px;
+  }
+}
+
+@media (max-width: 767px) {
+  .footer-main {
+    padding: 2rem 1rem;
+    gap: 1.5rem;
+  }
+  .footer-logo {
+    width: 200px;
+  }
+  .footer-links a {
+    display: block;
+    padding: 0.4rem 0;
+    font-size: 0.9rem;
+  }
+  .footer-title {
+    font-size: 1rem;
+  }
+  .footer-bottom {
+    padding: 1rem;
+  }
+  .footer-copyright {
+    font-size: 0.8rem;
+    text-align: center;
+  }
+}
