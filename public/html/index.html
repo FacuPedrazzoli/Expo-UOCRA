@@ -36,6 +36,7 @@
   <nav id="main-nav" aria-label="Navegación principal">
     <div class="nav-container">
       <a href="#hero" class="nav-link"><i class="fas fa-home"></i> Inicio</a>
+      <a href="#stats" class="nav-link"><i class="fas fa-chart-bar"></i> Stats</a>
       <a href="#bienvenida" class="nav-link"><i class="fas fa-info-circle"></i> Bienvenida</a>
       <a href="#empresas" class="nav-link"><i class="fas fa-building"></i> Empresas</a>
       <a href="#charlas" class="nav-link"><i class="fas fa-chalkboard-teacher"></i> Charlas</a>
@@ -76,15 +77,54 @@
     </div>
   </section>
 
-  <!-- Separador wave: Hero (oscuro) -> Bienvenida (blanco) -->
-  <div class="section-wave section-wave-down">
+  <!-- Fusión directa hero → stats (oscuro a oscuro) -->
+
+  <!-- ══════════════════════════════════════════════════════════════════
+       2. CONTADORES ANIMADOS — "Expo en Números"
+       ══════════════════════════════════════════════════════════════════ -->
+  <section id="stats" class="stats-section section-animated">
+    <div class="stats-container">
+      <h2 class="stats-title">Expo en <span>Números</span></h2>
+      <div class="stats-grid">
+        <div class="stat-item">
+          <i class="fas fa-building stat-icon"></i>
+          <div class="stat-number" data-target="30">0</div>
+          <div class="stat-label">
+            Empresas del sector
+          </div>
+        </div>
+        <div class="stat-item">
+          <i class="fas fa-chalkboard-teacher stat-icon"></i>
+          <div class="stat-number" data-target="20">0</div>
+          <div class="stat-label">
+            Charlas técnicas
+          </div>
+        </div>
+        <div class="stat-item">
+          <i class="fas fa-store stat-icon"></i>
+          <div class="stat-number" data-target="50">0</div>
+          <div class="stat-label">Stands</div>
+        </div>
+        <div class="stat-item">
+          <i class="fas fa-users stat-icon"></i>
+          <div class="stat-number" data-target="3500">0</div>
+          <div class="stat-label">
+            Visitantes
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Wave: Stats (oscuro) → Bienvenida (claro) -->
+  <div class="section-wave section-wave-down" style="background-color: #1a1a2e;">
     <svg viewBox="0 0 1440 120" preserveAspectRatio="none">
-      <path fill="#1a1a2e" d="M0,64 C480,150 960,-20 1440,64 L1440,120 L0,120 Z"></path>
+      <path fill="#f0f8fa" d="M0,0 C360,120 1080,120 1440,0 L1440,120 L0,120 Z"></path>
     </svg>
   </div>
 
   <!-- ══════════════════════════════════════════════════════════════════
-       2. BIENVENIDA UNIFICADA
+       3. BIENVENIDA UNIFICADA
        ══════════════════════════════════════════════════════════════════ -->
   <section id="bienvenida" class="bienvenida-section section-animated">
     <div class="bienvenida-container">
@@ -160,51 +200,12 @@
     </div>
   </section>
 
-  <!-- Separador wave: Bienvenida (blanco) -> Stats (oscuro) -->
-  <div class="section-wave section-wave-up">
+  <!-- Wave: Bienvenida (blanco) → Empresas (oscuro) -->
+  <div class="section-wave section-wave-up" style="background-color: #ffffff;">
     <svg viewBox="0 0 1440 120" preserveAspectRatio="none">
-      <path fill="#1a1a2e" d="M0,64 C480,150 960,-20 1440,64 L1440,0 L0,0 Z"></path>
+      <path fill="#0d1b2a" d="M0,120 C360,0 1080,0 1440,120 L1440,0 L0,0 Z"></path>
     </svg>
   </div>
-
-  <!-- ══════════════════════════════════════════════════════════════════
-       3. CONTADORES ANIMADOS — "Expo en Números"
-       ══════════════════════════════════════════════════════════════════ -->
-  <section id="stats" class="stats-section section-animated">
-    <div class="stats-container">
-      <h2 class="stats-title">Expo en <span>Números</span></h2>
-      <div class="stats-grid">
-        <div class="stat-item">
-          <i class="fas fa-building stat-icon"></i>
-          <div class="stat-number" data-target="30">0</div>
-          <div class="stat-label">
-            Empresas del sector
-          </div>
-        </div>
-        <div class="stat-item">
-          <i class="fas fa-chalkboard-teacher stat-icon"></i>
-          <div class="stat-number" data-target="20">0</div>
-          <div class="stat-label">
-            Charlas técnicas
-          </div>
-        </div>
-        <div class="stat-item">
-          <i class="fas fa-store stat-icon"></i>
-          <div class="stat-number" data-target="50">0</div>
-          <div class="stat-label">Stands</div>
-        </div>
-        <div class="stat-item">
-          <i class="fas fa-users stat-icon"></i>
-          <div class="stat-number" data-target="3500">0</div>
-          <div class="stat-label">
-            Visitantes
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-
 
   <!-- ══════════════════════════════════════════════════════════════════
        4. EMPRESAS PARTICIPANTES
@@ -221,10 +222,10 @@
     </div>
   </section>
 
-  <!-- Separador wave: Empresas (oscuro) -> Charlas (claro) -->
-  <div class="section-wave section-wave-down">
+  <!-- Wave: Empresas (oscuro) → Charlas (claro) -->
+  <div class="section-wave section-wave-down" style="background-color: #0d1b2a;">
     <svg viewBox="0 0 1440 120" preserveAspectRatio="none">
-      <path fill="#f0f8fa" d="M0,64 C480,150 960,-20 1440,64 L1440,120 L0,120 Z"></path>
+      <path fill="#f0f8fa" d="M0,0 C360,120 1080,120 1440,0 L1440,120 L0,120 Z"></path>
     </svg>
   </div>
 
@@ -250,8 +251,10 @@
     </div>
   </section>
 
+  <!-- Fusión directa charlas → galeria (colores casi idénticos) -->
+
   <!-- ══════════════════════════════════════════════════════════════════
-       7. GALERÍA DE FOTOS + VIDEO
+       6. GALERÍA DE FOTOS + VIDEO
        ══════════════════════════════════════════════════════════════════ -->
   <section id="galeria" class="galeria-section section-animated">
     <div class="galeria-container">
@@ -320,15 +323,15 @@
     </div>
   </section>
 
-  <!-- Separador wave: Galería (white) -> Muestras (oscuro) -->
-  <div class="section-wave section-wave-down">
+  <!-- Wave: Galería (blanco) → Muestras (oscuro) -->
+  <div class="section-wave section-wave-up" style="background-color: #ffffff;">
     <svg viewBox="0 0 1440 120" preserveAspectRatio="none">
-      <path fill="#1a1a2e" d="M0,64 C480,150 960,-20 1440,64 L1440,120 L0,120 Z"></path>
+      <path fill="#1a1a2e" d="M0,120 C360,0 1080,0 1440,120 L1440,0 L0,0 Z"></path>
     </svg>
   </div>
 
   <!-- ══════════════════════════════════════════════════════════════════
-       8. MUESTRAS ABIERTAS
+       7. MUESTRAS ABIERTAS
        ══════════════════════════════════════════════════════════════════ -->
   <section id="muestras" class="muestras-section section-animated">
     <div class="section-container">
@@ -344,15 +347,15 @@
     </div>
   </section>
 
-  <!-- Separador wave: Muestras (oscuro) -> Competiciones (claro) -->
-  <div class="section-wave section-wave-up">
+  <!-- Wave: Muestras (oscuro) → Competiciones (claro) -->
+  <div class="section-wave section-wave-down" style="background-color: #1a1a2e;">
     <svg viewBox="0 0 1440 120" preserveAspectRatio="none">
-      <path fill="#1a1a2e" d="M0,64 C480,150 960,-20 1440,64 L1440,0 L0,0 Z"></path>
+      <path fill="#f0f8fa" d="M0,0 C360,120 1080,120 1440,0 L1440,120 L0,120 Z"></path>
     </svg>
   </div>
 
   <!-- ══════════════════════════════════════════════════════════════════
-       9. COMPETICIONES
+       8. COMPETICIONES
        ══════════════════════════════════════════════════════════════════ -->
   <section id="competiciones" class="competiciones-section section-animated">
     <div class="section-container">
@@ -361,7 +364,7 @@
         <h2>Competiciones</h2>
         <div class="section-divider"></div>
       </div>
-      <p>Conoce las competiciones que se llevar&aacute;n a cabo durante el evento y sus horarios:</p>
+      <p>Conoce las competiciónes que se llevar&aacute;n a cabo durante el evento y sus horarios:</p>
       
       <div class="categorias-buttons">
         <button class="btn-categoria active" data-categoria="todas" data-competicion="todas" aria-label="Mostrar todas las competiciónes">Todas</button>
@@ -375,15 +378,10 @@
     </div>
   </section>
 
-  <!-- Separador wave: Competiciones (claro) -> Inscripción (claro) -->
-  <div class="section-wave section-wave-down">
-    <svg viewBox="0 0 1440 120" preserveAspectRatio="none">
-      <path fill="#f0f8fa" d="M0,64 C480,150 960,-20 1440,64 L1440,120 L0,120 Z"></path>
-    </svg>
-  </div>
+  <!-- Fusión directa competiciones → inscripcion (mismo color) -->
 
   <!-- ══════════════════════════════════════════════════════════════════
-       10. INSCRIPCIÓN
+       9. INSCRIPCIÓN
        ══════════════════════════════════════════════════════════════════ -->
   <section id="inscripcion" class="inscripcion-section section-animated">
     <div class="section-container">
@@ -468,7 +466,7 @@
   </section>
 
   <!-- ══════════════════════════════════════════════════════════════════
-       11. CTA STICKY DE INSCRIPCIÓN
+       10. CTA STICKY DE INSCRIPCIÓN
        ══════════════════════════════════════════════════════════════════ -->
   <div id="cta-sticky" class="cta-sticky">
     <span class="cta-sticky-text">Los cupos se están llenando — inscribite ahora.</span>
@@ -477,7 +475,7 @@
   </div>
 
   <!-- ══════════════════════════════════════════════════════════════════
-       12. FOOTER
+       11. FOOTER
        ══════════════════════════════════════════════════════════════════ -->
   <footer>
     <div class="footer-main">
@@ -491,6 +489,7 @@
         <h4 class="footer-title">Navegaci&oacute;n</h4>
         <ul class="footer-links">
           <li><a href="#hero">Inicio</a></li>
+          <li><a href="#stats">Stats</a></li>
           <li><a href="#bienvenida">Bienvenida</a></li>
           <li><a href="#empresas">Empresas</a></li>
           <li><a href="#charlas">Charlas</a></li>

@@ -4104,3 +4104,73 @@ svg {
     gap: 0 2rem;
   }
 }
+
+/* ══════════════════════════════════════════════════════════════════
+   WAVES — Sistema de transición entre secciones
+   ══════════════════════════════════════════════════════════════════ */
+
+.section-wave {
+  position: relative;
+  height: 100px;
+  overflow: hidden;
+  line-height: 0;
+  display: block;
+}
+
+.section-wave svg {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.section-wave-down svg {
+  transform: rotate(0deg);
+}
+
+.section-wave-up svg {
+  transform: rotate(180deg);
+}
+
+@media (max-width: 767px) {
+  .section-wave {
+    height: 60px;
+  }
+}
+
+@media (max-width: 374px) {
+  .section-wave {
+    height: 40px;
+  }
+}
+
+/* ── Fusión hero → stats (oscuro a oscuro) ─────────────────────── */
+.hero {
+  padding-bottom: 0;
+  margin-bottom: 0;
+}
+
+.stats-section {
+  margin-top: 0;
+  padding-top: 4rem;
+}
+
+/* ── Fusión charlas → galeria (claro a blanco) ──────────────────── */
+.charlas-section {
+  padding-bottom: 0;
+}
+
+.galeria-section {
+  padding-top: 4rem;
+}
+
+/* ── Fusión competiciones → inscripcion (claro a claro) ────────── */
+.competiciones-section {
+  padding-bottom: 0;
+}
+
+.inscripcion-section {
+  padding-top: 4rem;
+}
