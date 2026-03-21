@@ -35,7 +35,7 @@ async function cargarDatosEstaticos() {
         const res = await fetch('/js/data.json', { cache: 'default' });
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data = await res.json();
-        state.empresas      = data.empresas      || {};
+        state.empresas      = Array.isArray(data.empresas) ? data.empresas : [];
         state.muestras      = data.muestras      || [];
         state.competiciones  = data.competiciones  || {};
         log('Datos estáticos cargados');
@@ -392,68 +392,24 @@ async function fetchWithRetry(url, opts, retries = 2, timeout = 30000) {
 }
 
 // ── Empresas ─────────────────────────────────────────────────────────────
-function renderEmpresas(categoria = 'todas') {
-    $$('#empresas .btn-categoria[data-categoria]').forEach(btn => {
-        btn.classList.toggle('active', btn.dataset.categoria === categoria);
-    });
-
+function renderEmpresas() {
     const container = $('#empresas-lista');
-    if (!container) {
-        log('ERROR: No se encontró el contenedor de empresas');
+    if (!container) return;
+
+    const lista = state.empresas;
+
+    if (!lista || !lista.length) {
+        container.innerHTML = '<p style="color:rgba(255,255,255,0.6); text-align:center; padding:2rem;">Cargando empresas...</p>';
         return;
     }
 
-    const ordenCategorias = ['construccion', 'sanitarias', 'electricidad', 'informatica', 'instituciones'];
+    const fila = document.createElement('div');
+    fila.className = 'empresas-logos-fila';
 
-    if (categoria === 'todas') {
-        const frag = document.createDocumentFragment();
-        
-        ordenCategorias.forEach(cat => {
-            const empresasCat = state.empresas[cat];
-            if (!empresasCat || !empresasCat.length) return;
+    lista.forEach(emp => fila.appendChild(crearTarjetaEmpresa(emp)));
 
-            const grupo = document.createElement('div');
-            grupo.className = 'empresas-categoria-grupo';
-
-            const label = document.createElement('h3');
-            label.className = 'empresas-categoria-label';
-            label.textContent = cat.charAt(0).toUpperCase() + cat.slice(1);
-
-            const sep = document.createElement('div');
-            sep.className = 'empresas-categoria-sep';
-
-            const fila = document.createElement('div');
-            fila.className = 'empresas-logos-fila';
-            empresasCat.forEach(emp => fila.appendChild(crearTarjetaEmpresa(emp)));
-
-            grupo.appendChild(label);
-            grupo.appendChild(sep);
-            grupo.appendChild(fila);
-            frag.appendChild(grupo);
-        });
-
-        container.innerHTML = '';
-        container.appendChild(frag);
-    } else {
-        const lista = state.empresas[categoria] || [];
-        
-        if (!lista.length) {
-            container.innerHTML = '<p style="grid-column:1/-1; text-align:center; padding:2rem;">Cargando empresas...</p>';
-            return;
-        }
-
-        const frag = document.createDocumentFragment();
-        const fila = document.createElement('div');
-        fila.className = 'empresas-logos-fila';
-        
-        lista.forEach(emp => frag.appendChild(crearTarjetaEmpresa(emp)));
-        fila.appendChild(frag);
-        
-        container.innerHTML = '';
-        container.appendChild(fila);
-    }
-
-    log(`Empresas renderizadas para categoría: ${categoria}`);
+    container.innerHTML = '';
+    container.appendChild(fila);
 }
 
 function crearTarjetaEmpresa(emp) {
@@ -615,13 +571,6 @@ function setupEventListeners() {
         });
     });
 
-    // Filtro de empresas
-    document.addEventListener('click', (e) => {
-        const btn = e.target.closest('#empresas .btn-categoria[data-categoria]');
-        if (!btn) return;
-        renderEmpresas(btn.dataset.categoria);
-    });
-
     // Filtro de competiciones
     document.addEventListener('click', (e) => {
         const btn = e.target.closest('#competiciones .btn-categoria');
@@ -651,7 +600,7 @@ async function init() {
     // Renderizar todo
     renderTablaCharlas();
     renderCheckboxesCharlas();
-    renderEmpresas('todas');
+    renderEmpresas();
     renderMuestras();
     renderCompeticiones('todas');
 
