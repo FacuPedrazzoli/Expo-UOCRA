@@ -4106,12 +4106,89 @@ svg {
 }
 
 /* ══════════════════════════════════════════════════════════════════
-   SEPARADORES DIAGONALES — Sistema de transición entre secciones
-   Reemplaza el sistema SVG wave anterior.
-   Usa clip-path CSS puro: 100% responsive, sin distorsión en mobile.
+   SEPARADORES LLAMATIVOS — Sistema de transición entre secciones
+   Diseño moderno con triángulos, gradientes y efectos visuales.
    ══════════════════════════════════════════════════════════════════ */
 
-/* ── Hero: sin separador, fusión directa con stats (ambos oscuros) ── */
+/* ── Variables de colores para separadores ──────────────────────── */
+:root {
+  --separator-accent: #56bcb8;
+  --separator-dark: #0d1b2a;
+  --separator-light: #f0f8fa;
+}
+
+/* ════════════════════════════════════════════════════════════════
+   SEPARADOR TIPO 1: Triángulos hacia arriba (oscuro → claro)
+   Usado en: Stats → Bienvenida, Empresas → Charlas, Muestras → Competiciones
+   ════════════════════════════════════════════════════════════════ */
+.separator-triangle-up {
+  position: relative;
+  height: 80px;
+  margin-top: -1px;
+  z-index: 10;
+}
+
+.separator-triangle-up::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 100%;
+  background: linear-gradient(135deg, var(--separator-dark) 0%, var(--separator-accent) 50%, var(--separator-light) 100%);
+  clip-path: polygon(0 100%, 15% 30%, 30% 70%, 45% 40%, 60% 80%, 75% 30%, 90% 60%, 100% 100%, 100% 100%, 0 100%);
+}
+
+/* ════════════════════════════════════════════════════════════════
+   SEPARADOR TIPO 2: Triángulos hacia abajo (claro → oscuro)
+   Usado en: Bienvenida → Empresas, Galería → Muestras
+   ════════════════════════════════════════════════════════════════ */
+.separator-triangle-down {
+  position: relative;
+  height: 80px;
+  margin-top: -1px;
+  z-index: 10;
+}
+
+.separator-triangle-down::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 100%;
+  background: linear-gradient(135deg, var(--separator-light) 0%, var(--separator-accent) 50%, var(--separator-dark) 100%);
+  clip-path: polygon(0 0, 10% 40%, 25% 20%, 40% 70%, 55% 30%, 70% 80%, 85% 40%, 100% 0, 100% 0, 0 0);
+}
+
+/* ════════════════════════════════════════════════════════════════
+   SEPARADOR TIPO 3: Línea diagonal con acento
+   Usado como alternativa más sutil
+   ════════════════════════════════════════════════════════════════ */
+.separator-diagonal {
+  position: relative;
+  height: 60px;
+  margin-top: -1px;
+  overflow: hidden;
+}
+
+.separator-diagonal::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -50%;
+  width: 200%;
+  height: 100%;
+  background: var(--separator-accent);
+  transform: rotate(-3deg);
+  transform-origin: center;
+}
+
+/* ════════════════════════════════════════════════════════════════
+   Aplicar separadores a las secciones
+   ════════════════════════════════════════════════════════════════ */
+
+/* Hero → Stats: sin separador (fusión directa) */
 .hero {
   padding-bottom: 5rem;
   margin-bottom: 0;
@@ -4121,52 +4198,114 @@ svg {
   margin-top: 0;
 }
 
-/* ── Stats → Bienvenida: diagonal izquierda baja ────────────────── */
+/* Stats → Bienvenida: triángulos hacia arriba */
+.stats-section::after {
+  content: '';
+  display: block;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 80px;
+  background: linear-gradient(135deg, #0d1b2a 0%, #56bcb8 50%, #f0f8fa 100%);
+  clip-path: polygon(0 100%, 12% 35%, 25% 65%, 37% 40%, 50% 75%, 62% 35%, 75% 70%, 87% 30%, 100% 60%, 100% 100%, 0 100%);
+}
+
 .stats-section {
-  clip-path: polygon(0 0, 100% 0, 100% 88%, 0 100%);
-  padding-bottom: 140px;
+  position: relative;
+  overflow: visible;
+  padding-bottom: 100px;
 }
 
-/* ── Bienvenida → Empresas: diagonal derecha baja ───────────────── */
+/* Bienvenida → Empresas: triángulos hacia abajo */
+.bienvenida-section::after {
+  content: '';
+  display: block;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 80px;
+  background: linear-gradient(135deg, #f0f8fa 0%, #56bcb8 50%, #0d1b2a 100%);
+  clip-path: polygon(0 0, 12% 35%, 25% 55%, 37% 30%, 50% 65%, 62% 40%, 75% 75%, 87% 35%, 100% 50%, 100% 0, 0 0);
+}
+
 .bienvenida-section {
-  clip-path: polygon(0 0, 100% 0, 100% 100%, 0 90%);
-  padding-bottom: 130px;
-  margin-top: -2px;
-}
-
-/* ── Empresas → Charlas: diagonal izquierda baja ────────────────── */
-.empresas-section-nueva {
-  clip-path: polygon(0 0, 100% 0, 100% 90%, 0 100%);
-  padding-bottom: 140px;
-  margin-top: -2px;
-}
-
-/* ── Charlas → Galería: sin separador (colores similares) ───────── */
-.charlas-section {
+  position: relative;
+  overflow: visible;
+  padding-bottom: 100px;
   margin-bottom: 0;
+}
+
+/* Empresas → Charlas: triángulos hacia arriba */
+.empresas-section-nueva::after {
+  content: '';
+  display: block;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 80px;
+  background: linear-gradient(135deg, #0d1b2a 0%, #56bcb8 50%, #f0f8fa 100%);
+  clip-path: polygon(0 100%, 15% 30%, 30% 65%, 45% 35%, 60% 70%, 75% 40%, 90% 65%, 100% 100%, 100% 100%, 0 100%);
+}
+
+.empresas-section-nueva {
+  position: relative;
+  overflow: visible;
+  padding-bottom: 100px;
+}
+
+/* Charlas → Galería: sin separador (colores similares) */
+.charlas-section {
   padding-bottom: 4rem;
 }
 
 .galeria-section {
-  background: linear-gradient(180deg, #f0f8fa 0%, #ffffff 25%);
-  margin-top: 0;
+  background: linear-gradient(180deg, #f0f8fa 0%, #ffffff 30%);
   padding-top: 4rem;
+  margin-top: 0;
 }
 
-/* ── Galería → Muestras: diagonal derecha baja ──────────────────── */
+/* Galería → Muestras: triángulos hacia abajo */
+.galeria-section::after {
+  content: '';
+  display: block;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 80px;
+  background: linear-gradient(135deg, #ffffff 0%, #56bcb8 50%, #1a1a2e 100%);
+  clip-path: polygon(0 0, 10% 40%, 22% 25%, 35% 55%, 50% 30%, 65% 60%, 78% 35%, 90% 50%, 100% 0, 100% 0, 0 0);
+}
+
 .galeria-section {
-  clip-path: polygon(0 0, 100% 0, 100% 100%, 0 92%);
-  padding-bottom: 120px;
+  position: relative;
+  overflow: visible;
+  padding-bottom: 100px;
 }
 
-/* ── Muestras → Competiciones: diagonal izquierda baja ─────────── */
+/* Muestras → Competiciones: triángulos hacia arriba */
+.muestras-section::after {
+  content: '';
+  display: block;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 80px;
+  background: linear-gradient(135deg, #1a1a2a 0%, #56bcb8 50%, #f0f8fa 100%);
+  clip-path: polygon(0 100%, 12% 40%, 25% 25%, 37% 55%, 50% 30%, 62% 60%, 75% 35%, 87% 55%, 100% 40%, 100% 100%, 0 100%);
+}
+
 .muestras-section {
-  clip-path: polygon(0 0, 100% 0, 100% 90%, 0 100%);
-  padding-bottom: 140px;
-  margin-top: -2px;
+  position: relative;
+  overflow: visible;
+  padding-bottom: 100px;
 }
 
-/* ── Competiciones → Inscripción: sin separador (mismo color) ───── */
+/* Competiciones → Inscripción: sin separador */
 .competiciones-section {
   padding-bottom: 4rem;
 }
@@ -4175,107 +4314,65 @@ svg {
   padding-top: 4rem;
 }
 
-/* ── Solapamiento entre secciones para evitar gaps ──────────────── */
-#bienvenida {
-  margin-top: -60px;
-  position: relative;
-  z-index: 2;
-}
-
-#charlas {
-  margin-top: -60px;
-  position: relative;
-  z-index: 2;
-}
-
-#muestras {
-  margin-top: -60px;
-  position: relative;
-  z-index: 2;
-}
-
-#competiciones {
-  margin-top: -60px;
-  position: relative;
-  z-index: 2;
-}
-
-/* ── z-index para mantener orden correcto de apilamiento ─────────── */
+/* ── z-index para mantener orden correcto ──────────────────────── */
 #hero            { position: relative; z-index: 1; }
-#stats           { position: relative; z-index: 1; }
-#bienvenida      { position: relative; z-index: 2; }
-#empresas        { position: relative; z-index: 1; }
+#stats           { position: relative; z-index: 5; }
+#bienvenida      { position: relative; z-index: 5; }
+#empresas        { position: relative; z-index: 5; }
 #charlas         { position: relative; z-index: 2; }
-#galeria         { position: relative; z-index: 2; }
-#muestras        { position: relative; z-index: 1; }
+#galeria         { position: relative; z-index: 5; }
+#muestras        { position: relative; z-index: 5; }
 #competiciones   { position: relative; z-index: 2; }
 #inscripcion     { position: relative; z-index: 2; }
 
-/* ── Responsive ajustes para clip-path ──────────────────────────── */
-@media (min-width: 768px) and (max-width: 1023px) {
-  .stats-section,
-  .empresas-section-nueva,
-  .muestras-section {
-    padding-bottom: 120px;
+/* ── Responsive: ajustar altura de separadores en mobile ────────── */
+@media (max-width: 767px) {
+  .stats-section::after,
+  .bienvenida-section::after,
+  .empresas-section-nueva::after,
+  .galeria-section::after,
+  .muestras-section::after {
+    height: 50px;
   }
   
-  .bienvenida-section,
-  .galeria-section {
-    padding-bottom: 110px;
-  }
-}
-
-@media (max-width: 767px) {
   .stats-section {
-    clip-path: polygon(0 0, 100% 0, 100% 92%, 0 100%);
-    padding-bottom: 90px;
+    padding-bottom: 70px;
   }
-
+  
   .bienvenida-section {
-    clip-path: polygon(0 0, 100% 0, 100% 100%, 0 94%);
-    padding-bottom: 90px;
+    padding-bottom: 70px;
   }
-
+  
   .empresas-section-nueva {
-    clip-path: polygon(0 0, 100% 0, 100% 93%, 0 100%);
-    padding-bottom: 90px;
+    padding-bottom: 70px;
   }
-
+  
   .galeria-section {
-    clip-path: polygon(0 0, 100% 0, 100% 100%, 0 95%);
-    padding-bottom: 80px;
+    padding-bottom: 70px;
   }
-
+  
   .muestras-section {
-    clip-path: polygon(0 0, 100% 0, 100% 93%, 0 100%);
-    padding-bottom: 90px;
-  }
-
-  #bienvenida,
-  #charlas,
-  #muestras,
-  #competiciones {
-    margin-top: -40px;
+    padding-bottom: 70px;
   }
 }
 
 @media (max-width: 374px) {
-  .stats-section,
-  .bienvenida-section,
-  .empresas-section-nueva,
-  .galeria-section,
-  .muestras-section {
-    clip-path: polygon(0 0, 100% 0, 100% 95%, 0 100%);
-    padding-bottom: 70px;
-  }
-
-  #bienvenida,
-  #charlas,
-  #muestras,
-  #competiciones {
-    margin-top: -30px;
+  .stats-section::after,
+  .bienvenida-section::after,
+  .empresas-section-nueva::after,
+  .galeria-section::after,
+  .muestras-section::after {
+    height: 40px;
   }
 }
 
-@media (prefers-reduced-motion: reduce) {
+/* ════════════════════════════════════════════════════════════════════════
+   Fin del sistema de separadores llamativos
+   ════════════════════════════════════════════════════════════════════════ */
+}
+
+/* ════════════════════════════════════════════════════════════════
+   Fin del sistema de separadores llamativos
+   ════════════════════════════════════════════════════════════════ */
+
 }
