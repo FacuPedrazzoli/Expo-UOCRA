@@ -120,66 +120,7 @@
     </div>
   </section>
 
-  <!-- Separador wave: Stats (oscuro) -> Participar (claro) -->
-  <div class="section-wave section-wave-up">
-    <svg viewBox="0 0 1440 120" preserveAspectRatio="none">
-      <path fill="#1a1a2e" d="M0,64 C480,150 960,-20 1440,64 L1440,0 L0,0 Z"></path>
-    </svg>
-  </div>
 
-  <!-- ══════════════════════════════════════════════════════════════════
-       3. SECCIÓN "¿POR QUÉ PARTICIPAR?"
-       ══════════════════════════════════════════════════════════════════ -->
-  <section id="participar" class="participar-section section-animated">
-    <div class="participar-container">
-      <p class="section-antetitulo" style="text-align:center;">DESCUBRÍ</p>
-      <h2 class="participar-title">¿Por qué participar en Expo Formación?</h2>
-      <div class="participar-grid">
-        <div class="participar-column">
-          <h3><i class="fas fa-users"></i> ¿A quién está dirigido?</h3>
-          <div class="chips-container">
-            <span class="chip">Trabajadores del sector</span>
-            <span class="chip">Estudiantes técnicos</span>
-            <span class="chip">Empresas del rubro</span>
-            <span class="chip">Docentes</span>
-            <span class="chip">Público general</span>
-          </div>
-        </div>
-        <div class="participar-column">
-          <h3><i class="fas fa-star"></i> ¿Por qué participar?</h3>
-          <ul class="beneficios-list">
-            <li>
-              <i class="fas fa-hard-hat"></i>
-              <span>Conoc&eacute; las &uacute;ltimas tendencias del sector</span>
-            </li>
-            <li>
-              <i class="fas fa-handshake"></i>
-              <span>Conect&aacute; con empresas l&iacute;deres</span>
-            </li>
-            <li>
-              <i class="fas fa-graduation-cap"></i>
-              <span>Acced&eacute; a charlas y capacitaciones gratuitas</span>
-            </li>
-            <li>
-              <i class="fas fa-briefcase"></i>
-              <span>Descubr&iacute; oportunidades laborales y educativas</span>
-            </li>
-            <li>
-              <i class="fas fa-globe"></i>
-              <span>Viv&iacute; una experiencia &uacute;nica de networking</span>
-            </li>
-          </ul>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Separador wave: Participar (claro) -> Empresas (oscuro) -->
-  <div class="section-wave section-wave-down">
-    <svg viewBox="0 0 1440 120" preserveAspectRatio="none">
-      <path fill="#0d1b2a" d="M0,64 C480,150 960,-20 1440,64 L1440,120 L0,120 Z"></path>
-    </svg>
-  </div>
 
   <!-- ══════════════════════════════════════════════════════════════════
        4. EMPRESAS PARTICIPANTES
@@ -233,17 +174,68 @@
   </div>
 
   <!-- ══════════════════════════════════════════════════════════════════
-       6. BIENVENIDA
+       6. BIENVENIDA UNIFICADA
        ══════════════════════════════════════════════════════════════════ -->
   <section id="bienvenida" class="bienvenida-section section-animated">
     <div class="bienvenida-container">
-      <div class="bienvenida-card">
-        <span class="bienvenida-badge">EXPO FORMACIÓN 2026</span>
-        <div class="bienvenida-accent"></div>
-        <h2>Bienvenido a Expo Formación</h2>
-        <p class="bienvenida-texto">
-          La Expo Formación nació de una convicción simple: el sector de la construcción merece un espacio propio para crecer, aprender y conectarse. Desde su primera edición, reunimos a trabajadores, estudiantes y empresas líderes en un mismo lugar, con un objetivo compartido: impulsar la formación y el futuro del sector.
-        </p>
+
+      <!-- Acento lateral izquierdo -->
+      <div class="bienvenida-accent"></div>
+
+      <!-- Layout dos columnas -->
+      <div class="bienvenida-dos-columnas">
+
+        <!-- Columna izquierda: narrativa + público -->
+        <div class="bienvenida-col-narrativa">
+          <span class="bienvenida-badge">EXPO FORMACIÓN 2026</span>
+          <h2>Bienvenido a Expo Formación</h2>
+          <p class="bienvenida-texto">
+            La Expo Formación nació de una convicción simple: el sector de la construcción merece un espacio propio para crecer, aprender y conectarse. Desde su primera edición, reunimos a trabajadores, estudiantes y empresas líderes en un mismo lugar, con un objetivo compartido: impulsar la formación y el futuro del sector.
+          </p>
+          <h3 class="bienvenida-subtitulo">
+            <i class="fas fa-users"></i> ¿A quién está dirigido?
+          </h3>
+          <div class="chips-container">
+            <span class="chip">Trabajadores del sector</span>
+            <span class="chip">Estudiantes técnicos</span>
+            <span class="chip">Empresas del rubro</span>
+            <span class="chip">Docentes</span>
+            <span class="chip">Público general</span>
+          </div>
+        </div>
+
+        <!-- Separador vertical (solo desktop) -->
+        <div class="bienvenida-separador-vertical" aria-hidden="true"></div>
+
+        <!-- Columna derecha: beneficios -->
+        <div class="bienvenida-col-beneficios">
+          <h3 class="bienvenida-subtitulo">
+            <i class="fas fa-star"></i> ¿Por qué participar?
+          </h3>
+          <ul class="beneficios-list">
+            <li>
+              <i class="fas fa-hard-hat"></i>
+              <span>Conoc&eacute; las &uacute;ltimas tendencias del sector</span>
+            </li>
+            <li>
+              <i class="fas fa-handshake"></i>
+              <span>Conect&aacute; con empresas l&iacute;deres</span>
+            </li>
+            <li>
+              <i class="fas fa-graduation-cap"></i>
+              <span>Acced&eacute; a charlas y capacitaciones gratuitas</span>
+            </li>
+            <li>
+              <i class="fas fa-briefcase"></i>
+              <span>Descubr&iacute; oportunidades laborales y educativas</span>
+            </li>
+            <li>
+              <i class="fas fa-globe"></i>
+              <span>Viv&iacute; una experiencia &uacute;nica de networking</span>
+            </li>
+          </ul>
+        </div>
+
       </div>
     </div>
   </section>

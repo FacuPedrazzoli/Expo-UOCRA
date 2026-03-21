@@ -4026,3 +4026,81 @@ svg {
     text-align: center;
   }
 }
+
+/* ══════════════════════════════════════════════════════════════════
+   BIENVENIDA UNIFICADA — Layout dos columnas
+   ══════════════════════════════════════════════════════════════════ */
+
+.bienvenida-dos-columnas {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 0 3rem;
+  align-items: start;
+  position: relative;
+}
+
+.bienvenida-col-narrativa {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.bienvenida-col-beneficios {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.bienvenida-subtitulo {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 1.15rem;
+  color: var(--color-primary);
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin: 0;
+}
+
+.bienvenida-subtitulo i {
+  font-size: 1rem;
+  color: var(--color-accent);
+}
+
+/* Separador vertical entre columnas */
+.bienvenida-separador-vertical {
+  width: 1px;
+  align-self: stretch;
+  background: linear-gradient(
+    180deg,
+    transparent,
+    rgba(86, 188, 184, 0.4) 20%,
+    rgba(86, 188, 184, 0.4) 80%,
+    transparent
+  );
+  margin-top: 0.5rem;
+}
+
+/* Responsive — mobile */
+@media (max-width: 767px) {
+  .bienvenida-dos-columnas {
+    grid-template-columns: 1fr;
+    gap: 2rem 0;
+  }
+
+  .bienvenida-separador-vertical {
+    display: none;
+  }
+
+  .bienvenida-col-narrativa,
+  .bienvenida-col-beneficios {
+    gap: 1rem;
+  }
+}
+
+/* Responsive — tablet */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .bienvenida-dos-columnas {
+    grid-template-columns: 1fr auto 1fr;
+    gap: 0 2rem;
+  }
+}
