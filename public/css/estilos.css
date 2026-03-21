@@ -3230,6 +3230,17 @@ header {
   vertical-align: super;
 }
 
+/* Agregar + usando CSS para que sobreviva a la animación JS */
+.stat-number[data-target="30"]::after,
+.stat-number[data-target="20"]::after,
+.stat-number[data-target="3500"]::after {
+  content: '+';
+  color: #a8dedd;
+  font-size: 0.7em;
+  vertical-align: super;
+  margin-left: 2px;
+}
+
 /* ══════════════════════════════════════════════════════════════════
    3. PARTICIPAR
    ══════════════════════════════════════════════════════════════════ */
