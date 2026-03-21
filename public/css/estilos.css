@@ -4106,15 +4106,16 @@ svg {
 }
 
 /* ══════════════════════════════════════════════════════════════════
-   WAVES — Sistema de transición entre secciones
+   WAVES — Sistema de transición entre secciones (CORREGIDO)
    ══════════════════════════════════════════════════════════════════ */
 
 .section-wave {
   position: relative;
-  height: 100px;
+  height: 120px;
   overflow: hidden;
   line-height: 0;
   display: block;
+  z-index: 1;
 }
 
 .section-wave svg {
@@ -4126,23 +4127,31 @@ svg {
   display: block;
 }
 
+/*
+  CONVENCIÓN DE PATHS:
+  - section-wave-down: el path tiene forma CÓNCAVA (U). 
+    Con rotate(180deg) el SVG se voltea y la curva queda cóncava hacia abajo,
+    lo que visualmente "mordisquea" la sección anterior y deja ver la siguiente.
+  - section-wave-up: el path tiene forma CONVEXA (∩).
+    Sin rotación, la curva sube en el centro.
+*/
 .section-wave-down svg {
-  transform: rotate(0deg);
+  transform: rotate(180deg);
 }
 
 .section-wave-up svg {
-  transform: rotate(180deg);
+  transform: rotate(0deg);
 }
 
 @media (max-width: 767px) {
   .section-wave {
-    height: 60px;
+    height: 70px;
   }
 }
 
 @media (max-width: 374px) {
   .section-wave {
-    height: 40px;
+    height: 50px;
   }
 }
 
@@ -4150,20 +4159,23 @@ svg {
 .hero {
   padding-bottom: 0;
   margin-bottom: 0;
+  border-bottom: 3px solid #1a1a2e;
 }
 
 .stats-section {
   margin-top: 0;
   padding-top: 4rem;
+  border-top: none;
 }
 
-/* ── Fusión charlas → galeria (claro a blanco) ──────────────────── */
+/* ── Fusión charlas → galería (claro a claro, gradiente suave) ──── */
 .charlas-section {
-  padding-bottom: 0;
+  padding-bottom: 3rem;
 }
 
 .galeria-section {
-  padding-top: 4rem;
+  background: linear-gradient(180deg, #f0f8fa 0%, #ffffff 30%);
+  padding-top: 3rem;
 }
 
 /* ── Fusión competiciones → inscripcion (claro a claro) ────────── */
