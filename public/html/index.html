@@ -37,11 +37,11 @@
     <div class="nav-container">
       <a href="#hero" class="nav-link"><i class="fas fa-home"></i> Inicio</a>
       <a href="#bienvenida" class="nav-link"><i class="fas fa-info-circle"></i> Bienvenida</a>
-      <a href="#charlas" class="nav-link"><i class="fas fa-chalkboard-teacher"></i> Charlas</a>
-      <a href="#inscripcion" class="nav-link"><i class="fas fa-clipboard-list"></i> Inscripción</a>
       <a href="#empresas" class="nav-link"><i class="fas fa-building"></i> Empresas</a>
+      <a href="#charlas" class="nav-link"><i class="fas fa-chalkboard-teacher"></i> Charlas</a>
       <a href="#muestras" class="nav-link"><i class="fas fa-map-marker-alt"></i> Muestras</a>
       <a href="#competiciones" class="nav-link"><i class="fas fa-trophy"></i> Competiciones</a>
+      <a href="#inscripcion" class="nav-link"><i class="fas fa-clipboard-list"></i> Inscripción</a>
     </div>
     <div class="menu-toggle" id="toggle-menu" aria-label="Abrir menú de navegación" role="button" tabindex="0">
       <i class="fas fa-bars"></i>
@@ -61,12 +61,10 @@
       <div class="hero-info">
         <div class="hero-info-item">
           <i class="fas fa-calendar-alt"></i>
-          <!-- PLACEHOLDER: Reemplazar con la fecha real del evento -->
           <span>2 de Julio de 2026</span>
         </div>
         <div class="hero-info-item">
           <i class="fas fa-map-marker-alt"></i>
-          <!-- PLACEHOLDER: Reemplazar con el lugar real del evento -->
           <span>CFP N°3 UOCRA, Buenos Aires</span>
         </div>
       </div>
@@ -76,13 +74,70 @@
         </a>
       </div>
     </div>
-    <div class="hero-scroll-indicator">
-      <span class="scroll-texto">SCROLLEÁ</span>
-      <i class="fas fa-chevron-down"></i>
+  </section>
+
+  <!-- Separador wave: Hero (oscuro) -> Bienvenida (claro) -->
+  <div class="section-wave section-wave-down">
+    <svg viewBox="0 0 1440 120" preserveAspectRatio="none">
+      <path fill="#f0f8fa" d="M0,64 C480,150 960,-20 1440,64 L1440,120 L0,120 Z"></path>
+    </svg>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════════════
+       2. BIENVENIDA
+       ══════════════════════════════════════════════════════════════════ -->
+  <section id="bienvenida" class="bienvenida-section section-animated">
+    <div class="bienvenida-container">
+      <div class="bienvenida-card">
+        <span class="bienvenida-badge">EXPO FORMACIÓN 2026</span>
+        <div class="bienvenida-accent"></div>
+        <h2>Bienvenido a Expo Formación</h2>
+        <p class="bienvenida-texto">
+          La Expo Formación es el punto de encuentro entre quienes construyen el presente y quienes formarán el futuro del sector. Un espacio donde el conocimiento, las herramientas y las oportunidades se unen en un solo lugar.
+        </p>
+        <div class="bienvenida-cta">
+          <a href="#inscripcion" class="btn-inscribirme-destacado">
+            <i class="fas fa-sign-in-alt"></i> Inscribirme Ahora
+          </a>
+        </div>
+        <div class="features-container">
+          <h3>¿Qu&eacute; encontrar&aacute;s?</h3>
+          <ul class="features-list">
+            <li>
+              <i class="fas fa-calendar-alt"></i>
+              <div>
+                <strong>Charlas</strong>
+                <p>Programación en formato calendario, con horarios, aula, inscriptos y estado din&aacute;mico.</p>
+              </div>
+            </li>
+            <li>
+              <i class="fas fa-industry"></i>
+              <div>
+                <strong>Empresas Participantes</strong>
+                <p>Información de empresas organizadas por categor&iacute;as (Construcción, Sanitarias, Gas...).</p>
+              </div>
+            </li>
+            <li>
+              <i class="fas fa-user-plus"></i>
+              <div>
+                <strong>Inscripción</strong>
+                <p>Acceso a la plataforma y descarga de la oferta del cuatrimestre.</p>
+              </div>
+            </li>
+            <li>
+              <i class="fas fa-map"></i>
+              <div>
+                <strong>Muestras Abiertas</strong>
+                <p>Ubicación y stands de las empresas participantes.</p>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
     </div>
   </section>
 
-  <!-- Separador wave -->
+  <!-- Separador wave: Bienvenida (claro) -> Stats (oscuro) -->
   <div class="section-wave section-wave-down">
     <svg viewBox="0 0 1440 120" preserveAspectRatio="none">
       <path fill="#1a1a2e" d="M0,64 C480,150 960,-20 1440,64 L1440,120 L0,120 Z"></path>
@@ -90,7 +145,7 @@
   </div>
 
   <!-- ══════════════════════════════════════════════════════════════════
-       2. CONTADORES ANIMADOS — "Expo en Números"
+       3. CONTADORES ANIMADOS — "Expo en Números"
        ══════════════════════════════════════════════════════════════════ -->
   <section id="stats" class="stats-section section-animated">
     <div class="stats-container">
@@ -100,7 +155,6 @@
           <i class="fas fa-building stat-icon"></i>
           <div class="stat-number" data-target="30">0</div>
           <div class="stat-label">
-            <!-- PLACEHOLDER: Reemplazar el número con la cantidad real de empresas -->
             Empresas del sector
           </div>
         </div>
@@ -108,7 +162,6 @@
           <i class="fas fa-chalkboard-teacher stat-icon"></i>
           <div class="stat-number" data-target="20">0</div>
           <div class="stat-label">
-            <!-- PLACEHOLDER: Reemplazar el número con la cantidad real de charlas -->
             Charlas técnicas
           </div>
         </div>
@@ -121,7 +174,6 @@
           <i class="fas fa-users stat-icon"></i>
           <div class="stat-number" data-target="3500">0</div>
           <div class="stat-label">
-            <!-- PLACEHOLDER: Reemplazar con el número real de visitantes -->
             Visitantes
           </div>
         </div>
@@ -129,7 +181,7 @@
     </div>
   </section>
 
-  <!-- Separador wave -->
+  <!-- Separador wave: Stats (oscuro) -> Participar (claro) -->
   <div class="section-wave section-wave-up">
     <svg viewBox="0 0 1440 120" preserveAspectRatio="none">
       <path fill="#1a1a2e" d="M0,64 C480,150 960,-20 1440,64 L1440,0 L0,0 Z"></path>
@@ -137,7 +189,7 @@
   </div>
 
   <!-- ══════════════════════════════════════════════════════════════════
-       3. SECCIÓN "¿POR QUÉ PARTICIPAR?"
+       4. SECCIÓN "¿POR QUÉ PARTICIPAR?"
        ══════════════════════════════════════════════════════════════════ -->
   <section id="participar" class="participar-section section-animated">
     <div class="participar-container">
@@ -183,15 +235,15 @@
     </div>
   </section>
 
-  <!-- Separador wave -->
+  <!-- Separador wave: Participar (claro) -> Galería (claro/white) -->
   <div class="section-wave section-wave-down">
     <svg viewBox="0 0 1440 120" preserveAspectRatio="none">
-      <path fill="#f0f8fa" d="M0,64 C480,150 960,-20 1440,64 L1440,120 L0,120 Z"></path>
+      <path fill="#ffffff" d="M0,64 C480,150 960,-20 1440,64 L1440,120 L0,120 Z"></path>
     </svg>
   </div>
 
   <!-- ══════════════════════════════════════════════════════════════════
-       4. GALERÍA DE FOTOS + VIDEO — "Ediciones Anteriores"
+       5. GALERÍA DE FOTOS + VIDEO — "Ediciones Anteriores"
        ══════════════════════════════════════════════════════════════════ -->
   <section id="galeria" class="galeria-section section-animated">
     <div class="galeria-container">
@@ -215,7 +267,6 @@
       <!-- Grid de fotos -->
       <div class="fotos-grid">
         <div class="foto-item">
-          <!-- PLACEHOLDER: Reemplazar este div por <img src="ruta-de-tu-foto.jpg" alt="Foto Expo Formación"> cuando tengas las imágenes reales -->
           <div class="foto-placeholder">
             <span class="foto-num">01</span>
             <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
@@ -223,7 +274,6 @@
           </div>
         </div>
         <div class="foto-item">
-          <!-- PLACEHOLDER: Reemplazar este div por <img src="ruta-de-tu-foto.jpg" alt="Foto Expo Formación"> cuando tengas las imágenes reales -->
           <div class="foto-placeholder">
             <span class="foto-num">02</span>
             <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
@@ -231,7 +281,6 @@
           </div>
         </div>
         <div class="foto-item">
-          <!-- PLACEHOLDER: Reemplazar este div por <img src="ruta-de-tu-foto.jpg" alt="Foto Expo Formación"> cuando tengas las imágenes reales -->
           <div class="foto-placeholder">
             <span class="foto-num">03</span>
             <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
@@ -239,7 +288,6 @@
           </div>
         </div>
         <div class="foto-item">
-          <!-- PLACEHOLDER: Reemplazar este div por <img src="ruta-de-tu-foto.jpg" alt="Foto Expo Formación"> cuando tengas las imágenes reales -->
           <div class="foto-placeholder">
             <span class="foto-num">04</span>
             <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
@@ -247,7 +295,6 @@
           </div>
         </div>
         <div class="foto-item">
-          <!-- PLACEHOLDER: Reemplazar este div por <img src="ruta-de-tu-foto.jpg" alt="Foto Expo Formación"> cuando tengas las imágenes reales -->
           <div class="foto-placeholder">
             <span class="foto-num">05</span>
             <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
@@ -255,7 +302,6 @@
           </div>
         </div>
         <div class="foto-item">
-          <!-- PLACEHOLDER: Reemplazar este div por <img src="ruta-de-tu-foto.jpg" alt="Foto Expo Formación"> cuando tengas las imágenes reales -->
           <div class="foto-placeholder">
             <span class="foto-num">06</span>
             <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
@@ -266,71 +312,37 @@
     </div>
   </section>
 
-  <!-- Separador wave -->
+  <!-- Separador wave: Galería (white) -> Empresas (oscuro) -->
   <div class="section-wave section-wave-up">
     <svg viewBox="0 0 1440 120" preserveAspectRatio="none">
-      <path fill="#f0f8fa" d="M0,64 C480,150 960,-20 1440,64 L1440,0 L0,0 Z"></path>
+      <path fill="#ffffff" d="M0,64 C480,150 960,-20 1440,64 L1440,0 L0,0 Z"></path>
     </svg>
   </div>
 
   <!-- ══════════════════════════════════════════════════════════════════
-       5. BIENVENIDA
+       6. EMPRESAS PARTICIPANTES
        ══════════════════════════════════════════════════════════════════ -->
-  <section id="bienvenida" class="bienvenida-section section-animated">
-    <div class="bienvenida-container">
-      <div class="bienvenida-card">
-        <span class="bienvenida-badge">EXPO FORMACIÓN 2026</span>
-        <div class="bienvenida-accent"></div>
-        <h2>Bienvenido a Expo Formación</h2>
-        <p class="bienvenida-texto">
-          La Expo Formación surgió de la iniciativa de unir a empresas líderes y trabajadores en el sector para crear un
-          espacio de diálogo, innovación y capacitación.
-          Inspirados por la necesidad de transformar el mercado laboral y promover el intercambio de conocimientos.
-        </p>
-        <div class="bienvenida-cta">
-          <a href="#inscripcion" class="btn-inscribirme-destacado">
-            <i class="fas fa-sign-in-alt"></i> Inscribirme Ahora
-          </a>
-        </div>
-        <div class="features-container">
-          <h3>¿Qu&eacute; encontrar&aacute;s?</h3>
-          <ul class="features-list">
-            <li>
-              <i class="fas fa-calendar-alt"></i>
-              <div>
-                <strong>Charlas</strong>
-                <p>Programación en formato calendario, con horarios, aula, inscriptos y estado din&aacute;mico.</p>
-              </div>
-            </li>
-            <li>
-              <i class="fas fa-industry"></i>
-              <div>
-                <strong>Empresas Participantes</strong>
-                <p>Información de empresas organizadas por categor&iacute;as (Construcción, Sanitarias, Gas...).</p>
-              </div>
-            </li>
-            <li>
-              <i class="fas fa-user-plus"></i>
-              <div>
-                <strong>Inscripción</strong>
-                <p>Acceso a la plataforma y descarga de la oferta del cuatrimestre.</p>
-              </div>
-            </li>
-            <li>
-              <i class="fas fa-map"></i>
-              <div>
-                <strong>Muestras Abiertas</strong>
-                <p>Ubicación y stands de las empresas participantes.</p>
-              </div>
-            </li>
-          </ul>
-        </div>
+  <section id="empresas" class="empresas-section-nueva">
+    <div class="empresas-section-inner">
+      <div class="empresas-titulo-bloque">
+        <p class="empresas-antetitulo">CONOCÉ A LAS</p>
+        <h2 class="empresas-titulo-principal">EMPRESAS PARTICIPANTES 2026</h2>
+        <div class="empresas-titulo-linea"></div>
+      </div>
+      <div id="empresas-lista" class="empresas-logos-wrapper">
       </div>
     </div>
   </section>
 
+  <!-- Separador wave: Empresas (oscuro) -> Charlas (claro) -->
+  <div class="section-wave section-wave-down">
+    <svg viewBox="0 0 1440 120" preserveAspectRatio="none">
+      <path fill="#f0f8fa" d="M0,64 C480,150 960,-20 1440,64 L1440,120 L0,120 Z"></path>
+    </svg>
+  </div>
+
   <!-- ══════════════════════════════════════════════════════════════════
-       6. CHARLAS
+       7. CHARLAS
        ══════════════════════════════════════════════════════════════════ -->
   <section id="charlas" class="charlas-section section-animated">
     <div class="section-container">
@@ -346,12 +358,67 @@
       </div>
       <p class="charlas-nota" id="charlas-nota">
         <i class="fas fa-info-circle"></i>
-        Los cupos son limitados. Inscribite para reservar tu lugar.
+        Los cupos son limitados y se asignan por orden de inscripción. Asegurate el tuyo.
       </p>
     </div>
   </section>
 
-  <!-- Separador wave -->
+  <!-- Separador wave: Charlas (claro) -> Muestras (oscuro) -->
+  <div class="section-wave section-wave-down">
+    <svg viewBox="0 0 1440 120" preserveAspectRatio="none">
+      <path fill="#1a1a2e" d="M0,64 C480,150 960,-20 1440,64 L1440,120 L0,120 Z"></path>
+    </svg>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════════════
+       8. MUESTRAS ABIERTAS
+       ══════════════════════════════════════════════════════════════════ -->
+  <section id="muestras" class="muestras-section section-animated">
+    <div class="section-container">
+      <div class="section-header section-header-light">
+        <p class="section-antetitulo claro">PLANO DEL EVENTO</p>
+        <h2>Muestras Abiertas</h2>
+        <div class="section-divider section-divider-light"></div>
+      </div>
+      <p class="section-intro-light">Consulta los stands y ubicaciones de los rubros participantes.</p>
+
+      <div id="stands-container" class="stands-grid">
+      </div>
+    </div>
+  </section>
+
+  <!-- Separador wave: Muestras (oscuro) -> Competiciones (claro) -->
+  <div class="section-wave section-wave-up">
+    <svg viewBox="0 0 1440 120" preserveAspectRatio="none">
+      <path fill="#1a1a2e" d="M0,64 C480,150 960,-20 1440,64 L1440,0 L0,0 Z"></path>
+    </svg>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════════════
+       9. COMPETICIONES
+       ══════════════════════════════════════════════════════════════════ -->
+  <section id="competiciones" class="competiciones-section section-animated">
+    <div class="section-container">
+      <div class="section-header">
+        <p class="section-antetitulo">DEMOSTRÁ TU HABILIDAD</p>
+        <h2>Competiciones</h2>
+        <div class="section-divider"></div>
+      </div>
+      <p>Conoce las competiciones que se llevar&aacute;n a cabo durante el evento y sus horarios:</p>
+      
+      <div class="categorias-buttons">
+        <button class="btn-categoria active" data-categoria="todas" data-competicion="todas" aria-label="Mostrar todas las competiciones">Todas</button>
+        <button class="btn-categoria" data-categoria="construccion" data-competicion="construccion" aria-label="Mostrar competiciones de construcci&oacute;n">Construcci&oacute;n</button>
+        <button class="btn-categoria" data-categoria="electricidad" data-competicion="electricidad" aria-label="Mostrar competiciones de electricidad">Electricidad</button>
+        <button class="btn-categoria" data-categoria="sanitarias" data-competicion="sanitarias" aria-label="Mostrar competición de sanitarias">Sanitarias</button>
+      </div>
+      
+      <div id="competiciones-lista" class="competiciones-grid">
+      </div>
+    </div>
+  </section>
+
+  <!-- Separador wave: Competiciones (claro) -> Inscripción (claro) -->
   <div class="section-wave section-wave-down">
     <svg viewBox="0 0 1440 120" preserveAspectRatio="none">
       <path fill="#ffffff" d="M0,64 C480,150 960,-20 1440,64 L1440,120 L0,120 Z"></path>
@@ -359,7 +426,7 @@
   </div>
 
   <!-- ══════════════════════════════════════════════════════════════════
-       7. INSCRIPCIÓN
+       10. INSCRIPCIÓN
        ══════════════════════════════════════════════════════════════════ -->
   <section id="inscripcion" class="inscripcion-section section-animated">
     <div class="section-container">
@@ -375,7 +442,6 @@
           <h3>Formulario de Preinscripci&oacute;n</h3>
         </div>
         <form id="inscripcionForm" novalidate>
-          <!-- Datos personales -->
           <div class="form-row">
             <div class="form-group">
               <label for="nombre">Nombre <span class="required">*</span></label>
@@ -407,13 +473,11 @@
             </div>
           </div>
 
-          <!-- Selecci&oacute;n de charlas (multi-select con checkboxes) -->
           <div class="form-row-full">
             <div class="form-group">
               <label>Charlas <span class="required">*</span></label>
               <p class="form-hint">Pod&eacute;s seleccionar m&aacute;s de una charla.</p>
 
-              <!-- Resumen de charlas seleccionadas -->
               <div id="charlas-seleccionadas" class="charlas-seleccionadas-container" aria-live="polite">
                 <span class="charlas-seleccionadas-texto">Charlas seleccionadas:</span>
                 <div id="charlas-badges" class="charlas-badges">
@@ -421,14 +485,12 @@
                 </div>
               </div>
 
-              <!-- Lista de charlas con checkboxes -->
               <div id="charlas-container" class="charlas-checkbox-container" aria-label="Lista de charlas disponibles">
                 <div class="charlas-loading">
                   <i class="fas fa-spinner fa-spin"></i> Cargando charlas...
                 </div>
               </div>
 
-              <!-- Opci&oacute;n especial: no asistir a ninguna -->
               <div class="charla-especial">
                 <label class="checkbox-label">
                   <input type="checkbox" id="no-charla" name="charlas" value="no-charla">
@@ -458,96 +520,11 @@
     </div>
   </section>
 
-  <!-- Separador wave -->
-  <div class="section-wave section-wave-up">
-    <svg viewBox="0 0 1440 120" preserveAspectRatio="none">
-      <path fill="#f0f8fa" d="M0,64 C480,150 960,-20 1440,64 L1440,0 L0,0 Z"></path>
-    </svg>
-  </div>
-
-  <!-- ══════════════════════════════════════════════════════════════════
-        8. EMPRESAS PARTICIPANTES
-        ══════════════════════════════════════════════════════════════════ -->
-  <section id="empresas" class="empresas-section-nueva">
-    <div class="empresas-section-inner">
-
-      <!-- Título impactante estilo sponsors -->
-      <div class="empresas-titulo-bloque">
-        <p class="empresas-antetitulo">CONOCÉ A LAS</p>
-        <h2 class="empresas-titulo-principal">EMPRESAS PARTICIPANTES 2026</h2>
-        <div class="empresas-titulo-linea"></div>
-      </div>
-
-      <!-- Contenedor de logos — se rellena desde app.js -->
-      <div id="empresas-lista" class="empresas-logos-wrapper">
-        <!-- renderizado dinámico -->
-      </div>
-
-    </div>
-  </section>
-
-  <!-- Separador wave -->
-  <div class="section-wave section-wave-down">
-    <svg viewBox="0 0 1440 120" preserveAspectRatio="none">
-      <path fill="#1a1a2e" d="M0,64 C480,150 960,-20 1440,64 L1440,120 L0,120 Z"></path>
-    </svg>
-  </div>
-
-  <!-- ══════════════════════════════════════════════════════════════════
-       9. MUESTRAS ABIERTAS
-       ══════════════════════════════════════════════════════════════════ -->
-  <section id="muestras" class="muestras-section section-animated">
-    <div class="section-container">
-      <div class="section-header section-header-light">
-        <p class="section-antetitulo claro">PLANO DEL EVENTO</p>
-        <h2>Muestras Abiertas</h2>
-        <div class="section-divider section-divider-light"></div>
-      </div>
-      <p class="section-intro-light">Consulta los stands y ubicaciones de los rubros participantes.</p>
-
-      <div id="stands-container" class="stands-grid">
-        <!-- Las muestras se cargar&aacute;n din&aacute;micamente desde el controlador -->
-      </div>
-    </div>
-  </section>
-
-  <!-- Separador wave -->
-  <div class="section-wave section-wave-up">
-    <svg viewBox="0 0 1440 120" preserveAspectRatio="none">
-      <path fill="#1a1a2e" d="M0,64 C480,150 960,-20 1440,64 L1440,0 L0,0 Z"></path>
-    </svg>
-  </div>
-
-  <!-- ══════════════════════════════════════════════════════════════════
-       10. COMPETICIONES
-       ══════════════════════════════════════════════════════════════════ -->
-  <section id="competiciones" class="competiciones-section section-animated">
-    <div class="section-container">
-      <div class="section-header">
-        <p class="section-antetitulo">DEMOSTRÁ TU HABILIDAD</p>
-        <h2>Competiciones</h2>
-        <div class="section-divider"></div>
-      </div>
-      <p>Conoce las competiciones que se llevar&aacute;n a cabo durante el evento y sus horarios:</p>
-      
-      <div class="categorias-buttons">
-        <button class="btn-categoria active" data-categoria="todas" data-competicion="todas" aria-label="Mostrar todas las competiciones">Todas</button>
-        <button class="btn-categoria" data-categoria="construccion" data-competicion="construccion" aria-label="Mostrar competiciones de construcci&oacute;n">Construcci&oacute;n</button>
-        <button class="btn-categoria" data-categoria="electricidad" data-competicion="electricidad" aria-label="Mostrar competiciones de electricidad">Electricidad</button>
-        <button class="btn-categoria" data-categoria="sanitarias" data-competicion="sanitarias" aria-label="Mostrar competición de sanitarias">Sanitarias</button>
-      </div>
-      
-      <div id="competiciones-lista" class="competiciones-grid">
-        <!-- Las competiciones se cargar&aacute;n din&aacute;micamente -->
-      </div>
-    </div>
-  </section>
-
   <!-- ══════════════════════════════════════════════════════════════════
        11. CTA STICKY DE INSCRIPCIÓN
        ══════════════════════════════════════════════════════════════════ -->
   <div id="cta-sticky" class="cta-sticky">
-    <span class="cta-sticky-text">&iquest;Ya te inscribiste a Expo Formación?</span>
+    <span class="cta-sticky-text">Los cupos se están llenando. ¡Inscribite ahora!</span>
     <a href="#inscripcion" class="cta-sticky-btn">Inscribirme</a>
     <button id="cta-sticky-close" class="cta-sticky-close" aria-label="Cerrar">&times;</button>
   </div>
@@ -568,11 +545,11 @@
         <ul class="footer-links">
           <li><a href="#hero">Inicio</a></li>
           <li><a href="#bienvenida">Bienvenida</a></li>
-          <li><a href="#charlas">Charlas</a></li>
-          <li><a href="#inscripcion">Inscripci&oacute;n</a></li>
           <li><a href="#empresas">Empresas</a></li>
+          <li><a href="#charlas">Charlas</a></li>
           <li><a href="#muestras">Muestras</a></li>
           <li><a href="#competiciones">Competiciones</a></li>
+          <li><a href="#inscripcion">Inscripci&oacute;n</a></li>
         </ul>
       </div>
       <div class="footer-column">
