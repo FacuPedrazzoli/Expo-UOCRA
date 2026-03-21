@@ -1,8 +1,10 @@
 /**
  * Expo Formación — Controlador principal del frontend (unificado)
- *
+ * 
  * Fuente de verdad para charlas: /api/inscripcion/charlas (BD)
  * Fuente de verdad para empresas/muestras/competiciones: data.json (estático)
+ * 
+ * Página continua con scroll - sin sistema de secciones
  */
 
 import notifications from './utils/notifications.js';
@@ -57,59 +59,6 @@ async function cargarCharlas() {
     }
 }
 
-// ── Secciones ──────────────────────────────────────────────────────────────
-const secciones = {
-    activa: 'inicio',
-    cargadas: new Set(['inicio']),
-
-    async ir(id) {
-        if (this.activa === id) return;
-
-        $(`#${this.activa}`)?.classList.remove('activa');
-        const el = $(`#${id}`);
-        if (!el) return;
-
-        el.classList.add('activa');
-        this.activa = id;
-
-        // Cerrar menú móvil
-        $('#main-nav')?.classList.remove('active');
-        $('#toggle-menu')?.setAttribute('aria-expanded', 'false');
-
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-
-        if (!this.cargadas.has(id)) {
-            await this.cargarSeccion(id);
-            this.cargadas.add(id);
-        } else {
-            if (id === 'charlas')      renderTablaCharlas();
-            if (id === 'inscripcion')  renderCheckboxesCharlas();
-        }
-    },
-
-    async cargarSeccion(id) {
-        switch (id) {
-            case 'charlas':
-                await cargarCharlas();
-                renderTablaCharlas();
-                break;
-            case 'inscripcion':
-                await Promise.all([cargarCharlas(), cargarComoTeEnteraste()]);
-                renderCheckboxesCharlas();
-                break;
-            case 'empresas':
-                renderEmpresas('todas');
-                break;
-            case 'muestras':
-                renderMuestras();
-                break;
-            case 'competiciones':
-                renderCompeticiones('todas');
-                break;
-        }
-    },
-};
-
 // ── Tabla de charlas (sección "Charlas") ───────────────────────────────────
 function renderTablaCharlas() {
     const container = $('#charlas-tabla-container') || $('#charlas .table-responsive');
@@ -120,6 +69,7 @@ function renderTablaCharlas() {
         return;
     }
 
+    const currentHour = new Date().getHours();
     const tbody = document.createDocumentFragment();
     state.charlas.forEach(c => {
         const tr = document.createElement('tr');
@@ -136,8 +86,14 @@ function renderTablaCharlas() {
             badgeText  = `${c.cupo_disponible} lugares`;
         }
 
+        const horarioParts = c.horario.split(':');
+        const horaCharla = parseInt(horarioParts[0], 10);
+        const badgeHoy = (horaCharla >= currentHour && horaCharla < currentHour + 2) 
+            ? '<span class="charla-badge-hoy">PRÓXIMO</span>' 
+            : '';
+
         tr.innerHTML = `
-            <td>${c.horario}</td>
+            <td>${c.horario} ${badgeHoy}</td>
             <td><strong>${c.titulo}</strong></td>
             <td>${c.empresa}</td>
             <td>${c.ubicacion}</td>
@@ -382,12 +338,10 @@ async function enviarInscripcion() {
             numCharlas > 1
                 ? `¡Te inscribiste a ${numCharlas} charlas exitosamente!`
                 : '¡Tu inscripción fue registrada correctamente!',
-            { title: '¡Listo!', showConfirmButton: true, backdrop: true, callback: () => secciones.ir('inicio') }
+            { title: '¡Listo!', showConfirmButton: true, backdrop: true }
         );
 
         limpiarFormulario();
-        secciones.cargadas.delete('charlas');
-        secciones.cargadas.delete('inscripcion');
         await cargarCharlas();
 
     } catch (err) {
@@ -437,14 +391,17 @@ async function fetchWithRetry(url, opts, retries = 2, timeout = 30000) {
     throw lastErr;
 }
 
-// ── Empresas ──────────────────────────────────────────────────────────────
+// ── Empresas ─────────────────────────────────────────────────────────────
 function renderEmpresas(categoria = 'todas') {
     $$('#empresas .btn-categoria[data-categoria]').forEach(btn => {
         btn.classList.toggle('active', btn.dataset.categoria === categoria);
     });
 
     const container = $('#empresas-lista');
-    if (!container) return;
+    if (!container) {
+        log('ERROR: No se encontró el contenedor de empresas');
+        return;
+    }
 
     let lista = [];
     if (categoria === 'todas') {
@@ -455,8 +412,10 @@ function renderEmpresas(categoria = 'todas') {
         lista = state.empresas[categoria] || [];
     }
 
+    log(`Renderizando ${lista.length} empresas para categoría: ${categoria}`);
+
     if (!lista.length) {
-        container.innerHTML = '<p style="grid-column:1/-1">No hay empresas en esta categoría.</p>';
+        container.innerHTML = '<p style="grid-column:1/-1; text-align:center; padding:2rem;">Cargando empresas...</p>';
         return;
     }
 
@@ -464,26 +423,41 @@ function renderEmpresas(categoria = 'todas') {
     lista.forEach(emp => frag.appendChild(crearTarjetaEmpresa(emp)));
     container.innerHTML = '';
     container.appendChild(frag);
+    log(`Empresas renderizadas: ${lista.length}`);
 }
 
 function crearTarjetaEmpresa(emp) {
     const card = document.createElement('div');
     card.className = 'empresa-card';
-
-    card.innerHTML = `
-        ${emp.logo ? `<img src="${emp.logo}" alt="Logo ${emp.nombre}" class="empresa-logo" loading="lazy" onerror="this.style.display='none'" />` : ''}
-        <p><strong>${emp.nombre}</strong></p>
-        <p>${emp.descripcion || ''}</p>
-        ${emp.url ? `<a href="${emp.url}" target="_blank" rel="noopener" class="btn-visitar" onclick="event.stopPropagation()">Visitar sitio web</a>` : ''}
-    `;
-
+    
+    // Solo mostrar el logo, sin texto ni botones
+    if (emp.logo) {
+        card.innerHTML = `<img src="${emp.logo}" alt="${emp.nombre}" class="empresa-logo" loading="lazy" onerror="this.style.display='none'; this.parentElement.innerHTML=getInitials('${emp.nombre.replace(/'/g, "\\'")}')" />`;
+    } else {
+        card.innerHTML = getInitials(emp.nombre);
+    }
+    
     if (emp.url) {
         card.style.cursor = 'pointer';
-        card.addEventListener('click', (e) => {
-            if (!e.target.classList.contains('btn-visitar')) window.open(emp.url, '_blank', 'noopener');
+        card.addEventListener('click', () => {
+            window.open(emp.url, '_blank', 'noopener');
         });
     }
+    
     return card;
+}
+
+function getInitials(nombre) {
+    const palabras = nombre.trim().split(' ');
+    let initials = '';
+    if (palabras.length >= 2) {
+        initials = palabras[0][0] + palabras[1][0];
+    } else if (palabras[0].length >= 2) {
+        initials = palabras[0][0] + palabras[0][1];
+    } else {
+        initials = palabras[0][0];
+    }
+    return `<span class="empresa-initials">${initials.toUpperCase()}</span>`;
 }
 
 // ── Muestras ──────────────────────────────────────────────────────────────
@@ -543,8 +517,17 @@ function renderCompeticiones(categoria = 'todas') {
 function crearTarjetaCompeticion(c) {
     const card = document.createElement('div');
     card.className = 'competicion-card';
+    
+    // Badge de categoría
+    let badgeColor = '#124565';
+    if (c.categoria === 'electricidad') badgeColor = '#e2c048';
+    if (c.categoria === 'sanitarias') badgeColor = '#25848d';
+    const badgeHtml = c.categoria 
+        ? `<span class="competicion-badge" style="background-color: ${badgeColor}">${c.categoria}</span>` 
+        : '';
+    
     card.innerHTML = `
-        ${c.imagen ? `<div class="competicion-imagen"><img src="${c.imagen}" alt="${c.titulo}" loading="lazy" onerror="this.parentElement.style.display='none'" /></div>` : ''}
+        ${c.imagen ? `<div class="competicion-imagen"><img src="${c.imagen}" alt="${c.titulo}" loading="lazy" onerror="this.parentElement.style.display='none'" />${badgeHtml}</div>` : badgeHtml}
         <div class="competicion-info">
             <h3>${c.titulo}</h3>
             <p class="competicion-descripcion">${c.descripcion || ''}</p>
@@ -559,20 +542,30 @@ function crearTarjetaCompeticion(c) {
 
 // ── Event listeners ──────────────────────────────────────────────────────
 function setupEventListeners() {
-    // Navegación por data-seccion
-    document.addEventListener('click', (e) => {
-        const btn = e.target.closest('[data-seccion]');
-        if (!btn) return;
-        e.preventDefault();
-        secciones.ir(btn.dataset.seccion);
-    });
-
     // Toggle menú móvil
     $('#toggle-menu')?.addEventListener('click', () => {
         const nav    = $('#main-nav');
         const toggle = $('#toggle-menu');
         const isOpen = nav.classList.toggle('active');
         toggle.setAttribute('aria-expanded', String(isOpen));
+    });
+
+    // Scroll suave para enlaces del nav
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function(e) {
+            const targetId = this.getAttribute('href');
+            if (targetId === '#') return;
+            
+            const target = document.querySelector(targetId);
+            if (target) {
+                e.preventDefault();
+                target.scrollIntoView({ behavior: 'smooth' });
+                
+                // Cerrar menú móvil
+                $('#main-nav')?.classList.remove('active');
+                $('#toggle-menu')?.setAttribute('aria-expanded', 'false');
+            }
+        });
     });
 
     // Filtro de empresas
@@ -589,11 +582,6 @@ function setupEventListeners() {
         const cat = btn.dataset.competicion || btn.dataset.categoria;
         if (cat) renderCompeticiones(cat);
     });
-
-    // Botón "Inscribirme" del inicio
-    $('#btn-inscribirme')?.addEventListener('click', () => {
-        secciones.ir('inscripcion');
-    });
 }
 
 // ── Bootstrap ──────────────────────────────────────────────────────────────
@@ -603,10 +591,26 @@ async function init() {
     setupEventListeners();
     setupFormulario();
 
-    // Cargar datos estáticos en segundo plano
-    cargarDatosEstaticos();
+    // Cargar TODOS los datos al inicio
+    await Promise.all([
+        cargarDatosEstaticos(),
+        cargarCharlas(),
+        cargarComoTeEnteraste()
+    ]);
 
-    log('App lista');
+    log('Datos cargados, renderizando...');
+    log('Empresas en state:', state.empresas);
+
+    // Renderizar todo
+    renderTablaCharlas();
+    renderCheckboxesCharlas();
+    renderEmpresas('todas');
+    renderMuestras();
+    renderCompeticiones('todas');
+
+    log('App lista - página continua cargada');
+
+    log('App lista - página continua cargada');
 }
 
 if (document.readyState === 'loading') {

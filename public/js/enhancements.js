@@ -1,6 +1,6 @@
 /**
  * Expo Formación — Mejoras visuales
- * Funcionalidades: Contadores animados, CTA sticky, Hero
+ * Funcionalidades: Contadores animados, CTA sticky, Nav sticky, Animaciones
  */
 
 (function() {
@@ -63,7 +63,6 @@
     const ctaSticky = document.getElementById('cta-sticky');
     const hero = document.getElementById('hero');
     const ctaClose = document.getElementById('cta-sticky-close');
-    const ctaBtn = document.getElementById('cta-sticky-btn');
 
     if (!ctaSticky || !hero) return;
 
@@ -91,47 +90,85 @@
         sessionStorage.setItem('cta_cerrado', 'true');
       });
     }
-
-    if (ctaBtn) {
-      ctaBtn.addEventListener('click', () => {
-        const inscripcion = document.getElementById('inscripcion');
-        if (inscripcion) {
-          inscripcion.scrollIntoView({ behavior: 'smooth' });
-        }
-      });
-    }
   }
 
   // ══════════════════════════════════════════════════════════════════
-  // BOTÓN HERO — Inscribirme Ahora
+  // NAV STICKY CON SCROLL SHADOW Y SECCIÓN ACTIVA
   // ══════════════════════════════════════════════════════════════════
-  function initHeroButton() {
-    const heroBtn = document.getElementById('btn-inscribirme-hero');
-    if (!heroBtn) return;
+  function initNavSticky() {
+    const nav = document.getElementById('main-nav');
+    if (!nav) return;
 
-    heroBtn.addEventListener('click', () => {
-      const inscripcion = document.getElementById('inscripcion');
-      if (inscripcion) {
-        inscripcion.scrollIntoView({ behavior: 'smooth' });
+    // Scroll shadow
+    window.addEventListener('scroll', () => {
+      if (window.scrollY > 50) {
+        nav.classList.add('scrolled');
+      } else {
+        nav.classList.remove('scrolled');
+      }
+    });
+
+    // Sección activa con IntersectionObserver
+    const sections = document.querySelectorAll('section[id]');
+    const navLinks = document.querySelectorAll('.nav-link');
+
+    const sectionObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const id = entry.target.id;
+          navLinks.forEach(link => {
+            link.classList.remove('nav-active');
+            if (link.getAttribute('href') === '#' + id) {
+              link.classList.add('nav-active');
+            }
+          });
+        }
+      });
+    }, { threshold: 0.3 });
+
+    sections.forEach(section => sectionObserver.observe(section));
+  }
+
+  // ══════════════════════════════════════════════════════════════════
+  // ANIMACIONES DE ENTRADA DE SECCIONES
+  // ══════════════════════════════════════════════════════════════════
+  function initSectionAnimations() {
+    const sections = document.querySelectorAll('.section-animated');
+    if (!sections.length) return;
+
+    const observerOptions = {
+      threshold: 0.1,
+      rootMargin: '0px 0px -50px 0px'
+    };
+
+    const animationObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          animationObserver.unobserve(entry.target);
+        }
+      });
+    }, observerOptions);
+
+    sections.forEach(section => {
+      // La sección empresas siempre visible
+      if (section.id !== 'empresas') {
+        animationObserver.observe(section);
+      } else {
+        section.classList.add('visible');
       }
     });
   }
 
   // ══════════════════════════════════════════════════════════════════
-  // NAVEGACIÓN DEL FOOTER — Scroll suave
+  // PARTICULAS CSS EN HERO
   // ══════════════════════════════════════════════════════════════════
-  function initFooterNav() {
-    const footerLinks = document.querySelectorAll('footer .footer-links a[data-seccion]');
-    footerLinks.forEach(link => {
-      link.addEventListener('click', (e) => {
-        e.preventDefault();
-        const seccion = link.dataset.seccion;
-        const target = document.getElementById(seccion);
-        if (target) {
-          target.scrollIntoView({ behavior: 'smooth' });
-        }
-      });
-    });
+  function initHeroParticles() {
+    const hero = document.getElementById('hero');
+    if (!hero) return;
+
+    // Agregar partículas como pseudo-elementos
+    hero.classList.add('hero-particles');
   }
 
   // ══════════════════════════════════════════════════════════════════
@@ -140,8 +177,9 @@
   function init() {
     initCounters();
     initCTASticky();
-    initHeroButton();
-    initFooterNav();
+    initNavSticky();
+    initSectionAnimations();
+    initHeroParticles();
   }
 
   if (document.readyState === 'loading') {

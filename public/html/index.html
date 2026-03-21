@@ -32,28 +32,19 @@
   <!-- Contenedor de notificaciones -->
   <div class="notification-container" id="notification-container"></div>
   
-  <!-- Encabezado con logo (clic para volver al Inicio) -->
-  <header>
-    <div class="header-container" data-seccion="inicio">
-      <img src="../img/logo-expo-formacion.png" alt="Logo Expo Formación" width="120" height="40" loading="eager">
-      <h1>Expo Formación</h1>
-    </div>
-
-    <!-- Menú -->
-    <div class="menu-toggle" id="toggle-menu" aria-label="Abrir menú de navegación" role="button" tabindex="0">
-      <i class="fas fa-bars"></i>
-    </div>
-  </header>
-
-  <!-- Menú de navegación -->
+  <!-- Navegación sticky -->
   <nav id="main-nav" aria-label="Navegación principal">
     <div class="nav-container">
-      <a data-seccion="inicio" role="button" tabindex="0"><i class="fas fa-home"></i> Inicio</a>
-      <a data-seccion="inscripcion" role="button" tabindex="0"><i class="fas fa-clipboard-list"></i> Inscripción</a>
-      <a data-seccion="charlas" role="button" tabindex="0"><i class="fas fa-chalkboard-teacher"></i> Charlas</a>
-      <a data-seccion="empresas" role="button" tabindex="0"><i class="fas fa-building"></i> Empresas</a>
-      <a data-seccion="muestras" role="button" tabindex="0"><i class="fas fa-map-marker-alt"></i> Muestras</a>
-      <a data-seccion="competiciones" role="button" tabindex="0"><i class="fas fa-trophy"></i> Competiciones</a>
+      <a href="#hero" class="nav-link"><i class="fas fa-home"></i> Inicio</a>
+      <a href="#bienvenida" class="nav-link"><i class="fas fa-info-circle"></i> Bienvenida</a>
+      <a href="#charlas" class="nav-link"><i class="fas fa-chalkboard-teacher"></i> Charlas</a>
+      <a href="#inscripcion" class="nav-link"><i class="fas fa-clipboard-list"></i> Inscripción</a>
+      <a href="#empresas" class="nav-link"><i class="fas fa-building"></i> Empresas</a>
+      <a href="#muestras" class="nav-link"><i class="fas fa-map-marker-alt"></i> Muestras</a>
+      <a href="#competiciones" class="nav-link"><i class="fas fa-trophy"></i> Competiciones</a>
+    </div>
+    <div class="menu-toggle" id="toggle-menu" aria-label="Abrir menú de navegación" role="button" tabindex="0">
+      <i class="fas fa-bars"></i>
     </div>
   </nav>
 
@@ -70,7 +61,7 @@
         <div class="hero-info-item">
           <i class="fas fa-calendar-alt"></i>
           <!-- PLACEHOLDER: Reemplazar con la fecha real del evento -->
-          <span>15 de Agosto de 2026</span>
+          <span>2 de Julio de 2026</span>
         </div>
         <div class="hero-info-item">
           <i class="fas fa-map-marker-alt"></i>
@@ -79,9 +70,9 @@
         </div>
       </div>
       <div class="hero-cta">
-        <button id="btn-inscribirme-hero" class="btn-inscribirme-hero">
+        <a href="#inscripcion" class="btn-inscribirme-hero">
           <i class="fas fa-sign-in-alt"></i> Inscribirme Ahora
-        </button>
+        </a>
       </div>
     </div>
     <div class="hero-scroll-indicator">
@@ -89,35 +80,42 @@
     </div>
   </section>
 
+  <!-- Separador wave -->
+  <div class="section-wave section-wave-down">
+    <svg viewBox="0 0 1440 120" preserveAspectRatio="none">
+      <path fill="#1a1a2e" d="M0,64 C480,150 960,-20 1440,64 L1440,120 L0,120 Z"></path>
+    </svg>
+  </div>
+
   <!-- ══════════════════════════════════════════════════════════════════
        2. CONTADORES ANIMADOS — "Expo en Números"
        ══════════════════════════════════════════════════════════════════ -->
-  <section id="stats" class="stats-section">
+  <section id="stats" class="stats-section section-animated">
     <div class="stats-container">
       <h2 class="stats-title">Expo en <span>Números</span></h2>
       <div class="stats-grid">
         <div class="stat-item">
-          <div class="stat-number" data-target="+30">0</div>
+          <div class="stat-number" data-target="30">0</div>
           <div class="stat-label">
             <!-- PLACEHOLDER: Reemplazar el número con la cantidad real de empresas -->
             Empresas del sector
           </div>
         </div>
         <div class="stat-item">
-          <div class="stat-number" data-target="+20">0</div>
+          <div class="stat-number" data-target="20">0</div>
           <div class="stat-label">
             <!-- PLACEHOLDER: Reemplazar el número con la cantidad real de charlas -->
-            Charlas tecnicas
+            Charlas técnicas
           </div>
         </div>
         <div class="stat-item">
-          <div class="stat-number" data-target="+50"><span class="stat-suffix"></span></div>
+          <div class="stat-number" data-target="50"><span class="stat-suffix"></span></div>
           <div class="stat-label">Stands</div>
         </div>
         <div class="stat-item">
-          <div class="stat-number" data-target="+3500">0</div>
+          <div class="stat-number" data-target="3500">0</div>
           <div class="stat-label">
-            <!-- PLACEHOLDER: Reemplazar con el número real de inscriptos -->
+            <!-- PLACEHOLDER: Reemplazar con el número real de visitantes -->
             Visitantes
           </div>
         </div>
@@ -125,10 +123,17 @@
     </div>
   </section>
 
+  <!-- Separador wave -->
+  <div class="section-wave section-wave-up">
+    <svg viewBox="0 0 1440 120" preserveAspectRatio="none">
+      <path fill="#1a1a2e" d="M0,64 C480,150 960,-20 1440,64 L1440,0 L0,0 Z"></path>
+    </svg>
+  </div>
+
   <!-- ══════════════════════════════════════════════════════════════════
        3. SECCIÓN "¿POR QUÉ PARTICIPAR?"
        ══════════════════════════════════════════════════════════════════ -->
-  <section id="participar" class="participar-section">
+  <section id="participar" class="participar-section section-animated">
     <div class="participar-container">
       <h2 class="participar-title">¿Por qué participar en Expo Formación?</h2>
       <div class="participar-grid">
@@ -147,23 +152,23 @@
           <ul class="beneficios-list">
             <li>
               <i class="fas fa-hard-hat"></i>
-              <span>Conocé las últimas tendencias del sector</span>
+              <span>Conoc&eacute; las &uacute;ltimas tendencias del sector</span>
             </li>
             <li>
               <i class="fas fa-handshake"></i>
-              <span>Conectá con empresas líderes</span>
+              <span>Conect&aacute; con empresas l&iacute;deres</span>
             </li>
             <li>
               <i class="fas fa-graduation-cap"></i>
-              <span>Accedé a charlas y capacitaciones gratuitas</span>
+              <span>Acced&eacute; a charlas y capacitaciones gratuitas</span>
             </li>
             <li>
               <i class="fas fa-briefcase"></i>
-              <span>Descubrí oportunidades laborales y educativas</span>
+              <span>Descubr&iacute; oportunidades laborales y educativas</span>
             </li>
             <li>
               <i class="fas fa-globe"></i>
-              <span>Viví una experiencia única de networking</span>
+              <span>Viv&iacute; una experiencia &uacute;nica de networking</span>
             </li>
           </ul>
         </div>
@@ -171,23 +176,27 @@
     </div>
   </section>
 
+  <!-- Separador wave -->
+  <div class="section-wave section-wave-down">
+    <svg viewBox="0 0 1440 120" preserveAspectRatio="none">
+      <path fill="#f0f8fa" d="M0,64 C480,150 960,-20 1440,64 L1440,120 L0,120 Z"></path>
+    </svg>
+  </div>
+
   <!-- ══════════════════════════════════════════════════════════════════
        4. GALERÍA DE FOTOS + VIDEO — "Ediciones Anteriores"
        ══════════════════════════════════════════════════════════════════ -->
-  <section id="galeria" class="galeria-section">
+  <section id="galeria" class="galeria-section section-animated">
     <div class="galeria-container">
       <div class="galeria-header">
-        <h2 class="galeria-title">Así fue la última edición</h2>
+        <h2 class="galeria-title">As&iacute; fue la &uacute;ltima edici&oacute;n</h2>
         <p class="galeria-subtitle">Mirá el video y las fotos de la edición anterior</p>
       </div>
       
       <!-- Video de YouTube -->
       <div class="video-wrapper">
-        <!-- PLACEHOLDER: Reemplazar VIDEO_ID con el ID del video de YouTube.
-             Para obtenerlo: entrá al video en YouTube → Compartir → Insertar →
-             copiá solo la parte después de "https://www.youtube.com/embed/" -->
         <iframe
-          src="https://www.youtube.com/embed/watch?v=sdoX3YvrbuA&t=7s"
+          src="https://www.youtube.com/embed/sdoX3YvrbuA"
           title="Video Expo Formación - Edición anterior"
           allowfullscreen
           loading="lazy">
@@ -242,74 +251,106 @@
     </div>
   </section>
 
-  <!-- Contenido Principal -->
-  <div class="main-content">
-    <!-- Sección Inicio -->
-    <section id="inicio" class="section activa">
-      <div class="section-header">
-        <h2>Bienvenido a Expo Formación</h2>
-      </div>
-      <div class="cta-container">
-        <p>¿Interesado en participar? ¡Inscríbete ahora!</p>
-        <button id="btn-inscribirme" class="btn-primary btn-highlighted" aria-label="Ir al formulario de inscripción">
-          <i class="fas fa-sign-in-alt"></i> Inscribirme Ahora
-        </button>
-      </div>
+  <!-- Separador wave -->
+  <div class="section-wave section-wave-up">
+    <svg viewBox="0 0 1440 120" preserveAspectRatio="none">
+      <path fill="#f0f8fa" d="M0,64 C480,150 960,-20 1440,64 L1440,0 L0,0 Z"></path>
+    </svg>
+  </div>
 
-      <div class="card">
-        <p>
+  <!-- ══════════════════════════════════════════════════════════════════
+       5. BIENVENIDA
+       ══════════════════════════════════════════════════════════════════ -->
+  <section id="bienvenida" class="bienvenida-section section-animated">
+    <div class="bienvenida-container">
+      <div class="bienvenida-card">
+        <div class="bienvenida-accent"></div>
+        <h2>Bienvenido a Expo Formación</h2>
+        <p class="bienvenida-texto">
           La Expo Formación surgió de la iniciativa de unir a empresas líderes y trabajadores en el sector para crear un
           espacio de diálogo, innovación y capacitación.
           Inspirados por la necesidad de transformar el mercado laboral y promover el intercambio de conocimientos.
         </p>
+        <div class="bienvenida-cta">
+          <a href="#inscripcion" class="btn-inscribirme-destacado">
+            <i class="fas fa-sign-in-alt"></i> Inscribirme Ahora
+          </a>
+        </div>
+        <div class="features-container">
+          <h3>¿Qu&eacute; encontrar&aacute;s?</h3>
+          <ul class="features-list">
+            <li>
+              <i class="fas fa-calendar-alt"></i>
+              <div>
+                <strong>Charlas</strong>
+                <p>Programación en formato calendario, con horarios, aula, inscriptos y estado din&aacute;mico.</p>
+              </div>
+            </li>
+            <li>
+              <i class="fas fa-industry"></i>
+              <div>
+                <strong>Empresas Participantes</strong>
+                <p>Información de empresas organizadas por categor&iacute;as (Construcción, Sanitarias, Gas...).</p>
+              </div>
+            </li>
+            <li>
+              <i class="fas fa-user-plus"></i>
+              <div>
+                <strong>Inscripción</strong>
+                <p>Acceso a la plataforma y descarga de la oferta del cuatrimestre.</p>
+              </div>
+            </li>
+            <li>
+              <i class="fas fa-map"></i>
+              <div>
+                <strong>Muestras Abiertas</strong>
+                <p>Ubicación y stands de las empresas participantes.</p>
+              </div>
+            </li>
+          </ul>
+        </div>
       </div>
+    </div>
+  </section>
 
-      <div class="features-container">
-        <h3>¿Qué encontrarás?</h3>
-        <ul class="features-list">
-          <li>
-            <i class="fas fa-calendar-alt"></i>
-            <div>
-              <strong>Charlas</strong>
-              <p>Programación en formato calendario, con horarios, aula, inscriptos y estado dinámico.</p>
-            </div>
-          </li>
-          <li>
-            <i class="fas fa-industry"></i>
-            <div>
-              <strong>Empresas Participantes</strong>
-              <p>Información de empresas organizadas por categorías (Construcción, Sanitarias, Gas...).</p>
-            </div>
-          </li>
-          <li>
-            <i class="fas fa-user-plus"></i>
-            <div>
-              <strong>Inscripción</strong>
-              <p>Acceso a la plataforma y descarga de la oferta del cuatrimestre.</p>
-            </div>
-          </li>
-          <li>
-            <i class="fas fa-map"></i>
-            <div>
-              <strong>Muestras Abiertas</strong>
-              <p>Ubicación y stands de las empresas participantes.</p>
-            </div>
-          </li>
-        </ul>
-      </div>
-    </section>
-
-    <!-- Sección Inscripción -->
-    <section id="inscripcion" class="section">
+  <!-- ══════════════════════════════════════════════════════════════════
+       6. CHARLAS
+       ══════════════════════════════════════════════════════════════════ -->
+  <section id="charlas" class="charlas-section section-animated">
+    <div class="section-container">
       <div class="section-header">
-        <h2>Inscripción</h2>
+        <h2>Programaci&oacute;n de Charlas</h2>
+        <div class="section-divider"></div>
+      </div>
+      <div id="charlas-tabla-container" class="table-responsive">
+        <div class="charlas-loading">
+          <i class="fas fa-spinner fa-spin"></i> Cargando charlas...
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Separador wave -->
+  <div class="section-wave section-wave-down">
+    <svg viewBox="0 0 1440 120" preserveAspectRatio="none">
+      <path fill="#ffffff" d="M0,64 C480,150 960,-20 1440,64 L1440,120 L0,120 Z"></path>
+    </svg>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════════════
+       7. INSCRIPCIÓN
+       ══════════════════════════════════════════════════════════════════ -->
+  <section id="inscripcion" class="inscripcion-section section-animated">
+    <div class="section-container">
+      <div class="section-header">
+        <h2>Inscripci&oacute;n</h2>
         <div class="section-divider"></div>
       </div>
 
       <div class="form-container">
         <div class="form-header">
           <i class="fas fa-user-plus"></i>
-          <h3>Formulario de Preinscripción</h3>
+          <h3>Formulario de Preinscripci&oacute;n</h3>
         </div>
         <form id="inscripcionForm" novalidate>
           <!-- Datos personales -->
@@ -327,7 +368,7 @@
           <div class="form-row">
             <div class="form-group">
               <label for="dni">DNI <span class="required">*</span></label>
-              <input type="text" id="dni" name="dni" required autocomplete="off" inputmode="numeric" pattern="\d{6,10}" minlength="6" maxlength="10" title="Solo números, entre 6 y 10 dígitos">
+              <input type="text" id="dni" name="dni" required autocomplete="off" inputmode="numeric" pattern="\d{6,10}" minlength="6" maxlength="10" title="Solo n&uacute;meros, entre 6 y 10 d&iacute;gitos">
             </div>
             <div class="form-group">
               <label for="email">Email <span class="required">*</span></label>
@@ -337,18 +378,18 @@
 
           <div class="form-row-full">
             <div class="form-group">
-              <label for="como-te-enteraste">¿Cómo conociste la expo? <span class="required">*</span></label>
+              <label for="como-te-enteraste">&iquest;C&oacute;mo conociste la expo? <span class="required">*</span></label>
               <select id="como-te-enteraste" name="como_te_enteraste" required>
-                <option value="">Selecciona una opción...</option>
+                <option value="">Selecciona una opci&oacute;n...</option>
               </select>
             </div>
           </div>
 
-          <!-- Selección de charlas (multi-select con checkboxes) -->
+          <!-- Selecci&oacute;n de charlas (multi-select con checkboxes) -->
           <div class="form-row-full">
             <div class="form-group">
               <label>Charlas <span class="required">*</span></label>
-              <p class="form-hint">Podés seleccionar más de una charla.</p>
+              <p class="form-hint">Pod&eacute;s seleccionar m&aacute;s de una charla.</p>
 
               <!-- Resumen de charlas seleccionadas -->
               <div id="charlas-seleccionadas" class="charlas-seleccionadas-container" aria-live="polite">
@@ -365,7 +406,7 @@
                 </div>
               </div>
 
-              <!-- Opción especial: no asistir a ninguna -->
+              <!-- Opci&oacute;n especial: no asistir a ninguna -->
               <div class="charla-especial">
                 <label class="checkbox-label">
                   <input type="checkbox" id="no-charla" name="charlas" value="no-charla">
@@ -376,8 +417,8 @@
             </div>
           </div>
 
-          <button type="submit" id="btn-formulario" class="btn-submit" aria-label="Enviar formulario de inscripción">
-            <span class="btn-text"><i class="fas fa-paper-plane"></i> Enviar inscripción</span>
+          <button type="submit" id="btn-formulario" class="btn-submit btn-submit-action" aria-label="Enviar formulario de inscripción">
+            <span class="btn-text"><i class="fas fa-paper-plane"></i> Enviar inscripci&oacute;n</span>
             <span class="btn-loading" style="display:none;"><i class="fas fa-spinner fa-spin"></i> Enviando...</span>
           </button>
         </form>
@@ -388,129 +429,137 @@
         <a href="https://fundacion.uocra.org/" target="_blank" class="btn-link" aria-label="Ir a la plataforma de Fundacion UOCRA" rel="noopener noreferrer">
           <i class="fas fa-external-link-alt"></i> Ir a la plataforma de Fundacion UOCRA
         </a>
-        <a href="https://fundacion.uocra.org/oferta-educativa-formacion-profesional/cific-cfp-n-3/" target="_blank" class="btn-link" aria-label="Ver oferta academica" rel="noopener noreferrer">
-          <i class="fas fa-external-link-alt"></i> Ver oferta academica
+        <a href="https://fundacion.uocra.org/oferta-educativa-formacion-profesional/cific-cfp-n-3/" target="_blank" class="btn-link" aria-label="Ver oferta acad&eacute;mica" rel="noopener noreferrer">
+          <i class="fas fa-external-link-alt"></i> Ver oferta acad&eacute;mica
         </a>
       </div>
+    </div>
+  </section>
 
-      <button class="btn-volver" data-seccion="inicio" aria-label="Volver al Inicio">Volver al Inicio</button>
-    </section>
+  <!-- Separador wave -->
+  <div class="section-wave section-wave-up">
+    <svg viewBox="0 0 1440 120" preserveAspectRatio="none">
+      <path fill="#f0f8fa" d="M0,64 C480,150 960,-20 1440,64 L1440,0 L0,0 Z"></path>
+    </svg>
+  </div>
 
-    <!-- Sección Charlas -->
-    <section id="charlas" class="section">
-      <div class="section-header">
-        <h2>Programación de Charlas</h2>
-        <div class="section-divider"></div>
-      </div>
-
-      <div id="charlas-tabla-container" class="table-responsive">
-        <div class="charlas-loading">
-          <i class="fas fa-spinner fa-spin"></i> Cargando charlas...
-        </div>
-      </div>
-
-      <button class="btn-volver" data-seccion="inicio" aria-label="Volver al Inicio">
-        <i class="fas fa-arrow-left"></i> Volver al Inicio
-      </button>
-    </section>
-
-    <!-- Sección Empresas Participantes -->
-    <section id="empresas" class="section">
+  <!-- ══════════════════════════════════════════════════════════════════
+       8. EMPRESAS PARTICIPANTES
+       ══════════════════════════════════════════════════════════════════ -->
+  <section id="empresas" class="empresas-section section-animated">
+    <div class="section-container">
       <div class="section-header">
         <h2>Empresas Participantes</h2>
         <div class="section-divider"></div>
       </div>
-      <p class="empresas-intro">Las empresas más importantes del sector</p>
-      <p>Estas son todas las empresas que participarán en la exposición. Puedes filtrar por categoría:</p>
+      <p class="empresas-intro">Las empresas m&aacute;s importantes del sector</p>
+      <p>Estas son todas las empresas que participar&aacute;n en la exposici&oacute;n. Puedes filtrar por categor&iacute;a:</p>
       <div class="categorias-buttons">
         <button class="btn-categoria active" data-categoria="todas" aria-label="Mostrar todas las empresas">Todas</button>
-        <button class="btn-categoria" data-categoria="construccion" aria-label="Mostrar empresas de construcción">Construcción</button>
+        <button class="btn-categoria" data-categoria="construccion" aria-label="Mostrar empresas de construcci&oacute;n">Construcci&oacute;n</button>
         <button class="btn-categoria" data-categoria="sanitarias" aria-label="Mostrar empresas de sanitarias">Sanitarias</button>
         <button class="btn-categoria" data-categoria="instituciones" aria-label="Mostrar empresas de instituciones">Instituciones</button>
         <button class="btn-categoria" data-categoria="electricidad" aria-label="Mostrar empresas de electricidad">Electricidad</button>
-        <button class="btn-categoria" data-categoria="informatica" aria-label="Mostrar empresas de informática">Informática</button>
+        <button class="btn-categoria" data-categoria="informatica" aria-label="Mostrar empresas de inform&aacute;tica">Inform&aacute;tica</button>
       </div>
       <div id="empresas-lista" class="empresas-grid">
-        <!-- Las empresas se cargarán dinámicamente -->
+        <!-- Las empresas se cargar&aacute;n din&aacute;micamente -->
       </div>
-      <button class="btn-volver" data-seccion="inicio" aria-label="Volver al Inicio">Volver al Inicio</button>
-    </section>
+    </div>
+  </section>
 
-    <!-- Sección Muestras Abiertas -->
-    <section id="muestras" class="section">
-      <div class="section-header">
+  <!-- Separador wave -->
+  <div class="section-wave section-wave-down">
+    <svg viewBox="0 0 1440 120" preserveAspectRatio="none">
+      <path fill="#1a1a2e" d="M0,64 C480,150 960,-20 1440,64 L1440,120 L0,120 Z"></path>
+    </svg>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════════════
+       9. MUESTRAS ABIERTAS
+       ══════════════════════════════════════════════════════════════════ -->
+  <section id="muestras" class="muestras-section section-animated">
+    <div class="section-container">
+      <div class="section-header section-header-light">
         <h2>Muestras Abiertas</h2>
-        <div class="section-divider"></div>
+        <div class="section-divider section-divider-light"></div>
       </div>
-      <p>Consulta los stands y ubicaciones de los rubros participantes.</p>
+      <p class="section-intro-light">Consulta los stands y ubicaciones de los rubros participantes.</p>
 
       <div id="stands-container" class="stands-grid">
-        <!-- Las muestras se cargarán dinámicamente desde el controlador -->
+        <!-- Las muestras se cargar&aacute;n din&aacute;micamente desde el controlador -->
       </div>
+    </div>
+  </section>
 
-      <button class="btn-volver" data-seccion="inicio" aria-label="Volver al Inicio">Volver al Inicio</button>
-    </section>
+  <!-- Separador wave -->
+  <div class="section-wave section-wave-up">
+    <svg viewBox="0 0 1440 120" preserveAspectRatio="none">
+      <path fill="#1a1a2e" d="M0,64 C480,150 960,-20 1440,64 L1440,0 L0,0 Z"></path>
+    </svg>
+  </div>
 
-    <!-- Sección Competiciones -->
-    <section id="competiciones" class="section">
+  <!-- ══════════════════════════════════════════════════════════════════
+       10. COMPETICIONES
+       ══════════════════════════════════════════════════════════════════ -->
+  <section id="competiciones" class="competiciones-section section-animated">
+    <div class="section-container">
       <div class="section-header">
         <h2>Competiciones</h2>
         <div class="section-divider"></div>
       </div>
-      <p>Conoce las competiciones que se llevarán a cabo durante el evento y sus horarios:</p>
+      <p>Conoce las competiciones que se llevar&aacute;n a cabo durante el evento y sus horarios:</p>
       
       <div class="categorias-buttons">
         <button class="btn-categoria active" data-categoria="todas" data-competicion="todas" aria-label="Mostrar todas las competiciones">Todas</button>
-        <button class="btn-categoria" data-categoria="construccion" data-competicion="construccion" aria-label="Mostrar competiciones de construcción">Construcción</button>
+        <button class="btn-categoria" data-categoria="construccion" data-competicion="construccion" aria-label="Mostrar competiciones de construcci&oacute;n">Construcci&oacute;n</button>
         <button class="btn-categoria" data-categoria="electricidad" data-competicion="electricidad" aria-label="Mostrar competiciones de electricidad">Electricidad</button>
-        <button class="btn-categoria" data-categoria="sanitarias" data-competicion="sanitarias" aria-label="Mostrar competiciones de sanitarias">Sanitarias</button>
+        <button class="btn-categoria" data-categoria="sanitarias" data-competicion="sanitarias" aria-label="Mostrar competición de sanitarias">Sanitarias</button>
       </div>
       
       <div id="competiciones-lista" class="competiciones-grid">
-        <!-- Las competiciones se cargarán dinámicamente -->
+        <!-- Las competiciones se cargar&aacute;n din&aacute;micamente -->
       </div>
-      
-      <button class="btn-volver" data-seccion="inicio" aria-label="Volver al Inicio">Volver al Inicio</button>
-    </section>
-
-  </div>
+    </div>
+  </section>
 
   <!-- ══════════════════════════════════════════════════════════════════
-       6. CTA STICKY DE INSCRIPCIÓN
+       11. CTA STICKY DE INSCRIPCIÓN
        ══════════════════════════════════════════════════════════════════ -->
   <div id="cta-sticky" class="cta-sticky">
-    <span class="cta-sticky-text">¿Ya te inscribiste a Expo Formación?</span>
-    <button id="cta-sticky-btn" class="cta-sticky-btn">Inscribirme</button>
+    <span class="cta-sticky-text">&iquest;Ya te inscribiste a Expo Formación?</span>
+    <a href="#inscripcion" class="cta-sticky-btn">Inscribirme</a>
     <button id="cta-sticky-close" class="cta-sticky-close" aria-label="Cerrar">&times;</button>
   </div>
 
   <!-- ══════════════════════════════════════════════════════════════════
-       7. FOOTER MEJORADO
+       12. FOOTER
        ══════════════════════════════════════════════════════════════════ -->
   <footer>
     <div class="footer-main">
       <div class="footer-column">
         <img src="../img/logo-expo-formacion.png" alt="Logo Expo Formación" class="footer-logo">
         <p style="font-size: 0.9rem; color: rgba(255,255,255,0.7); margin-top: 1rem;">
-          El encuentro de formación más importante del sector construcción.
+          El encuentro de formaci&oacute;n m&aacute;s importante del sector construcci&oacute;n.
         </p>
       </div>
       <div class="footer-column">
-        <h4 class="footer-title">Navegación</h4>
+        <h4 class="footer-title">Navegaci&oacute;n</h4>
         <ul class="footer-links">
-          <li><a href="#inicio" data-seccion="inicio">Inicio</a></li>
-          <li><a href="#inscripcion" data-seccion="inscripcion">Inscripción</a></li>
-          <li><a href="#charlas" data-seccion="charlas">Charlas</a></li>
-          <li><a href="#empresas" data-seccion="empresas">Empresas</a></li>
-          <li><a href="#muestras" data-seccion="muestras">Muestras</a></li>
-          <li><a href="#competiciones" data-seccion="competiciones">Competiciones</a></li>
+          <li><a href="#hero">Inicio</a></li>
+          <li><a href="#bienvenida">Bienvenida</a></li>
+          <li><a href="#charlas">Charlas</a></li>
+          <li><a href="#inscripcion">Inscripci&oacute;n</a></li>
+          <li><a href="#empresas">Empresas</a></li>
+          <li><a href="#muestras">Muestras</a></li>
+          <li><a href="#competiciones">Competiciones</a></li>
         </ul>
       </div>
       <div class="footer-column">
         <h4 class="footer-title">Enlaces</h4>
         <ul class="footer-links">
-          <li><a href="https://fundacion.uocra.org/" target="_blank" rel="noopener noreferrer">Fundación UOCRA</a></li>
-          <li><a href="https://fundacion.uocra.org/oferta-educativa-formacion-profesional/cific-cfp-n-3/" target="_blank" rel="noopener noreferrer">Oferta Académica</a></li>
+          <li><a href="https://fundacion.uocra.org/" target="_blank" rel="noopener noreferrer">Fundaci&oacute;n UOCRA</a></li>
+          <li><a href="https://fundacion.uocra.org/oferta-educativa-formacion-profesional/cific-cfp-n-3/" target="_blank" rel="noopener noreferrer">Oferta Acad&eacute;mica</a></li>
           <li><a href="https://fundacion.uocra.org/" target="_blank" rel="noopener noreferrer">Plataforma Virtual</a></li>
         </ul>
       </div>
