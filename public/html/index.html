@@ -36,9 +36,9 @@
   <nav id="main-nav" aria-label="Navegación principal">
     <div class="nav-container">
       <a href="#hero" class="nav-link"><i class="fas fa-home"></i> Inicio</a>
-      <a href="#bienvenida" class="nav-link"><i class="fas fa-info-circle"></i> Bienvenida</a>
       <a href="#empresas" class="nav-link"><i class="fas fa-building"></i> Empresas</a>
       <a href="#charlas" class="nav-link"><i class="fas fa-chalkboard-teacher"></i> Charlas</a>
+      <a href="#bienvenida" class="nav-link"><i class="fas fa-info-circle"></i> Bienvenida</a>
       <a href="#muestras" class="nav-link"><i class="fas fa-map-marker-alt"></i> Muestras</a>
       <a href="#competiciones" class="nav-link"><i class="fas fa-trophy"></i> Competiciones</a>
       <a href="#inscripcion" class="nav-link"><i class="fas fa-clipboard-list"></i> Inscripción</a>
@@ -76,68 +76,7 @@
     </div>
   </section>
 
-  <!-- Separador wave: Hero (oscuro) -> Bienvenida (claro) -->
-  <div class="section-wave section-wave-down">
-    <svg viewBox="0 0 1440 120" preserveAspectRatio="none">
-      <path fill="#f0f8fa" d="M0,64 C480,150 960,-20 1440,64 L1440,120 L0,120 Z"></path>
-    </svg>
-  </div>
-
-  <!-- ══════════════════════════════════════════════════════════════════
-       2. BIENVENIDA
-       ══════════════════════════════════════════════════════════════════ -->
-  <section id="bienvenida" class="bienvenida-section section-animated">
-    <div class="bienvenida-container">
-      <div class="bienvenida-card">
-        <span class="bienvenida-badge">EXPO FORMACIÓN 2026</span>
-        <div class="bienvenida-accent"></div>
-        <h2>Bienvenido a Expo Formación</h2>
-        <p class="bienvenida-texto">
-          La Expo Formación es el punto de encuentro entre quienes construyen el presente y quienes formarán el futuro del sector. Un espacio donde el conocimiento, las herramientas y las oportunidades se unen en un solo lugar.
-        </p>
-        <div class="bienvenida-cta">
-          <a href="#inscripcion" class="btn-inscribirme-destacado">
-            <i class="fas fa-sign-in-alt"></i> Inscribirme Ahora
-          </a>
-        </div>
-        <div class="features-container">
-          <h3>¿Qu&eacute; encontrar&aacute;s?</h3>
-          <ul class="features-list">
-            <li>
-              <i class="fas fa-calendar-alt"></i>
-              <div>
-                <strong>Charlas</strong>
-                <p>Programación en formato calendario, con horarios, aula, inscriptos y estado din&aacute;mico.</p>
-              </div>
-            </li>
-            <li>
-              <i class="fas fa-industry"></i>
-              <div>
-                <strong>Empresas Participantes</strong>
-                <p>Información de empresas organizadas por categor&iacute;as (Construcción, Sanitarias, Gas...).</p>
-              </div>
-            </li>
-            <li>
-              <i class="fas fa-user-plus"></i>
-              <div>
-                <strong>Inscripción</strong>
-                <p>Acceso a la plataforma y descarga de la oferta del cuatrimestre.</p>
-              </div>
-            </li>
-            <li>
-              <i class="fas fa-map"></i>
-              <div>
-                <strong>Muestras Abiertas</strong>
-                <p>Ubicación y stands de las empresas participantes.</p>
-              </div>
-            </li>
-          </ul>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Separador wave: Bienvenida (claro) -> Stats (oscuro) -->
+  <!-- Separador wave: Hero (oscuro) -> Stats (oscuro) -->
   <div class="section-wave section-wave-down">
     <svg viewBox="0 0 1440 120" preserveAspectRatio="none">
       <path fill="#1a1a2e" d="M0,64 C480,150 960,-20 1440,64 L1440,120 L0,120 Z"></path>
@@ -145,7 +84,7 @@
   </div>
 
   <!-- ══════════════════════════════════════════════════════════════════
-       3. CONTADORES ANIMADOS — "Expo en Números"
+       2. CONTADORES ANIMADOS — "Expo en Números"
        ══════════════════════════════════════════════════════════════════ -->
   <section id="stats" class="stats-section section-animated">
     <div class="stats-container">
@@ -189,7 +128,7 @@
   </div>
 
   <!-- ══════════════════════════════════════════════════════════════════
-       4. SECCIÓN "¿POR QUÉ PARTICIPAR?"
+       3. SECCIÓN "¿POR QUÉ PARTICIPAR?"
        ══════════════════════════════════════════════════════════════════ -->
   <section id="participar" class="participar-section section-animated">
     <div class="participar-container">
@@ -235,7 +174,58 @@
     </div>
   </section>
 
-  <!-- Separador wave: Participar (claro) -> Galería (claro/white) -->
+  <!-- Separador wave: Participar (claro) -> Empresas (oscuro) -->
+  <div class="section-wave section-wave-down">
+    <svg viewBox="0 0 1440 120" preserveAspectRatio="none">
+      <path fill="#0d1b2a" d="M0,64 C480,150 960,-20 1440,64 L1440,120 L0,120 Z"></path>
+    </svg>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════════════
+       4. EMPRESAS PARTICIPANTES
+       ══════════════════════════════════════════════════════════════════ -->
+  <section id="empresas" class="empresas-section-nueva">
+    <div class="empresas-section-inner">
+      <div class="empresas-titulo-bloque">
+        <p class="empresas-antetitulo">CONOCÉ A LAS</p>
+        <h2 class="empresas-titulo-principal">EMPRESAS PARTICIPANTES 2026</h2>
+        <div class="empresas-titulo-linea"></div>
+      </div>
+      <div id="empresas-lista" class="empresas-logos-wrapper">
+      </div>
+    </div>
+  </section>
+
+  <!-- Separador wave: Empresas (oscuro) -> Charlas (claro) -->
+  <div class="section-wave section-wave-down">
+    <svg viewBox="0 0 1440 120" preserveAspectRatio="none">
+      <path fill="#f0f8fa" d="M0,64 C480,150 960,-20 1440,64 L1440,120 L0,120 Z"></path>
+    </svg>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════════════
+       5. CHARLAS
+       ══════════════════════════════════════════════════════════════════ -->
+  <section id="charlas" class="charlas-section section-animated">
+    <div class="section-container">
+      <div class="section-header">
+        <p class="section-antetitulo">AGENDA OFICIAL</p>
+        <h2>Programaci&oacute;n de Charlas</h2>
+        <div class="section-divider"></div>
+      </div>
+      <div id="charlas-tabla-container" class="table-responsive">
+        <div class="charlas-loading">
+          <i class="fas fa-spinner fa-spin"></i> Cargando charlas...
+        </div>
+      </div>
+      <p class="charlas-nota" id="charlas-nota">
+        <i class="fas fa-info-circle"></i>
+        Los cupos se asignan por orden de inscripción. Si una charla te interesa, asegurate el lugar antes de que se llene.
+      </p>
+    </div>
+  </section>
+
+  <!-- Separador wave: Charlas (claro) -> Bienvenida (claro) -->
   <div class="section-wave section-wave-down">
     <svg viewBox="0 0 1440 120" preserveAspectRatio="none">
       <path fill="#ffffff" d="M0,64 C480,150 960,-20 1440,64 L1440,120 L0,120 Z"></path>
@@ -243,15 +233,38 @@
   </div>
 
   <!-- ══════════════════════════════════════════════════════════════════
-       5. GALERÍA DE FOTOS + VIDEO — "Ediciones Anteriores"
+       6. BIENVENIDA
+       ══════════════════════════════════════════════════════════════════ -->
+  <section id="bienvenida" class="bienvenida-section section-animated">
+    <div class="bienvenida-container">
+      <div class="bienvenida-card">
+        <span class="bienvenida-badge">EXPO FORMACIÓN 2026</span>
+        <div class="bienvenida-accent"></div>
+        <h2>Bienvenido a Expo Formación</h2>
+        <p class="bienvenida-texto">
+          La Expo Formación nació de una convicción simple: el sector de la construcción merece un espacio propio para crecer, aprender y conectarse. Desde su primera edición, reunimos a trabajadores, estudiantes y empresas líderes en un mismo lugar, con un objetivo compartido: impulsar la formación y el futuro del sector.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Separador wave: Bienvenida (white) -> Galería (white) -->
+  <div class="section-wave section-wave-up">
+    <svg viewBox="0 0 1440 120" preserveAspectRatio="none">
+      <path fill="#ffffff" d="M0,64 C480,150 960,-20 1440,64 L1440,0 L0,0 Z"></path>
+    </svg>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════════════
+       7. GALERÍA DE FOTOS + VIDEO
        ══════════════════════════════════════════════════════════════════ -->
   <section id="galeria" class="galeria-section section-animated">
     <div class="galeria-container">
       <div class="galeria-header">
         <p class="section-antetitulo" style="text-align:center;">EDICIÓN ANTERIOR</p>
-        <h2 class="galeria-title">As&iacute; fue la &uacute;ltima edici&oacute;n</h2>
+        <h2 class="galeria-title">Viví la experiencia de la edición anterior</h2>
         <div class="galeria-linea-deco"></div>
-        <p class="galeria-subtitle">Mirá el video y las fotos de la edición anterior</p>
+        <p class="galeria-subtitle">Mirá cómo fue la edición anterior</p>
       </div>
       
       <!-- Video de YouTube -->
@@ -312,58 +325,7 @@
     </div>
   </section>
 
-  <!-- Separador wave: Galería (white) -> Empresas (oscuro) -->
-  <div class="section-wave section-wave-up">
-    <svg viewBox="0 0 1440 120" preserveAspectRatio="none">
-      <path fill="#ffffff" d="M0,64 C480,150 960,-20 1440,64 L1440,0 L0,0 Z"></path>
-    </svg>
-  </div>
-
-  <!-- ══════════════════════════════════════════════════════════════════
-       6. EMPRESAS PARTICIPANTES
-       ══════════════════════════════════════════════════════════════════ -->
-  <section id="empresas" class="empresas-section-nueva">
-    <div class="empresas-section-inner">
-      <div class="empresas-titulo-bloque">
-        <p class="empresas-antetitulo">CONOCÉ A LAS</p>
-        <h2 class="empresas-titulo-principal">EMPRESAS PARTICIPANTES 2026</h2>
-        <div class="empresas-titulo-linea"></div>
-      </div>
-      <div id="empresas-lista" class="empresas-logos-wrapper">
-      </div>
-    </div>
-  </section>
-
-  <!-- Separador wave: Empresas (oscuro) -> Charlas (claro) -->
-  <div class="section-wave section-wave-down">
-    <svg viewBox="0 0 1440 120" preserveAspectRatio="none">
-      <path fill="#f0f8fa" d="M0,64 C480,150 960,-20 1440,64 L1440,120 L0,120 Z"></path>
-    </svg>
-  </div>
-
-  <!-- ══════════════════════════════════════════════════════════════════
-       7. CHARLAS
-       ══════════════════════════════════════════════════════════════════ -->
-  <section id="charlas" class="charlas-section section-animated">
-    <div class="section-container">
-      <div class="section-header">
-        <p class="section-antetitulo">AGENDA OFICIAL</p>
-        <h2>Programaci&oacute;n de Charlas</h2>
-        <div class="section-divider"></div>
-      </div>
-      <div id="charlas-tabla-container" class="table-responsive">
-        <div class="charlas-loading">
-          <i class="fas fa-spinner fa-spin"></i> Cargando charlas...
-        </div>
-      </div>
-      <p class="charlas-nota" id="charlas-nota">
-        <i class="fas fa-info-circle"></i>
-        Los cupos son limitados y se asignan por orden de inscripción. Asegurate el tuyo.
-      </p>
-    </div>
-  </section>
-
-  <!-- Separador wave: Charlas (claro) -> Muestras (oscuro) -->
+  <!-- Separador wave: Galería (white) -> Muestras (oscuro) -->
   <div class="section-wave section-wave-down">
     <svg viewBox="0 0 1440 120" preserveAspectRatio="none">
       <path fill="#1a1a2e" d="M0,64 C480,150 960,-20 1440,64 L1440,120 L0,120 Z"></path>
@@ -407,7 +369,7 @@
       <p>Conoce las competiciones que se llevar&aacute;n a cabo durante el evento y sus horarios:</p>
       
       <div class="categorias-buttons">
-        <button class="btn-categoria active" data-categoria="todas" data-competicion="todas" aria-label="Mostrar todas las competiciones">Todas</button>
+        <button class="btn-categoria active" data-categoria="todas" data-competicion="todas" aria-label="Mostrar todas las competiciónes">Todas</button>
         <button class="btn-categoria" data-categoria="construccion" data-competicion="construccion" aria-label="Mostrar competiciones de construcci&oacute;n">Construcci&oacute;n</button>
         <button class="btn-categoria" data-categoria="electricidad" data-competicion="electricidad" aria-label="Mostrar competiciones de electricidad">Electricidad</button>
         <button class="btn-categoria" data-categoria="sanitarias" data-competicion="sanitarias" aria-label="Mostrar competición de sanitarias">Sanitarias</button>
@@ -421,7 +383,7 @@
   <!-- Separador wave: Competiciones (claro) -> Inscripción (claro) -->
   <div class="section-wave section-wave-down">
     <svg viewBox="0 0 1440 120" preserveAspectRatio="none">
-      <path fill="#ffffff" d="M0,64 C480,150 960,-20 1440,64 L1440,120 L0,120 Z"></path>
+      <path fill="#f0f8fa" d="M0,64 C480,150 960,-20 1440,64 L1440,120 L0,120 Z"></path>
     </svg>
   </div>
 
@@ -524,7 +486,7 @@
        11. CTA STICKY DE INSCRIPCIÓN
        ══════════════════════════════════════════════════════════════════ -->
   <div id="cta-sticky" class="cta-sticky">
-    <span class="cta-sticky-text">Los cupos se están llenando. ¡Inscribite ahora!</span>
+    <span class="cta-sticky-text">Los cupos se están llenando — inscribite ahora.</span>
     <a href="#inscripcion" class="cta-sticky-btn">Inscribirme</a>
     <button id="cta-sticky-close" class="cta-sticky-close" aria-label="Cerrar">&times;</button>
   </div>
@@ -544,9 +506,9 @@
         <h4 class="footer-title">Navegaci&oacute;n</h4>
         <ul class="footer-links">
           <li><a href="#hero">Inicio</a></li>
-          <li><a href="#bienvenida">Bienvenida</a></li>
           <li><a href="#empresas">Empresas</a></li>
           <li><a href="#charlas">Charlas</a></li>
+          <li><a href="#bienvenida">Bienvenida</a></li>
           <li><a href="#muestras">Muestras</a></li>
           <li><a href="#competiciones">Competiciones</a></li>
           <li><a href="#inscripcion">Inscripci&oacute;n</a></li>
