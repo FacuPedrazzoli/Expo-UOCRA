@@ -3074,3 +3074,427 @@ header {
     transition: none;
   }
 }
+
+/* ══════════════════════════════════════════════════════════════════
+   SISTEMA GLOBAL DE ANTETÍTULOS
+   ══════════════════════════════════════════════════════════════════ */
+.section-antetitulo {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.5em;
+  text-transform: uppercase;
+  color: #56bcb8;
+  margin-bottom: 0.5rem;
+  display: block;
+}
+
+.section-antetitulo.claro {
+  color: rgba(86, 188, 184, 0.8);
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   EFECTO SHIMMER
+   ══════════════════════════════════════════════════════════════════ */
+.btn-inscribirme-hero,
+.btn-inscribirme-destacado,
+.btn-submit-action,
+.cta-sticky-btn,
+.chip {
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-inscribirme-hero::before,
+.btn-inscribirme-destacado::before,
+.btn-submit-action::before,
+.cta-sticky-btn::before,
+.chip::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255,255,255,0.15),
+    transparent
+  );
+  transition: left 0.5s ease;
+}
+
+.btn-inscribirme-hero:hover::before,
+.btn-inscribirme-destacado:hover::before,
+.btn-submit-action:hover::before,
+.cta-sticky-btn:hover::before,
+.chip:hover::before {
+  left: 150%;
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   1. HERO
+   ══════════════════════════════════════════════════════════════════ */
+.hero {
+  background: linear-gradient(135deg, #0d1b2a 0%, #124565 45%, #1a1a2e 100%);
+}
+
+.hero::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: repeating-linear-gradient(
+    45deg,
+    transparent,
+    transparent 40px,
+    rgba(86,188,184,0.03) 40px,
+    rgba(86,188,184,0.03) 41px
+  );
+  pointer-events: none;
+  z-index: 0;
+}
+
+.hero-content {
+  animation: heroEntrada 1s ease-out both;
+}
+
+@keyframes heroEntrada {
+  from {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.hero-antetitulo {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.5em;
+  color: #56bcb8;
+  text-transform: uppercase;
+  margin-bottom: 1rem;
+  opacity: 0.9;
+}
+
+.hero-title {
+  font-size: clamp(2.2rem, 6vw, 4rem);
+  font-weight: 800;
+}
+
+.hero-info-item {
+  background: rgba(255,255,255,0.07);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(86,188,184,0.2);
+  border-radius: 50px;
+  padding: 0.6rem 1.5rem;
+}
+
+.scroll-texto {
+  font-size: 0.65rem;
+  letter-spacing: 0.3em;
+  color: rgba(255,255,255,0.5);
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+.btn-inscribirme-hero {
+  border: 2px solid rgba(86,188,184,0.5);
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   2. STATS
+   ══════════════════════════════════════════════════════════════════ */
+.stat-icon {
+  font-size: 2rem;
+  color: #56bcb8;
+  margin-bottom: 1rem;
+  display: block;
+  opacity: 0.7;
+}
+
+.stat-item {
+  border-top: 3px solid rgba(86,188,184,0.3);
+  padding-top: 2rem;
+  position: relative;
+}
+
+.stat-plus {
+  color: #a8dedd;
+  font-size: 0.7em;
+  vertical-align: super;
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   3. PARTICIPAR
+   ══════════════════════════════════════════════════════════════════ */
+.participar-grid {
+  grid-template-columns: 45% 55%;
+}
+
+.beneficios-list li {
+  background: rgba(18,69,101,0.05);
+  border-radius: 8px;
+  padding: 1rem 1.25rem;
+  margin-bottom: 0.5rem;
+  border-left: 3px solid transparent;
+  transition: all 0.3s ease;
+  border-bottom: none;
+}
+
+.beneficios-list li:hover {
+  border-left-color: #56bcb8;
+  background: rgba(18,69,101,0.1);
+  transform: translateX(4px);
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   4. GALERÍA
+   ══════════════════════════════════════════════════════════════════ */
+.galeria-linea-deco {
+  width: 120px;
+  height: 3px;
+  background: linear-gradient(90deg, #124565, #56bcb8, transparent);
+  margin: 0.75rem auto 2rem;
+  border-radius: 2px;
+}
+
+.foto-num {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: rgba(255,255,255,0.4);
+  letter-spacing: 0.1em;
+  z-index: 2;
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   5. BIENVENIDA
+   ══════════════════════════════════════════════════════════════════ */
+.bienvenida-section {
+  background: linear-gradient(180deg, #f0f8fa 0%, #ffffff 100%);
+}
+
+.bienvenida-card {
+  border: 1px solid rgba(86,188,184,0.2);
+  background: linear-gradient(135deg, #ffffff 0%, #f8fdfd 100%);
+}
+
+.bienvenida-accent {
+  width: 6px;
+  background: linear-gradient(180deg, #56bcb8 0%, #124565 100%);
+}
+
+.bienvenida-badge {
+  display: inline-block;
+  background: linear-gradient(135deg, #124565, #25848d);
+  color: white;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.3em;
+  padding: 0.35rem 1rem;
+  border-radius: 50px;
+  margin-bottom: 1rem;
+  text-transform: uppercase;
+}
+
+.features-list li {
+  background: #f8fdfd;
+  border: 1px solid rgba(86,188,184,0.15);
+  border-radius: 10px;
+  padding: 1rem 1.25rem;
+  margin-bottom: 0.75rem;
+  transition: all 0.3s ease;
+}
+
+.features-list li:hover {
+  border-color: #56bcb8;
+  transform: translateX(6px);
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   6. CHARLAS
+   ══════════════════════════════════════════════════════════════════ */
+.charlas-table td {
+  padding: 14px 12px;
+  font-size: 0.95rem;
+}
+
+.charlas-table tr:hover {
+  background: rgba(18,69,101,0.07) !important;
+  transition: background 0.2s ease;
+}
+
+.charlas-table th {
+  letter-spacing: 0.08em;
+  font-size: 0.85rem;
+}
+
+.charlas-table td:first-child {
+  font-weight: 700;
+  color: #124565;
+  font-family: 'Montserrat', sans-serif;
+}
+
+.charlas-nota {
+  font-size: 0.85rem;
+  color: #25848d;
+  margin-top: 1rem;
+  text-align: center;
+  font-style: italic;
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   7. INSCRIPCIÓN
+   ══════════════════════════════════════════════════════════════════ */
+.form-container {
+  border: 1px solid rgba(86,188,184,0.2);
+  background: linear-gradient(180deg, #ffffff 0%, #f8fdfd 100%);
+}
+
+.form-group input:focus,
+.form-group select:focus {
+  border-color: #25848d;
+  box-shadow: 0 0 0 3px rgba(37,132,141,0.15);
+  background: #fafffe;
+}
+
+.btn-submit-action {
+  background: linear-gradient(135deg, #124565 0%, #25848d 100%) !important;
+  font-size: 1.1rem;
+  padding: 16px;
+  letter-spacing: 0.05em;
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   8. EMPRESAS
+   ══════════════════════════════════════════════════════════════════ */
+.empresas-titulo-principal {
+  text-shadow: 0 2px 20px rgba(0,0,0,0.3);
+}
+
+.empresa-logo-img {
+  transition: transform 0.3s ease;
+}
+
+.empresa-logo-card:hover .empresa-logo-img {
+  transform: scale(1.08);
+}
+
+.empresas-antetitulo {
+  letter-spacing: 0.5em;
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   9. MUESTRAS
+   ══════════════════════════════════════════════════════════════════ */
+.stand-item {
+  transition: all 0.3s ease;
+}
+
+.stand-item:hover {
+  background: rgba(255,255,255,0.14) !important;
+  transform: translateX(6px);
+  border-color: rgba(86,188,184,0.4) !important;
+}
+
+.stand-number {
+  font-size: 0.9rem;
+  font-weight: 800;
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   10. COMPETICIONES
+   ══════════════════════════════════════════════════════════════════ */
+.competicion-card {
+  border: 1px solid rgba(86,188,184,0.1);
+  transition: all 0.3s ease;
+}
+
+.competicion-card:hover {
+  border-color: rgba(86,188,184,0.4);
+  transform: translateY(-6px);
+  box-shadow: 0 16px 40px rgba(18,69,101,0.15);
+  border-top: none;
+}
+
+.competicion-info h3 {
+  font-size: 1.2rem;
+  margin-bottom: 0.75rem;
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   CTA STICKY
+   ══════════════════════════════════════════════════════════════════ */
+.cta-sticky {
+  background: rgba(13,27,42,0.96);
+  border-top: 1px solid rgba(86,188,184,0.3);
+}
+
+.cta-sticky-btn {
+  background: linear-gradient(135deg, #124565, #25848d);
+  box-shadow: 0 4px 15px rgba(37,132,141,0.4);
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   NAV
+   ══════════════════════════════════════════════════════════════════ */
+.nav-link.nav-active {
+  color: #56bcb8;
+  font-weight: 600;
+}
+
+#main-nav.scrolled {
+  border-bottom: 1px solid rgba(86,188,184,0.15);
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   FOOTER
+   ══════════════════════════════════════════════════════════════════ */
+.footer-title {
+  position: relative;
+  padding-bottom: 0.5rem;
+  margin-bottom: 1.25rem;
+}
+
+.footer-title::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 30px;
+  height: 2px;
+  background: #56bcb8;
+  border-radius: 1px;
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   ACCESIBILIDAD MEJORADA
+   ══════════════════════════════════════════════════════════════════ */
+@media (prefers-reduced-motion: reduce) {
+  .hero-content {
+    animation: none;
+  }
+
+  .btn-inscribirme-hero::before,
+  .btn-inscribirme-destacado::before,
+  .btn-submit-action::before,
+  .cta-sticky-btn::before,
+  .chip::before {
+    display: none;
+  }
+
+  .features-list li:hover,
+  .stand-item:hover,
+  .beneficios-list li:hover {
+    transform: none;
+  }
+}
