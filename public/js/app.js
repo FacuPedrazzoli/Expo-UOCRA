@@ -567,7 +567,7 @@ function crearTarjetaCompeticion(c) {
     
     // Badge de categoría
     let badgeColor = '#124565';
-    if (c.categoria === 'electricidad') badgeColor = '#e2c048';
+    if (c.categoria === 'electricidad') badgeColor = '#56bcb8';
     if (c.categoria === 'sanitarias') badgeColor = '#25848d';
     const badgeHtml = c.categoria 
         ? `<span class="competicion-badge" style="background-color: ${badgeColor}">${c.categoria}</span>` 
@@ -654,8 +654,6 @@ async function init() {
     renderEmpresas('todas');
     renderMuestras();
     renderCompeticiones('todas');
-
-    log('App lista - página continua cargada');
 
     log('App lista - página continua cargada');
 }
