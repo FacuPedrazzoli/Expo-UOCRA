@@ -1902,6 +1902,7 @@ footer {
 .galeria-section {
   background-color: var(--color-blanco);
   padding: 5rem 2rem;
+  overflow: visible;
 }
 
 .galeria-container {
