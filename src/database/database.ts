@@ -10,9 +10,9 @@ const pool = new Pool({
     password: config.db.password,
     database: config.db.name,
     port: config.db.port,
-    max: 20,
-    idleTimeoutMillis: 30000,
-    connectionTimeoutMillis: 10000,
+    max: isProd ? 5 : 10,
+    idleTimeoutMillis: 10000,
+    connectionTimeoutMillis: 5000,
     ssl: isProd ? { rejectUnauthorized: false } : false,
 });
 
