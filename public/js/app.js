@@ -370,6 +370,7 @@ function limpiarFormulario() {
     state.charlasSeleccionadas.clear();
     actualizarBadges();
     renderCheckboxesCharlas();
+    renderTablaCharlas();
 }
 
 // ── fetch con reintentos ──────────────────────────────────────────────────
@@ -399,7 +400,7 @@ function renderEmpresas() {
     const lista = state.empresas;
 
     if (!lista || !lista.length) {
-        container.innerHTML = '<p style="color:rgba(255,255,255,0.6); text-align:center; padding:2rem;">Cargando empresas...</p>';
+        container.innerHTML = '<p style="color:rgba(255,255,255,0.6); text-align:center; padding:2rem;">Error al cargar empresas. Actualizá la página.</p>';
         return;
     }
 
@@ -448,19 +449,6 @@ function crearTarjetaEmpresa(emp) {
     }
 
     return card;
-}
-
-function getInitials(nombre) {
-    const palabras = nombre.trim().split(' ');
-    let initials = '';
-    if (palabras.length >= 2) {
-        initials = palabras[0][0] + palabras[1][0];
-    } else if (palabras[0].length >= 2) {
-        initials = palabras[0][0] + palabras[0][1];
-    } else {
-        initials = palabras[0][0];
-    }
-    return `<span class="empresa-initials">${initials.toUpperCase()}</span>`;
 }
 
 // ── Muestras ──────────────────────────────────────────────────────────────
@@ -540,6 +528,16 @@ function crearTarjetaCompeticion(c) {
             </div>
         </div>
     `;
+    if (c.imagen) {
+        const img = card.querySelector('.competicion-imagen img');
+        const badge = card.querySelector('.competicion-badge');
+        if (img && badge) {
+            img.onerror = function() {
+                const container = this.parentElement;
+                if (container) container.style.display = 'none';
+            };
+        }
+    }
     return card;
 }
 

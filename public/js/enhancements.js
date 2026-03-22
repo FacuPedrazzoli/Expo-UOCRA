@@ -66,9 +66,13 @@
 
     if (!ctaSticky || !hero) return;
 
-    if (sessionStorage.getItem('cta_cerrado') === 'true') {
-      ctaSticky.classList.add('hidden');
-      return;
+    try {
+      if (sessionStorage.getItem('cta_cerrado') === 'true') {
+        ctaSticky.classList.add('hidden');
+        return;
+      }
+    } catch (e) {
+      // sessionStorage no disponible (modo incógnito)
     }
 
     const heroObserver = new IntersectionObserver((entries) => {
@@ -87,7 +91,9 @@
       ctaClose.addEventListener('click', () => {
         ctaSticky.classList.remove('visible');
         ctaSticky.classList.add('hidden');
-        sessionStorage.setItem('cta_cerrado', 'true');
+        try {
+          sessionStorage.setItem('cta_cerrado', 'true');
+        } catch (e) {}
       });
     }
   }

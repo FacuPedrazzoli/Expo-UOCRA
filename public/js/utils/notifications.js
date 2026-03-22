@@ -3,17 +3,7 @@
  * Muestra notificaciones como modales centrados en la pantalla
  */
 
-// Importar sistema de logs si está disponible
-let logger;
-try {
-  import('./logger-init.js').then(module => {
-    logger = module.default;
-  }).catch(() => {
-    logger = console;
-  });
-} catch (error) {
-  logger = console;
-}
+const logger = console;
 
 // Configuración por defecto
 const defaultConfig = {
@@ -221,6 +211,12 @@ function showOverlay() {
 function hideOverlay() {
   if (state.overlay) {
     state.overlay.classList.remove('active');
+    setTimeout(() => {
+      if (state.overlay && state.overlay.parentNode) {
+        state.overlay.parentNode.removeChild(state.overlay);
+        state.overlay = null;
+      }
+    }, 300);
   }
 }
 

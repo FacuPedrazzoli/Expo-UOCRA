@@ -8,41 +8,32 @@ const router = Router();
 const DEFAULT_VALIDATION_USER_ID = "00000000-0000-0000-0000-000000000001";
 const DEFAULT_VALIDATION_USERNAME = "sistema_validacion";
 
-function normalizeDni(value: unknown): string {
-    return String(value || "").replace(/\D+/g, "").trim();
-}
+let cachedValidationUserId: string | null = null;
 
-async function dbQuery(text: string, params?: any[]): Promise<any> {
-    const start = Date.now();
-    const res = await pool.query(text, params);
-    const duration = Date.now() - start;
-    logger.debug('[DB] Executed query', { text: text.substring(0, 50), duration, rows: res.rowCount });
-    return res;
-}
-
-async function resolveValidationUser(client: PoolClient): Promise<string> {
+async function ensureValidationUser(): Promise<string> {
+    if (cachedValidationUserId) return cachedValidationUserId;
+    
     const configuredUserId = String(process.env.VALIDACION_USUARIO_ID || "").trim();
-
     if (configuredUserId) {
-        const configuredRows = await client.query(
+        const configuredRows = await pool.query(
             "SELECT id FROM usuarios WHERE id = $1 LIMIT 1",
             [configuredUserId]
         );
-
         if (configuredRows.rowCount && configuredRows.rowCount > 0) {
-            return String(configuredRows.rows[0].id);
+            cachedValidationUserId = String(configuredRows.rows[0].id);
+            return cachedValidationUserId;
         }
     }
 
-    const existingRows = await client.query(
+    const existingRows = await pool.query(
         "SELECT id FROM usuarios ORDER BY nom_usuario ASC LIMIT 1"
     );
-
     if (existingRows.rowCount && existingRows.rowCount > 0) {
-        return String(existingRows.rows[0].id);
+        cachedValidationUserId = String(existingRows.rows[0].id);
+        return cachedValidationUserId;
     }
 
-    await client.query(
+    await pool.query(
         `INSERT INTO usuarios (id, nombre, apellido, nom_usuario, password, salt)
          VALUES ($1, $2, $3, $4, $5, $6)
          ON CONFLICT (id) DO NOTHING`,
@@ -56,7 +47,7 @@ async function resolveValidationUser(client: PoolClient): Promise<string> {
         ]
     );
 
-    const systemRows = await client.query(
+    const systemRows = await pool.query(
         "SELECT id FROM usuarios WHERE id = $1 OR nom_usuario = $2 LIMIT 1",
         [DEFAULT_VALIDATION_USER_ID, DEFAULT_VALIDATION_USERNAME]
     );
@@ -65,7 +56,29 @@ async function resolveValidationUser(client: PoolClient): Promise<string> {
         throw new Error("No se pudo resolver el usuario habilitante para registrar el ingreso");
     }
 
-    return String(systemRows.rows[0].id);
+    cachedValidationUserId = String(systemRows.rows[0].id);
+    return cachedValidationUserId;
+}
+
+ensureValidationUser().catch(err => {
+    logger.warn("[Validación] No se pudo inicializar el usuario de validación:", err.message);
+});
+
+function normalizeDni(value: unknown): string {
+    return String(value || "").replace(/\D+/g, "").trim();
+}
+
+async function dbQuery(text: string, params?: any[]): Promise<any> {
+    const start = Date.now();
+    const res = await pool.query(text, params);
+    const duration = Date.now() - start;
+    logger.debug('[DB] Executed query', { text: text.substring(0, 50), duration, rows: res.rowCount });
+    return res;
+}
+
+async function resolveValidationUser(client: PoolClient): Promise<string> {
+    if (cachedValidationUserId) return cachedValidationUserId;
+    return await ensureValidationUser();
 }
 
 router.get("/buscar", async (req, res) => {

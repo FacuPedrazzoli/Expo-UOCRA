@@ -10,14 +10,46 @@ const pool = new Pool({
     password: config.db.password,
     database: config.db.name,
     port: config.db.port,
-    max: isProd ? 5 : 10,
-    idleTimeoutMillis: 10000,
-    connectionTimeoutMillis: 5000,
+    max: isProd ? 2 : 10,
+    idleTimeoutMillis: isProd ? 5000 : 10000,
+    connectionTimeoutMillis: isProd ? 3000 : 5000,
+    allowExitOnIdle: !isProd,
     ssl: isProd ? { rejectUnauthorized: false } : false,
 });
 
-pool.on('error', (err) => {
+let isReconnecting = false;
+
+async function handleReconnect(): Promise<void> {
+    if (isReconnecting) return;
+    isReconnecting = true;
+    logger.warn('[DB] Reconectando pool de PostgreSQL...');
+    try {
+        await pool.end();
+        Object.assign(pool, new Pool({
+            host: config.db.host,
+            user: config.db.user,
+            password: config.db.password,
+            database: config.db.name,
+            port: config.db.port,
+            max: isProd ? 2 : 10,
+            idleTimeoutMillis: isProd ? 5000 : 10000,
+            connectionTimeoutMillis: isProd ? 3000 : 5000,
+            allowExitOnIdle: !isProd,
+            ssl: isProd ? { rejectUnauthorized: false } : false,
+        }));
+        logger.info('[DB] Pool recreado exitosamente');
+    } catch (err) {
+        logger.error('[DB] Error al recrear pool:', err);
+    } finally {
+        isReconnecting = false;
+    }
+}
+
+pool.on('error', async (err: any) => {
     logger.error('[DB] Error inesperado en el pool', err);
+    if (isProd && (err.message?.includes('connection') || err.code === 'ECONNRESET')) {
+        await handleReconnect();
+    }
 });
 
 pool.on('connect', () => {

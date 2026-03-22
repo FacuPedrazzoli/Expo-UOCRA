@@ -1,5 +1,5 @@
 import { Router, Response } from 'express';
-import { PoolClient, QueryResultRow } from 'pg';
+import { PoolClient } from 'pg';
 import { v4 as uuidv4 } from 'uuid';
 import pool, { getClient } from '../database/database';
 import logger from '../utils/logger';
@@ -7,41 +7,6 @@ import { inscripcionRateLimit } from '../utils/middleware';
 import { sanitizeAndValidateInscripcion } from '../utils/sanitize';
 
 const router = Router();
-
-interface CacheEntry<T> {
-    data: T;
-    expiresAt: number;
-}
-
-class SimpleCache {
-    private store = new Map<string, CacheEntry<any>>();
-
-    set<T>(key: string, data: T, ttlMs: number): void {
-        this.store.set(key, { data, expiresAt: Date.now() + ttlMs });
-    }
-
-    get<T>(key: string): T | null {
-        const entry = this.store.get(key);
-        if (!entry) return null;
-        if (Date.now() > entry.expiresAt) {
-            this.store.delete(key);
-            return null;
-        }
-        return entry.data as T;
-    }
-
-    invalidate(prefix?: string): void {
-        if (!prefix) {
-            this.store.clear();
-            return;
-        }
-        for (const key of this.store.keys()) {
-            if (key.startsWith(prefix)) this.store.delete(key);
-        }
-    }
-}
-
-const cache = new SimpleCache();
 
 async function dbQuery(text: string, params?: any[]): Promise<any> {
     const start = Date.now();
@@ -76,6 +41,7 @@ router.post('/', inscripcionRateLimit, async (req, res) => {
 
         const charlasInscritas: string[] = [];
         for (const charlaInput of input.charlas) {
+            if (charlaInput === 'no-charla') continue;
             const charlaId = await resolveCharla(client, charlaInput);
             charlasInscritas.push(charlaId);
         }
@@ -91,8 +57,6 @@ router.post('/', inscripcionRateLimit, async (req, res) => {
         }
 
         await client.query('COMMIT');
-
-        cache.invalidate('charlas');
 
         const ms = Date.now() - t0;
         logger.info(`Inscripción completada en ${ms}ms: ${id}`);
@@ -127,12 +91,6 @@ router.get('/charlas', async (_req, res) => {
     try {
         res.setHeader('Cache-Control', 'no-store');
 
-        const cached = cache.get<any[]>('charlas_list');
-        if (cached) {
-            logger.debug('Charlas servidas desde caché en memoria');
-            return res.json(cached);
-        }
-
         logger.info('Solicitud de listado de charlas (BD)');
         
         const result = await dbQuery(`
@@ -143,7 +101,7 @@ router.get('/charlas', async (_req, res) => {
                 c.empresa,
                 c.ubicacion,
                 COALESCE(ic.total_inscriptos, 0) AS participantes
-            FROM charlas c
+            FROM Chantalas c
             LEFT JOIN (
                 SELECT charlas_id, COUNT(*) AS total_inscriptos
                 FROM inscriptos_charlas
@@ -166,8 +124,6 @@ router.get('/charlas', async (_req, res) => {
             disponible: (parseInt(charla.participantes) || 0) < 50,
         }));
 
-        cache.set('charlas_list', charlasFormateadas, 2 * 60 * 1000);
-
         res.json(charlasFormateadas);
         logger.debug(`Enviadas ${charlasFormateadas.length} charlas al cliente`);
     } catch (error: any) {
@@ -180,29 +136,16 @@ router.get('/como-te-enteraste', async (_req, res) => {
     try {
         res.setHeader('Cache-Control', 'no-store');
 
-        const cached = cache.get<any[]>('como_te_enteraste');
-        if (cached) {
-            logger.debug('Opciones como-te-enteraste servidas desde caché');
-            return res.json(cached);
-        }
-
         const result = await dbQuery(
             'SELECT id, descripcion FROM como_te_enteraste ORDER BY descripcion'
         );
 
-        cache.set('como_te_enteraste', result.rows, 10 * 60 * 1000);
         logger.debug(`Enviando ${result.rows.length} opciones de 'cómo te enteraste'`);
         res.json(result.rows);
     } catch (error: any) {
         logger.error("Error al obtener opciones de 'cómo te enteraste'", error);
         res.status(500).json({ error: 'Error al obtener las opciones', mensaje: error.message });
     }
-});
-
-router.post('/cache/clear', (_req, res) => {
-    cache.invalidate();
-    logger.info('Caché invalidado manualmente');
-    res.json({ mensaje: 'Caché limpiado correctamente' });
 });
 
 router.post('/logs', (req, res) => {
@@ -217,7 +160,7 @@ router.post('/logs', (req, res) => {
         switch (level.toLowerCase()) {
             case 'error': logger.error(`[Cliente] ${safeMessage}`); break;
             case 'warn':  logger.warn(`[Cliente] ${safeMessage}`);  break;
-            case 'info':  logger.info(`[Cliente] ${safeMessage}`);  break;
+            case 'info':  logger.info(`[Cliente] ${safeMessage}`);   break;
             default:      logger.debug(`[Cliente] ${safeMessage}`);
         }
         
@@ -250,15 +193,8 @@ async function resolveComoTeEnteraste(client: PoolClient, value: string): Promis
     );
     if (byDescResult.rowCount && byDescResult.rowCount > 0) return byDescResult.rows[0].id;
 
-    const firstResult = await client.query(
-        'SELECT id FROM como_te_enteraste LIMIT 1'
-    );
-    if (firstResult.rowCount && firstResult.rowCount > 0) {
-        logger.warn(`como_te_enteraste '${value}' no encontrado, usando default: ${firstResult.rows[0].id}`);
-        return firstResult.rows[0].id;
-    }
-
-    throw new Error('No hay opciones válidas en la tabla como_te_enteraste');
+    logger.error(`como_te_enteraste '${value}' no encontrado en la base de datos`);
+    throw new Error(`La opción "${value}" no es válida. Por favor contactá al administrador.`);
 }
 
 async function assertNoDuplicateUser(client: PoolClient, email: string, dni: string): Promise<void> {

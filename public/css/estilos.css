@@ -8,9 +8,12 @@
   --color-card: #ffffff;
   --color-text: #333333;
   --color-text-light: #666666;
-  --border-radius: 8px;
-  --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  --transition: all 0.3s ease;
+
+  /* Variables para notificaciones */
+  --color-success: #4caf50;
+  --color-error: #f44336;
+  --color-warning: #ff9800;
+  --color-info: #2196f3;
 
   /* Variables para popups de notificación */
   --popup-bg-success: rgba(255, 255, 255, 0.98);
@@ -629,49 +632,11 @@ table.charlas-table {
   margin-top: 1.5rem;
 }
 
-/* Estilos para las tarjetas de empresas */
-.empresa-card {
-  background-color: white;
-  border-radius: var(--border-radius);
-  box-shadow: var(--box-shadow);
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  transition:
-    transform 0.2s,
-    box-shadow 0.2s;
-  width: 100%;
-}
-
-.empresa-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
-}
-
-.empresa-logo {
-  width: 100%;
-  max-width: 250px;
-  height: auto;
-  max-height: 130px;
-  object-fit: contain;
-  margin-bottom: 15px;
-}
-
-.empresa-card p {
-  margin-bottom: 10px;
-}
-
 /* Responsive para empresas */
 @media (max-width: 768px) {
   .empresas-grid {
     grid-template-columns: 1fr;
     gap: 16px;
-  }
-
-  .empresa-card {
-    padding: 15px;
   }
 
   .empresa-logo {
@@ -1037,51 +1002,6 @@ table.charlas-table {
   .form-group label {
     font-size: 1.1rem;
   }
-}
-
-/* Footer */
-footer {
-  background-color: var(--color-primary);
-  color: white;
-  padding: 0.375rem;
-  /* Reducido un 25% (de 0.5rem) */
-  position: fixed;
-  bottom: 0;
-  width: 100%;
-  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
-}
-
-.footer-container {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  max-width: 1200px;
-  margin: 0 auto;
-  font-size: 0.675rem;
-  /* Reducido un 25% (de 0.9rem) */
-}
-
-.footer-container p {
-  margin: 0;
-  /* Elimina el margen que podría causar desalineación */
-  line-height: 1;
-  /* Ajusta la altura de línea para mejor alineación vertical */
-}
-
-.social-links {
-  display: flex;
-  gap: 15px;
-}
-
-.social-links a {
-  color: white;
-  font-size: 1rem;
-  /* Reducido de 1.2rem a 1rem */
-  transition: var(--transition);
-}
-
-.social-links a:hover {
-  color: var(--color-accent);
 }
 
 /* Responsive */

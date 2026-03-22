@@ -3,6 +3,9 @@ import rateLimit from 'express-rate-limit';
 import logger, { logHTTP } from './logger';
 
 // ── Rate limiting para inscripciones (usa express-rate-limit) ────────────
+// NOTA: En Vercel serverless, el almacenamiento en memoria no persiste entre invocaciones.
+// El rate limit protección básico se mantiene pero puede ser menos efectivo en ese entorno.
+// Para producción serverless, considerar usar una_store externo (Redis, etc.).
 export const inscripcionRateLimit = rateLimit({
   windowMs: 15 * 60 * 1000,  // 15 minutos
   max: 10,                    // Máximo 10 intentos por IP por ventana
@@ -12,7 +15,6 @@ export const inscripcionRateLimit = rateLimit({
     error: 'Demasiados intentos',
     mensaje: 'Has superado el límite de intentos. Espera 15 minutos e intenta nuevamente.',
   },
-  // Solo limitar POST (inscribirse), no GET (consultar charlas)
   skip: (req) => req.method !== 'POST',
 });
 
