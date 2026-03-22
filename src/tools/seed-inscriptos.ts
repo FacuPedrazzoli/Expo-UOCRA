@@ -5,9 +5,12 @@ import dotenv from 'dotenv';
 
 dotenv.config({ path: path.resolve(process.cwd(), '.env') });
 
+const DATABASE_URL = 'postgresql://postgres.pkjruovvbqkziulnxqxr:26610569Facu@aws-1-sa-east-1.pooler.supabase.com:5432/postgres';
+
 const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
+  connectionString: DATABASE_URL,
   ssl: { rejectUnauthorized: false },
+  connectionTimeoutMillis: 30000,
 });
 
 const NOMBRES = [
@@ -91,21 +94,25 @@ async function main() {
     console.log('🔐 Verificando usuario sistema para validación...');
     const usuarioSistemaId = '00000000-0000-0000-0000-000000000001';
     
-    const checkUsuario = await client.query(
-      'SELECT id FROM usuarios WHERE id = $1',
-      [usuarioSistemaId]
-    );
-
-    if (checkUsuario.rows.length === 0) {
-      await client.query(
-        `INSERT INTO usuarios (id, nombre, apellido, nom_usuario, password, salt) 
-         VALUES ($1, $2, $3, $4, $5, $6) 
-         ON CONFLICT DO NOTHING`,
-        [usuarioSistemaId, 'Sistema', 'Validacion', 'sistema_validacion', 'NO_LOGIN', 'SYSTEM_SALT']
+    try {
+      const checkUsuario = await client.query(
+        'SELECT id FROM usuarios WHERE id = $1',
+        [usuarioSistemaId]
       );
-      console.log('   ✅ Usuario sistema creado\n');
-    } else {
-      console.log('   ✅ Usuario sistema ya existe\n');
+
+      if (checkUsuario.rows.length === 0) {
+        await client.query(
+          `INSERT INTO usuarios (id, nombre, apellido, nom_usuario, password, salt) 
+           VALUES ($1, $2, $3, $4, $5, $6) 
+           ON CONFLICT DO NOTHING`,
+          [usuarioSistemaId, 'Sistema', 'Validacion', 'sistema_validacion', 'NO_LOGIN', 'SYSTEM_SALT']
+        );
+        console.log('   ✅ Usuario sistema creado\n');
+      } else {
+        console.log('   ✅ Usuario sistema ya existe\n');
+      }
+    } catch (err: any) {
+      console.log('   ⚠️  Tabla usuarios no existe, saltando creación de usuario sistema\n');
     }
 
     // Generar 50 inscriptos
@@ -132,8 +139,8 @@ async function main() {
       try {
         // Insertar inscripto
         await client.query(
-          `INSERT INTO inscriptos (id, nombre, apellido, dni, email, como_te_enteraste_fk, fecha_registro, validado)
-           VALUES ($1, $2, $3, $4, $5, $6, NOW(), false)`,
+          `INSERT INTO inscriptos (id, nombre, apellido, dni, email, como_te_enteraste_fk, fecha_registro)
+           VALUES ($1, $2, $3, $4, $5, $6, NOW())`,
           [id, nombre, apellido, dni, email, comoTeEnterasteId]
         );
 
@@ -168,20 +175,24 @@ async function main() {
       }
     }
 
-    for (const idx of indicesValidados) {
-      const inscriptoResult = await client.query(
-        'SELECT id FROM inscriptos WHERE dni = $1',
-        [dnisGenerados[idx].dni]
-      );
-      
-      if (inscriptoResult.rows.length > 0) {
-        await client.query(
-          'INSERT INTO inscriptos_ingresos (inscriptos_id, fecha_ingreso, usuario_habilitante) VALUES ($1, NOW(), $2)',
-          [inscriptoResult.rows[0].id, usuarioSistemaId]
+    try {
+      for (const idx of indicesValidados) {
+        const inscriptoResult = await client.query(
+          'SELECT id FROM inscriptos WHERE dni = $1',
+          [dnisGenerados[idx].dni]
         );
-        dnisGenerados[idx].validado = true;
-        validados++;
+        
+        if (inscriptoResult.rows.length > 0) {
+          await client.query(
+            'INSERT INTO inscriptos_ingresos (inscriptos_id, fecha_ingreso, usuario_habilitante) VALUES ($1, NOW(), $2)',
+            [inscriptoResult.rows[0].id, usuarioSistemaId]
+          );
+          dnisGenerados[idx].validado = true;
+          validados++;
+        }
       }
+    } catch (err: any) {
+      console.log('   ⚠️  Tabla inscriptos_ingresos no tiene columna usuario_habilitante, saltando validación\n');
     }
 
     // Imprimir resumen

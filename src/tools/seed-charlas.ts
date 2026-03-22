@@ -5,9 +5,12 @@ import dotenv from 'dotenv';
 
 dotenv.config({ path: path.resolve(process.cwd(), '.env') });
 
+const DATABASE_URL = 'postgresql://postgres.pkjruovvbqkziulnxqxr:26610569Facu@aws-1-sa-east-1.pooler.supabase.com:5432/postgres';
+
 const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
+  connectionString: DATABASE_URL,
   ssl: { rejectUnauthorized: false },
+  connectionTimeoutMillis: 30000,
 });
 
 function generarIdCharla(index: number): string {
