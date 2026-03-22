@@ -69,7 +69,6 @@
         ],
         "sanitarias": [
             { "titulo": "Plomería Rápida", "descripcion": "Competición de instalación de sistemas de cañerías y griferías", "horario": "11:00 - 13:00", "fecha": "21/04/2025", "ubicacion": "Taller de Sanitarias", "imagen": "https://stabi-mantenimientoyconstruccion.com/wp-content/uploads/2019/11/plomeria-2.jpg", "categoria": "sanitarias" },
-            { "titulo": "Termofusión", "descripcion": "Competición de soldadura por termofusión de tuberías de PP", "horario": "15:00 - 16:30", "fecha": "22/04/2025", "ubicacion": "Taller de Sanitarias", "imagen": "https://www.termofusion.biz/cdn/shop/files/verdoscuro-750x3751-1_750x375_crop_center.jpg?v=1681421170", "categoria": "sanitarias" },
             { "titulo": "Bombas y Cisternas", "descripcion": "Competición de cálculo y montaje de sistemas de bombeo", "horario": "09:00 - 11:30", "fecha": "23/04/2025", "ubicacion": "Laboratorio Hidráulico", "imagen": "https://static.wixstatic.com/media/14624e_88ab3cfad2264dec8d2925e5ff055d66~mv2.jpg/v1/fill/w_640,h_338,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/14624e_88ab3cfad2264dec8d2925e5ff055d66~mv2.jpg", "categoria": "sanitarias" }
         ]
     }
