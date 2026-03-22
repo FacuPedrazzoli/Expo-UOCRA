@@ -4,42 +4,399 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Validación de Inscriptos — Expo Formación</title>
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"
-    />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;700&family=Roboto:wght@300;400;700&display=swap"
-      rel="stylesheet"
-    />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;700&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../css/validacion.css" />
     <link rel="icon" href="../img/logo_expo.png" />
+    <style>
+      :root {
+        --color-primary: #124565;
+        --color-secondary: #25848d;
+        --color-accent: #56bcb8;
+        --color-accent-hover: #68caca;
+        --color-background: #f0f8fa;
+        --color-white: #ffffff;
+        --color-text: #333333;
+        --color-text-light: #666666;
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        font-family: 'Roboto', Arial, sans-serif;
+        background: linear-gradient(135deg, #0d1b2a 0%, #124565 45%, #1a1a2e 100%);
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-start;
+        padding: 0;
+      }
+
+      .hero-section {
+        width: 100%;
+        padding: 3rem 1rem;
+        text-align: center;
+        background: transparent;
+      }
+
+      .hero-logo {
+        width: 180px;
+        height: auto;
+        margin-bottom: 1rem;
+        filter: drop-shadow(0 0 20px rgba(86, 188, 184, 0.4));
+        animation: pulse-glow 3s ease-in-out infinite;
+      }
+
+      @keyframes pulse-glow {
+        0%, 100% { filter: drop-shadow(0 0 15px rgba(86, 188, 184, 0.3)); }
+        50% { filter: drop-shadow(0 0 25px rgba(86, 188, 184, 0.6)); }
+      }
+
+      .hero-title {
+        font-family: 'Montserrat', sans-serif;
+        font-size: 2rem;
+        color: var(--color-white);
+        margin-bottom: 0.5rem;
+        font-weight: 700;
+        text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+      }
+
+      .hero-subtitle {
+        font-family: 'Montserrat', sans-serif;
+        font-size: 0.95rem;
+        color: var(--color-accent);
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        font-weight: 500;
+      }
+
+      .validacion-container {
+        width: 100%;
+        max-width: 500px;
+        padding: 0 1rem 3rem 1rem;
+      }
+
+      .busqueda-card,
+      .resultado-card,
+      .no-encontrado-card,
+      .error-card {
+        background: var(--color-white);
+        border-radius: 16px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+        padding: 2rem;
+        backdrop-filter: blur(10px);
+      }
+
+      .validacion-header {
+        text-align: center;
+        margin-bottom: 1.5rem;
+      }
+
+      .validacion-header h2 {
+        font-family: 'Montserrat', sans-serif;
+        color: var(--color-primary);
+        font-size: 1.4rem;
+        margin-bottom: 0.5rem;
+      }
+
+      .validacion-subtitle {
+        color: var(--color-text-light);
+        font-size: 0.95rem;
+      }
+
+      .busqueda-form {
+        display: flex;
+        gap: 0.75rem;
+      }
+
+      .input-group {
+        flex: 1;
+        position: relative;
+      }
+
+      .input-icon {
+        position: absolute;
+        left: 16px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--color-primary);
+        font-size: 1.1rem;
+      }
+
+      #dni-input {
+        width: 100%;
+        padding: 1rem 1rem 1rem 3rem;
+        border: 2px solid #dde5e9;
+        border-radius: 12px;
+        font-size: 1.1rem;
+        font-family: 'Roboto', sans-serif;
+        outline: none;
+        transition: all 0.3s ease;
+        background: #f8fafa;
+      }
+
+      #dni-input:focus {
+        border-color: var(--color-accent);
+        box-shadow: 0 0 0 4px rgba(86, 188, 184, 0.15);
+        background: white;
+      }
+
+      #dni-input.input-error-border {
+        border-color: #e74c3c;
+      }
+
+      .input-error {
+        color: #e74c3c;
+        font-size: 0.85rem;
+        margin-top: 0.5rem;
+      }
+
+      .btn-buscar {
+        padding: 1rem 1.75rem;
+        background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
+        color: white;
+        border: none;
+        border-radius: 12px;
+        font-size: 1rem;
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        white-space: nowrap;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        box-shadow: 0 4px 15px rgba(18, 69, 101, 0.3);
+      }
+
+      .btn-buscar:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(18, 69, 101, 0.4);
+      }
+
+      .btn-buscar:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+        transform: none;
+      }
+
+      .loading {
+        text-align: center;
+        padding: 2rem 1rem;
+        color: var(--color-white);
+      }
+
+      .spinner {
+        width: 50px;
+        height: 50px;
+        border: 4px solid rgba(255,255,255,0.2);
+        border-top-color: var(--color-accent);
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+        margin: 0 auto 1rem;
+      }
+
+      @keyframes spin {
+        to { transform: rotate(360deg); }
+      }
+
+      .resultado-card {
+        text-align: center;
+      }
+
+      .resultado-icon {
+        font-size: 3rem;
+        color: var(--color-accent);
+        margin-bottom: 1rem;
+      }
+
+      .resultado-card h2 {
+        font-family: 'Montserrat', sans-serif;
+        color: var(--color-primary);
+        font-size: 1.5rem;
+        margin-bottom: 1rem;
+      }
+
+      .badge-validado {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: linear-gradient(135deg, #4caf50 0%, #45a049 100%);
+        color: white;
+        padding: 0.75rem 1.25rem;
+        border-radius: 30px;
+        font-weight: 600;
+        font-size: 0.95rem;
+        box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+        margin-bottom: 1rem;
+      }
+
+      .badge-validado i {
+        font-size: 1.1rem;
+      }
+
+      .fecha-validacion {
+        font-weight: 400;
+        opacity: 0.9;
+        font-size: 0.85rem;
+      }
+
+      .btn-validar {
+        width: 100%;
+        padding: 1.1rem;
+        background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-secondary) 100%);
+        color: white;
+        border: none;
+        border-radius: 12px;
+        font-size: 1.15rem;
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.6rem;
+        box-shadow: 0 4px 20px rgba(86, 188, 184, 0.4);
+        text-transform: uppercase;
+        letter-spacing: 1px;
+      }
+
+      .btn-validar:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 25px rgba(86, 188, 184, 0.5);
+      }
+
+      .btn-validar:active {
+        transform: scale(0.98);
+      }
+
+      .btn-validar:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+      }
+
+      .confirmacion {
+        text-align: center;
+        padding: 1rem;
+      }
+
+      .confirmacion-icon {
+        font-size: 3.5rem;
+        color: #4caf50;
+        margin-bottom: 0.75rem;
+        animation: success-pop 0.5s ease;
+      }
+
+      @keyframes success-pop {
+        0% { transform: scale(0); }
+        50% { transform: scale(1.2); }
+        100% { transform: scale(1); }
+      }
+
+      .confirmacion p {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: var(--color-text);
+      }
+
+      .no-encontrado-card {
+        text-align: center;
+        border-left: 5px solid #ff9800;
+      }
+
+      .no-encontrado-icon {
+        font-size: 3rem;
+        color: #ff9800;
+        margin-bottom: 0.75rem;
+      }
+
+      .no-encontrado-card p {
+        color: var(--color-text-light);
+        font-size: 1rem;
+      }
+
+      .error-card {
+        text-align: center;
+        border-left: 5px solid #e74c3c;
+      }
+
+      .error-icon {
+        font-size: 3rem;
+        color: #e74c3c;
+        margin-bottom: 0.75rem;
+      }
+
+      .error-card p {
+        color: var(--color-text-light);
+        font-size: 1rem;
+      }
+
+      .footer-info {
+        text-align: center;
+        padding: 1.5rem;
+        color: rgba(255,255,255,0.6);
+        font-size: 0.85rem;
+      }
+
+      .footer-info a {
+        color: var(--color-accent);
+        text-decoration: none;
+      }
+
+      @media (max-width: 480px) {
+        .hero-title {
+          font-size: 1.5rem;
+        }
+
+        .busqueda-form {
+          flex-direction: column;
+        }
+
+        .btn-buscar {
+          justify-content: center;
+        }
+
+        .busqueda-card,
+        .resultado-card,
+        .no-encontrado-card,
+        .error-card {
+          padding: 1.5rem;
+        }
+      }
+    </style>
   </head>
 
   <body>
-    <div class="validacion-container">
-      <!-- Header -->
-      <div class="validacion-header">
-        <img
-          src="../img/logo_expo.png"
-          alt="Logo Expo"
-          class="validacion-logo"
-        />
-        <h1>Validación de Inscriptos</h1>
-        <p class="validacion-subtitle">
-          Buscar por DNI para verificar y validar inscripción
-        </p>
-      </div>
+    <!-- Hero Section -->
+    <div class="hero-section">
+      <img src="../img/logo-expo-formacion.png" alt="Logo Expo Formación" class="hero-logo" />
+      <p class="hero-subtitle">Sector Construcción · 2026</p>
+      <h1 class="hero-title">Panel de Validación</h1>
+    </div>
 
+    <div class="validacion-container">
       <!-- Buscador -->
       <div class="busqueda-card">
+        <div class="validacion-header">
+          <h2>Buscar Inscripto</h2>
+          <p class="validacion-subtitle">Ingresá el DNI para verificar y validar</p>
+        </div>
+        
         <div class="busqueda-form">
           <div class="input-group">
             <i class="fas fa-id-card input-icon"></i>
             <input
               type="text"
               id="dni-input"
-              placeholder="Ingresá el DNI del inscripto"
+              placeholder="Número de DNI"
               autocomplete="off"
               inputmode="numeric"
               maxlength="20"
@@ -62,21 +419,19 @@
 
       <!-- Resultado: inscripto encontrado -->
       <div id="resultado" class="resultado-card" hidden>
-        <div class="resultado-header">
-          <i class="fas fa-user-check resultado-icon"></i>
-          <h2 id="nombre-completo"></h2>
-        </div>
-
+        <i class="fas fa-user-check resultado-icon"></i>
+        <h2 id="nombre-completo"></h2>
+        
         <!-- Badge ya validado -->
         <div id="badge-validado" class="badge-validado" hidden>
           <i class="fas fa-check-circle"></i>
-          <span>Ya validado</span>
+          <span>Inscripción Validada</span>
           <span id="fecha-validacion" class="fecha-validacion"></span>
         </div>
 
         <!-- Botón validar -->
         <button id="btn-validar" class="btn-validar" hidden>
-          <i class="fas fa-clipboard-check"></i> VALIDAR
+          <i class="fas fa-clipboard-check"></i> Validar Inscripción
         </button>
 
         <!-- Confirmación post-validación -->
@@ -88,7 +443,7 @@
 
       <!-- Resultado: no encontrado -->
       <div id="no-encontrado" class="no-encontrado-card" hidden>
-        <i class="fas fa-user-times no-encontrado-icon"></i>
+        <i class="fas fa-user-slash no-encontrado-icon"></i>
         <p>No se encontró ningún inscripto con ese DNI.</p>
       </div>
 
@@ -97,6 +452,11 @@
         <i class="fas fa-exclamation-triangle error-icon"></i>
         <p id="error-mensaje">Error al comunicarse con el servidor.</p>
       </div>
+    </div>
+
+    <div class="footer-info">
+      <p>Expo Formación UOCRA &copy; 2026</p>
+      <p><a href="/">Volver al inicio</a></p>
     </div>
 
     <script src="../js/validacion.js"></script>
