@@ -8,7 +8,10 @@
         "build": "tsc",
         "start": "NODE_ENV=production node build/index.js servidor",
         "dev": "ts-node-dev ./src/index.ts",
-        "compilar": "tsc --watch"
+        "compilar": "tsc --watch",
+        "seed:charlas": "ts-node src/tools/seed-charlas.ts",
+        "seed:inscriptos": "ts-node src/tools/seed-inscriptos.ts",
+        "seed:reset": "ts-node src/tools/seed-reset.ts"
     },
     "engines": {
         "node": ">=18.0.0"
