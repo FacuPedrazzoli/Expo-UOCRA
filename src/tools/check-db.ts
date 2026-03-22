@@ -1,7 +1,13 @@
 import { Pool } from 'pg';
 
+const DATABASE_URL = process.env.DATABASE_URL || '';
+if (!DATABASE_URL) {
+  console.error('❌ Error: DATABASE_URL no está configurada en las variables de entorno.');
+  process.exit(1);
+}
+
 const pool = new Pool({
-    connectionString: 'postgresql://postgres:26610569Facu@db.pkjruovvbqkziulnxqxr.supabase.co:5432/postgres',
+    connectionString: DATABASE_URL,
     ssl: { rejectUnauthorized: false },
 });
 

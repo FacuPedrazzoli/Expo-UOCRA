@@ -101,7 +101,7 @@ router.get('/charlas', async (_req, res) => {
                 c.empresa,
                 c.ubicacion,
                 COALESCE(ic.total_inscriptos, 0) AS participantes
-            FROM Chantalas c
+            FROM charlas c
             LEFT JOIN (
                 SELECT charlas_id, COUNT(*) AS total_inscriptos
                 FROM inscriptos_charlas

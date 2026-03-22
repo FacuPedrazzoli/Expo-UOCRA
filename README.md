@@ -7,29 +7,37 @@ Este repositorio contiene una aplicación web para la gestión de la "Expo Forma
 ## Estructura del Proyecto
 
 ```
-proyectoexpo/
+expo-uocra/
 ├── .env                    # Variables de entorno para configuración
 ├── public/                 # Archivos públicos accesibles desde el navegador
 │   ├── css/                # Hojas de estilo
 │   ├── html/               # Archivos HTML
 │   ├── img/                # Imágenes y recursos visuales
 │   └── js/                 # Scripts del cliente
-│       ├── app.js          # Funcionalidades básicas de la UI
-│       ├── data.json       # Datos estáticos para el cliente
-│       ├── inscriptos.js   # Controlador de inscripciones
-│       └── main.js         # Sistema principal de controladores
-├── sql/                    # Scripts SQL para la base de datos
-│   └── script_azu_ver1.sql # Definición de tablas y datos iniciales
-└── src/                    # Código fuente del servidor
-    ├── index.ts            # Punto de entrada de la aplicación
-    ├── model/              # Definición de modelos de datos
-    │   └── inscripcion.ts  # Modelo de inscripción
-    ├── routes/             # Rutas/endpoints de la API
-    │   ├── inscriptos.ts   # API para gestión de inscripciones
-    │   ├── mesa-de-entrada.ts
-    │   └── querys.ts
-    └── tools/              # Utilidades y herramientas
-        └── insertar-inscriptos.js # Generador de datos de prueba
+│       ├── app.js          # Funcionalidades principales de la UI
+│       ├── enhancements.js # Mejoras visuales (sticky nav, counters)
+│       ├── validacion.js   # Script del panel de validación
+│       ├── data.json       # Datos estáticos de empresas
+│       └── utils/          # Utilidades del cliente
+├── src/                    # Código fuente del servidor
+│   ├── app.ts             # Factory de configuración Express
+│   ├── index.ts           # Punto de entrada para Vercel
+│   ├── server.ts          # Servidor standalone
+│   ├── vercel.ts          # Configuración Vercel/Serverless
+│   ├── config/            # Configuración
+│   │   └── env.ts         # Variables de entorno
+│   ├── database/          # Conexión a base de datos
+│   │   └── database.ts    # Pool de PostgreSQL
+│   ├── model/             # Definición de modelos de datos
+│   │   └── inscripcion.ts # Modelo(TypeScript) de inscripción
+│   ├── routes/            # Rutas/endpoints de la API
+│   │   ├── inscriptos.ts  # API para gestión de inscripciones
+│   │   └── validacion.ts  # API para validación de inscriptos
+│   └── utils/             # Utilidades del servidor
+│       ├── logger.ts      # Sistema de logs
+│       ├── middleware.ts  # Middlewares (rate limit, CORS, etc.)
+│       └── sanitize.ts    # Sanitización de inputs
+└── sql/                    # Scripts SQL para la base de datos
 ```
 
 ## Características Principales
@@ -40,45 +48,52 @@ proyectoexpo/
 - **Mapa de muestras:** Visualización de stands y ubicaciones de las muestras del evento.
 - **Panel administrativo:** Área para validar inscripciones de participantes.
 - **Diseño responsive:** Adaptado a dispositivos móviles y de escritorio.
+- **Optimizado para serverless:** Compatible con Vercel y entornos serverless.
 
 ## Tecnologías Utilizadas
 
 - **Frontend:**
-  - HTML5, CSS3, JavaScript
-  - Diseño modular con controladores específicos
-  - Sistema de eventos para comunicación entre módulos
+  - HTML5, CSS3, JavaScript (ES Modules)
+  - Diseño modular con scripts separados
+  - Intersection Observer para animaciones
 
 - **Backend:**
   - Node.js con TypeScript
   - Express para el servidor API
-  - MySQL para la base de datos
+  - PostgreSQL (Supabase) para la base de datos
+  - Compatibilidad con serverless (Vercel)
 
 - **Herramientas:**
-  - Jest para pruebas unitarias
   - dotenv para gestión de variables de entorno
+  - TypeScript para tipado estático
+  - express-rate-limit para protección de rutas
 
 ## Base de Datos
 
-La aplicación utiliza MySQL con las siguientes tablas principales:
+La aplicación utiliza PostgreSQL (Supabase) con las siguientes tablas principales:
 - `inscriptos`: Almacena información de los participantes inscritos
 - `charlas`: Contiene las charlas programadas para el evento
-- `como_te_enteraste_tbl`: Opciones para el campo "Cómo te enteraste"
-- `inscripciones_charlas`: Relación entre inscriptos y charlas
-- `colaboradores`: Datos de colaboradores/presentadores
+- `como_te_enteraste`: Opciones para el campo "Cómo te enteraste"
+- `inscriptos_charlas`: Relación muchos a muchos entre inscriptos y charlas
+- `inscriptos_ingresos`: Historial de ingresos/validaciones
+- `usuarios`: Usuarios del sistema de validación
+- `empresas`: Empresas participantes del evento
+- `muestras`: Stands y ubicaciones de muestras
+- `competiciones`: Competiciones del evento
 
 ## Configuración y Ejecución
 
 ### Requisitos Previos
-- Node.js (v14 o superior)
-- MySQL Server (v5.7 o superior)
-- npm o yarn
+- Node.js (v18 o superior)
+- PostgreSQL (o cuenta de Supabase)
+- npm
 
 ### Instalación
 
 1. Clonar el repositorio:
 ```bash
 git clone <url-del-repositorio>
-cd proyectoexpo
+cd expo-uocra
 ```
 
 2. Instalar dependencias:
@@ -88,41 +103,52 @@ npm install
 
 3. Configurar el archivo `.env`:
 ```
-DB_HOST=localhost
-DB_USER=root
-DB_PASSWORD=
-DB_NAME=inscripciones
-DB_PORT=3306
+DATABASE_URL=postgresql://user:password@host:5432/dbname
+NODE_ENV=development
 PORT=3000
 ```
 
-4. Inicializar la base de datos:
+4. Compilar TypeScript:
 ```bash
-mysql -u root < sql/script_azu_ver1.sql
+npm run build
 ```
 
 ### Ejecución
 
-- Iniciar el servidor:
+- Iniciar el servidor en desarrollo:
+```bash
+npm run dev
+```
+
+- Iniciar el servidor en producción:
 ```bash
 npm start
 ```
 
-- Generar datos de prueba:
+- Verificar compilación TypeScript:
 ```bash
-npm run start -- inscriptos 50
-```
-
-- Insertar charlas desde data.json:
-```bash
-npm run start -- charlas
+npm run build
 ```
 
 ## API Endpoints
 
+### Inscripción
 - `POST /api/inscripcion`: Registra una nueva inscripción
 - `GET /api/inscripcion/charlas`: Obtiene todas las charlas disponibles
 - `GET /api/inscripcion/como-te-enteraste`: Obtiene opciones para "cómo te enteraste"
+- `POST /api/inscripcion/logs`: Envía logs del cliente
+
+### Validación
+- `GET /api/validacion/buscar?dni=XXX`: Busca inscripto por DNI
+- `PATCH /api/validacion/validar`: Marca al inscripto como validado
+
+### Utility
+- `GET /health`: Health check del servidor
+
+## URL de Producción
+
+- **Sitio principal:** https://expoformacionuocra.org/
+- **Panel de validación:** https://expoformacionuocra.org/admin-validacion
 
 ## Flujo de Usuario
 
@@ -130,7 +156,7 @@ npm run start -- charlas
 2. Puede explorar las charlas programadas, empresas participantes y muestras abiertas
 3. Para inscribirse, el usuario completa un formulario con:
    - Datos personales (nombre, apellido, DNI, email)
-   - Selección de charla
+   - Selección de charlas (puede seleccionar múltiples)
    - Cómo se enteró del evento
 4. Tras la inscripción exitosa, recibe confirmación y puede volver a la página principal
 
@@ -153,4 +179,4 @@ Este proyecto es propiedad de UOCRA Formación y está destinado para uso intern
 
 ---
 
-*© 2025 Expo Formación*
+*© 2026 Expo Formación*
