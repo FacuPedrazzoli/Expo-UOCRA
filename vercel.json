@@ -1,52 +1,22 @@
 {
-    "version": 2,
-    "functions": {
-        "src/index.ts": {
-            "maxDuration": 10
-        }
-    },
-    "builds": [
-        {
-            "src": "src/index.ts",
-            "use": "@vercel/node"
-        },
-        {
-            "src": "public/**",
-            "use": "@vercel/static"
-        }
-    ],
-    "routes": [
-        {
-            "src": "/api/(.*)",
-            "dest": "/src/index.ts"
-        },
-        {
-            "src": "/health",
-            "dest": "/src/index.ts"
-        },
-        {
-            "src": "/js/(.*)",
-            "dest": "/public/js/$1"
-        },
-        {
-            "src": "/css/(.*)",
-            "dest": "/public/css/$1"
-        },
-        {
-            "src": "/img/(.*)",
-            "dest": "/public/img/$1"
-        },
-        {
-            "src": "/admin-validacion",
-            "dest": "/public/html/validacion.html"
-        },
-        {
-            "src": "/estadisticas",
-            "dest": "/public/html/estadisticas.html"
-        },
-        {
-            "src": "/(.*)",
-            "dest": "/public/html/index.html"
-        }
-    ]
+  "version": 2,
+  "builds": [
+    {
+      "src": "src/index.ts",
+      "use": "@vercel/node",
+      "config": {
+        "includeFiles": ["src/**", "public/**"]
+      }
+    }
+  ],
+  "routes": [
+    { "src": "/api/(.*)", "dest": "/src/index.ts" },
+    { "src": "/health", "dest": "/src/index.ts" },
+    { "src": "/js/(.*)", "dest": "/public/js/$1" },
+    { "src": "/css/(.*)", "dest": "/public/css/$1" },
+    { "src": "/img/(.*)", "dest": "/public/img/$1" },
+    { "src": "/admin-validacion", "dest": "/public/html/validacion.html" },
+    { "src": "/estadisticas", "dest": "/public/html/estadisticas.html" },
+    { "src": "/(.*)", "dest": "/public/html/index.html" }
+  ]
 }
