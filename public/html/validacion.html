@@ -4,11 +4,11 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="robots" content="noindex, nofollow">
-    <title>Validación de Inscriptos — Expo Formación</title>
+    <title>Validación — Expo Formación</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,400&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../css/validacion.css" />
     <link rel="icon" href="../img/logo_expo.png" />
   </head>
@@ -17,13 +17,13 @@
 
     <!-- HERO -->
     <div class="hero-section">
-      <img src="../img/logo-expo-formacion.png" alt="Logo Expo Formación" class="hero-logo" />
+      <img src="../img/logo-expo-formacion.png" alt="Expo Formación" class="hero-logo" />
       <div class="hero-linea-deco"></div>
-      <p class="hero-subtitle">SECTOR CONSTRUCCIÓN · 2026</p>
-      <h1 class="hero-title">Panel de Validación</h1>
+      <p class="hero-subtitle">Sector Construcción · 2026</p>
+      <h1 class="hero-title">Validación de Acceso</h1>
       <div class="contador-badge">
+        <span class="contador-numero" id="contador-validados">—</span>
         <span class="contador-label">Validados</span>
-        <span id="contador-validados" class="contador-numero">—</span>
       </div>
     </div>
 
@@ -37,14 +37,14 @@
           <input
             type="text"
             id="dni-input"
-            placeholder="DNI o escanear QR"
+            placeholder="DNI"
             autocomplete="off"
             inputmode="numeric"
             autofocus
           />
         </div>
         <button id="btn-validar" class="btn-validar-principal">
-          <i class="fas fa-bolt"></i> VALIDAR
+          Validar
         </button>
       </div>
 
@@ -59,15 +59,14 @@
         <h2 id="nombre-resultado" class="nombre-resultado"></h2>
         <div id="charlas-resultado" class="charlas-resultado"></div>
         <div id="ya-validado-msg" class="ya-validado-msg" hidden>
-          <i class="fas fa-clock"></i>
-          <span>Ya validado previamente</span>
+          Validado anteriormente
         </div>
       </div>
 
       <!-- ERROR NO ENCONTRADO -->
       <div id="resultado-error" class="resultado-card resultado-error glass-card" hidden>
-        <i class="fas fa-user-slash resultado-icon"></i>
-        <p class="error-mensaje">DNI no encontrado</p>
+        <i class="fas fa-times-circle resultado-icon"></i>
+        <p class="error-mensaje">DNI no registrado</p>
       </div>
 
       <!-- ERROR SERVIDOR -->
@@ -80,10 +79,7 @@
 
     <!-- FOOTER -->
     <div class="footer-info">
-      <p>Expo Formación UOCRA &copy; 2026 &nbsp;·&nbsp;
-        <a href="/">Inicio</a> &nbsp;·&nbsp;
-        <a href="/estadisticas">Estadísticas</a>
-      </p>
+      <p>Expo Formación UOCRA &copy; 2026 · <a href="/">Inicio</a> · <a href="/estadisticas">Estadísticas</a></p>
     </div>
 
     <script src="../js/validacion.js"></script>
