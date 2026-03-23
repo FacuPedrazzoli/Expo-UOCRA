@@ -4,6 +4,7 @@ import logger from '../utils/logger';
 
 declare global {
     var _pgPool: Pool | undefined;
+    var _poolConfig: any | undefined;
 }
 
 const isProd = config.server.isProd;
@@ -14,54 +15,49 @@ const poolConfig = {
     password: config.db.password,
     database: config.db.name,
     port: config.db.port,
-    max: isProd ? 1 : 10,
-    idleTimeoutMillis: isProd ? 1000 : 10000,
-    connectionTimeoutMillis: isProd ? 2000 : 5000,
-    allowExitOnIdle: !isProd,
+    max: 1,
+    min: 0,
+    idleTimeoutMillis: 800,
+    connectionTimeoutMillis: 1500,
+    allowExitOnIdle: true,
     ssl: isProd ? { rejectUnauthorized: false } : false,
-    ...(isProd ? { statement_timeout: 8000 } : {}),
+    statement_timeout: 5000,
+    query_timeout: 5000,
+    keepAlive: true,
+    keepAliveInitialDelay: 0,
 };
 
 let pool: Pool;
 
 if (isProd) {
-    if (global._pgPool) {
+    if (global._pgPool && global._poolConfig === JSON.stringify(poolConfig)) {
         pool = global._pgPool;
         logger.debug('[DB] Reutilizando pool existente en producción');
     } else {
+        if (global._pgPool) {
+            global._pgPool.end().catch(() => {});
+        }
         pool = new Pool(poolConfig);
         global._pgPool = pool;
-        logger.info('[DB] Pool creado y guardado en global para producción');
+        global._poolConfig = JSON.stringify(poolConfig);
+        logger.info('[DB] Pool creado con config optimizada para serverless');
     }
 } else {
     pool = new Pool(poolConfig);
 }
 
-let isReconnecting = false;
-
-async function handleReconnect(): Promise<void> {
-    if (isReconnecting) return;
-    isReconnecting = true;
-    logger.warn('[DB] Reconectando pool de PostgreSQL...');
-    try {
-        await pool.end();
-        const newPool = new Pool(poolConfig);
-        if (isProd) {
-            global._pgPool = newPool;
+pool.on('error', (err: any) => {
+    logger.error('[DB] Pool error:', err.message);
+    if (isProd && (err.message?.includes('connection') || err.code === 'ECONNRESET' || err.message?.includes('max clients'))) {
+        try {
+            pool.end().then(() => {
+                pool = new Pool(poolConfig);
+                global._pgPool = pool;
+                logger.info('[DB] Pool recreado después de error de conexión');
+            }).catch(() => {});
+        } catch (e) {
+            logger.error('[DB] Error al recrear pool:', e);
         }
-        Object.assign(pool, newPool);
-        logger.info('[DB] Pool recreado exitosamente');
-    } catch (err) {
-        logger.error('[DB] Error al recrear pool:', err);
-    } finally {
-        isReconnecting = false;
-    }
-}
-
-pool.on('error', async (err: any) => {
-    logger.error('[DB] Error inesperado en el pool', err);
-    if (isProd && (err.message?.includes('connection') || err.code === 'ECONNRESET')) {
-        await handleReconnect();
     }
 });
 
@@ -69,37 +65,45 @@ pool.on('connect', () => {
     logger.debug('[DB] Nueva conexión establecida');
 });
 
-async function testConnection(): Promise<void> {
-    let retries = 5;
-    const retryDelay = 3000;
-    
-    logger.info(`Intentando conectar a PostgreSQL: ${config.db.host}:${config.db.port}/${config.db.name}`);
-    
-    while (retries > 0) {
-        try {
-            const client = await pool.connect();
-            await client.query('SELECT NOW()');
-            client.release();
-            logger.debug(`[DB] Conexión establecida: ${config.db.name}@${config.db.host}:${config.db.port}`);
-            return;
-        } catch (err: any) {
-            retries--;
-            logger.error(`Error de conexión PostgreSQL (intentos restantes: ${retries}): ${err.message}`);
-            if (retries === 0) {
-                logger.error('[DB] No se pudo conectar después de 5 intentos. El servidor continuará.');
-                return;
-            }
-            await new Promise(r => setTimeout(r, retryDelay));
-        }
-    }
-}
-
-if (!isProd) {
-    testConnection().catch(() => undefined);
-}
+pool.on('remove', () => {
+    logger.debug('[DB] Conexión removida del pool');
+});
 
 export default pool;
 
 export async function getClient(): Promise<PoolClient> {
-    return await pool.connect();
+    let client: PoolClient | null = null;
+    let retries = 3;
+    
+    while (retries > 0) {
+        try {
+            client = await pool.connect();
+            return client;
+        } catch (err: any) {
+            retries--;
+            if (err.message?.includes('max clients') || err.message?.includes('connection')) {
+                logger.warn(`[DB] Conexión agotada, reintento ${3 - retries}/3...`);
+                await new Promise(r => setTimeout(r, 200));
+            } else {
+                throw err;
+            }
+        }
+    }
+    
+    throw new Error('No se pudo obtener conexión después de 3 intentos');
+}
+
+export async function query<T = any>(text: string, params?: any[]): Promise<T[]> {
+    const client = await getClient();
+    try {
+        const result = await client.query(text, params);
+        return result.rows;
+    } finally {
+        client.release();
+    }
+}
+
+export async function queryOne<T = any>(text: string, params?: any[]): Promise<T | null> {
+    const rows = await query<T>(text, params);
+    return rows[0] || null;
 }

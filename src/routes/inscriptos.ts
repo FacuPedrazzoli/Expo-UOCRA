@@ -1,7 +1,7 @@
 import { Router, Response } from 'express';
 import { PoolClient } from 'pg';
 import { v4 as uuidv4 } from 'uuid';
-import pool, { getClient } from '../database/database';
+import pool, { getClient, query, queryOne } from '../database/database';
 import logger from '../utils/logger';
 import { inscripcionRateLimit } from '../utils/middleware';
 import { sanitizeAndValidateInscripcion } from '../utils/sanitize';
@@ -10,10 +10,15 @@ const router = Router();
 
 async function dbQuery(text: string, params?: any[]): Promise<any> {
     const start = Date.now();
-    const res = await pool.query(text, params);
-    const duration = Date.now() - start;
-    logger.debug('[DB] Executed query', { text: text.substring(0, 50), duration, rows: res.rowCount });
-    return res;
+    const client = await getClient();
+    try {
+        const res = await client.query(text, params);
+        const duration = Date.now() - start;
+        logger.debug('[DB] Query', { text: text.substring(0, 50), duration, rows: res.rowCount });
+        return res;
+    } finally {
+        client.release();
+    }
 }
 
 router.post('/', inscripcionRateLimit, async (req, res) => {
