@@ -22,7 +22,7 @@ export function createApp(isServerless = false): Express {
     app.use(cors({
         origin: isServerless ? '*' : (process.env.CORS_ORIGIN || '*'),
         methods: ['GET', 'POST', 'PATCH'],
-        allowedHeaders: ['Content-Type'],
+        allowedHeaders: ['Content-Type', 'Accept'],
     }));
     app.use(express.json({ limit: '512kb' }));
     app.use(express.urlencoded({ extended: true, limit: '512kb' }));

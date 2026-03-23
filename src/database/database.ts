@@ -2,20 +2,40 @@ import { Pool, PoolClient } from 'pg';
 import { config } from '../config/env';
 import logger from '../utils/logger';
 
+declare global {
+    var _pgPool: Pool | undefined;
+}
+
 const isProd = config.server.isProd;
 
-const pool = new Pool({
+const poolConfig = {
     host: config.db.host,
     user: config.db.user,
     password: config.db.password,
     database: config.db.name,
     port: config.db.port,
-    max: isProd ? 2 : 10,
-    idleTimeoutMillis: isProd ? 5000 : 10000,
-    connectionTimeoutMillis: isProd ? 3000 : 5000,
+    max: isProd ? 1 : 10,
+    idleTimeoutMillis: isProd ? 1000 : 10000,
+    connectionTimeoutMillis: isProd ? 2000 : 5000,
     allowExitOnIdle: !isProd,
     ssl: isProd ? { rejectUnauthorized: false } : false,
-});
+    ...(isProd ? { statement_timeout: 8000 } : {}),
+};
+
+let pool: Pool;
+
+if (isProd) {
+    if (global._pgPool) {
+        pool = global._pgPool;
+        logger.debug('[DB] Reutilizando pool existente en producción');
+    } else {
+        pool = new Pool(poolConfig);
+        global._pgPool = pool;
+        logger.info('[DB] Pool creado y guardado en global para producción');
+    }
+} else {
+    pool = new Pool(poolConfig);
+}
 
 let isReconnecting = false;
 
@@ -25,18 +45,11 @@ async function handleReconnect(): Promise<void> {
     logger.warn('[DB] Reconectando pool de PostgreSQL...');
     try {
         await pool.end();
-        Object.assign(pool, new Pool({
-            host: config.db.host,
-            user: config.db.user,
-            password: config.db.password,
-            database: config.db.name,
-            port: config.db.port,
-            max: isProd ? 2 : 10,
-            idleTimeoutMillis: isProd ? 5000 : 10000,
-            connectionTimeoutMillis: isProd ? 3000 : 5000,
-            allowExitOnIdle: !isProd,
-            ssl: isProd ? { rejectUnauthorized: false } : false,
-        }));
+        const newPool = new Pool(poolConfig);
+        if (isProd) {
+            global._pgPool = newPool;
+        }
+        Object.assign(pool, newPool);
         logger.info('[DB] Pool recreado exitosamente');
     } catch (err) {
         logger.error('[DB] Error al recrear pool:', err);
@@ -81,7 +94,9 @@ async function testConnection(): Promise<void> {
     }
 }
 
-testConnection().catch(() => undefined);
+if (!isProd) {
+    testConnection().catch(() => undefined);
+}
 
 export default pool;
 
