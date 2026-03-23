@@ -8,7 +8,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,400&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../css/validacion.css" />
     <link rel="icon" href="../img/logo_expo.png" />
   </head>
@@ -17,10 +17,10 @@
 
     <!-- HERO -->
     <div class="hero-section">
-      <img src="../img/logo-expo-formacion.png" alt="Expo Formación" class="hero-logo" />
+      <img src="../img/logo-expo-formacion.png" alt="Logo Expo Formación" class="hero-logo" />
       <div class="hero-linea-deco"></div>
-      <p class="hero-subtitle">Sector Construcción · 2026</p>
-      <h1 class="hero-title">Validación de Acceso</h1>
+      <p class="hero-subtitle">SECTOR CONSTRUCCIÓN · 2026</p>
+      <h1 class="hero-title">Panel de Validación</h1>
       <div class="contador-badge">
         <span class="contador-numero" id="contador-validados">—</span>
         <span class="contador-label">Validados</span>
@@ -37,14 +37,14 @@
           <input
             type="text"
             id="dni-input"
-            placeholder="DNI"
+            placeholder="Ingresá el DNI"
             autocomplete="off"
             inputmode="numeric"
             autofocus
           />
         </div>
         <button id="btn-validar" class="btn-validar-principal">
-          Validar
+          <i class="fas fa-check"></i> Validar
         </button>
       </div>
 
@@ -59,6 +59,7 @@
         <h2 id="nombre-resultado" class="nombre-resultado"></h2>
         <div id="charlas-resultado" class="charlas-resultado"></div>
         <div id="ya-validado-msg" class="ya-validado-msg" hidden>
+          <i class="fas fa-clock"></i>
           Validado anteriormente
         </div>
       </div>
@@ -66,7 +67,7 @@
       <!-- ERROR NO ENCONTRADO -->
       <div id="resultado-error" class="resultado-card resultado-error glass-card" hidden>
         <i class="fas fa-times-circle resultado-icon"></i>
-        <p class="error-mensaje">DNI no registrado</p>
+        <p class="error-mensaje">DNI no encontrado</p>
       </div>
 
       <!-- ERROR SERVIDOR -->
