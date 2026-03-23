@@ -11,6 +11,7 @@ import {
 } from './utils/middleware';
 import inscriptosRouter from './routes/inscriptos';
 import validacionRouter from './routes/validacion';
+import statsRouter from './routes/stats';
 
 export function createApp(isServerless = false): Express {
     const app = express();
@@ -41,6 +42,7 @@ export function createApp(isServerless = false): Express {
 
     app.use('/api/inscripcion', inscriptosRouter);
     app.use('/api/validacion', validacionRouter);
+    app.use('/api/stats', statsRouter);
 
     app.use(errorHandler);
     app.use(unknownEndpoint);

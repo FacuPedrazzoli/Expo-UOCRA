@@ -50,6 +50,11 @@ export default function startServer() {
         res.sendFile(path.join(HTML_PATH, 'validacion.html'));
     });
 
+    app.get('/estadisticas', (_req, res) => {
+        res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+        res.sendFile(path.join(HTML_PATH, 'estadisticas.html'));
+    });
+
     app.use((req, res, _next) => {
         if (req.path.startsWith('/api/')) {
             return unknownEndpoint(req, res);

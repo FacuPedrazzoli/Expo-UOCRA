@@ -36,6 +36,10 @@
             "dest": "/public/html/validacion.html"
         },
         {
+            "src": "/estadisticas",
+            "dest": "/public/html/estadisticas.html"
+        },
+        {
             "src": "/(.*)",
             "dest": "/public/html/index.html"
         }

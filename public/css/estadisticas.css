@@ -1,0 +1,72 @@
+/* Reset y base */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Roboto', Arial, sans-serif; background: linear-gradient(135deg, #0d1b2a 0%, #124565 45%, #1a1a2e 100%); min-height: 100vh; color: #fff; }
+
+/* Hero header del panel */
+.stats-hero { text-align: center; padding: 2.5rem 1rem 1.5rem; }
+.stats-logo { width: 160px; height: auto; margin-bottom: 1rem; filter: drop-shadow(0 0 20px rgba(86,188,184,0.4)); }
+.stats-title { font-family: 'Montserrat', sans-serif; font-size: 1.8rem; font-weight: 700; color: #fff; margin-bottom: 0.25rem; }
+.stats-subtitle { font-size: 0.9rem; color: #56bcb8; text-transform: uppercase; letter-spacing: 2px; }
+
+/* Contenedor principal */
+.stats-container { max-width: 1100px; margin: 0 auto; padding: 0 1rem 3rem; }
+
+/* Tarjetas resumen (4 en fila) */
+.resumen-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-bottom: 2rem; }
+.resumen-card { background: rgba(255,255,255,0.07); border: 1px solid rgba(86,188,184,0.2); border-radius: 12px; padding: 1.5rem 1rem; text-align: center; }
+.resumen-card .card-icon { font-size: 1.8rem; color: #56bcb8; margin-bottom: 0.5rem; }
+.resumen-card .card-number { font-family: 'Montserrat', sans-serif; font-size: 2.5rem; font-weight: 700; color: #fff; line-height: 1; }
+.resumen-card .card-label { font-size: 0.85rem; color: rgba(255,255,255,0.6); margin-top: 0.4rem; }
+
+/* Secciones de gráficos */
+.stats-section { background: rgba(255,255,255,0.05); border: 1px solid rgba(86,188,184,0.15); border-radius: 12px; padding: 1.5rem; margin-bottom: 1.5rem; }
+.stats-section-title { font-family: 'Montserrat', sans-serif; font-size: 1rem; font-weight: 600; color: #56bcb8; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 1.25rem; display: flex; align-items: center; gap: 0.5rem; }
+
+/* Barras de progreso (charlas y como se enteraron) */
+.barra-item { margin-bottom: 1rem; }
+.barra-header { display: flex; justify-content: space-between; font-size: 0.9rem; margin-bottom: 0.3rem; }
+.barra-header .barra-label { color: rgba(255,255,255,0.85); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 70%; }
+.barra-header .barra-valor { color: #56bcb8; font-weight: 600; flex-shrink: 0; }
+.barra-track { background: rgba(255,255,255,0.1); border-radius: 4px; height: 8px; overflow: hidden; }
+.barra-fill { height: 100%; border-radius: 4px; background: linear-gradient(90deg, #124565, #56bcb8); transition: width 0.8s ease; }
+.barra-fill.danger { background: linear-gradient(90deg, #c62828, #e53935); }
+.barra-fill.warning { background: linear-gradient(90deg, #e65100, #ff9800); }
+
+/* Gráfico de tendencia por día (barras verticales CSS) */
+.tendencia-grid { display: flex; align-items: flex-end; gap: 4px; height: 120px; padding-top: 1rem; }
+.tendencia-bar-wrap { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; height: 100%; justify-content: flex-end; }
+.tendencia-bar { width: 100%; background: linear-gradient(180deg, #56bcb8, #124565); border-radius: 3px 3px 0 0; transition: height 0.6s ease; min-height: 2px; }
+.tendencia-label { font-size: 0.6rem; color: rgba(255,255,255,0.4); writing-mode: vertical-rl; transform: rotate(180deg); white-space: nowrap; }
+
+/* Estado validados vs pendientes (donut simple CSS) */
+.validacion-row { display: flex; align-items: center; gap: 2rem; }
+.validacion-donut { position: relative; width: 120px; height: 120px; flex-shrink: 0; }
+.validacion-donut svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+.validacion-donut .donut-text { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; }
+.validacion-donut .donut-pct { font-family: 'Montserrat', sans-serif; font-size: 1.4rem; font-weight: 700; color: #fff; display: block; line-height: 1; }
+.validacion-donut .donut-sub { font-size: 0.65rem; color: rgba(255,255,255,0.5); }
+.validacion-leyenda { flex: 1; }
+.leyenda-item { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.75rem; font-size: 0.9rem; }
+.leyenda-dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; }
+
+/* Loading y error */
+.stats-loading { text-align: center; padding: 4rem 1rem; color: rgba(255,255,255,0.6); }
+.stats-loading .spinner { width: 48px; height: 48px; border: 4px solid rgba(255,255,255,0.1); border-top-color: #56bcb8; border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 1rem; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.stats-error { text-align: center; padding: 3rem 1rem; color: #e74c3c; }
+
+/* Footer */
+.stats-footer { text-align: center; padding: 1.5rem; color: rgba(255,255,255,0.4); font-size: 0.8rem; }
+.stats-footer a { color: #56bcb8; text-decoration: none; }
+
+/* Responsive */
+@media (max-width: 768px) {
+  .resumen-grid { grid-template-columns: repeat(2, 1fr); }
+  .stats-title { font-size: 1.4rem; }
+  .validacion-row { flex-direction: column; }
+}
+@media (max-width: 480px) {
+  .resumen-grid { grid-template-columns: repeat(2, 1fr); }
+  .resumen-card .card-number { font-size: 2rem; }
+}
