@@ -4,97 +4,73 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Validación de Inscriptos — Expo Formación</title>
+    <meta name="robots" content="noindex, nofollow">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;700&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../css/validacion.css" />
     <link rel="icon" href="../img/logo_expo.png" />
   </head>
 
   <body>
-    <!-- Hero Section -->
+    <!-- Header con contador -->
     <div class="hero-section">
       <img src="../img/logo-expo-formacion.png" alt="Logo Expo Formación" class="hero-logo" />
       <p class="hero-subtitle">Sector Construcción · 2026</p>
       <h1 class="hero-title">Panel de Validación</h1>
+      <p class="contador-validados">Validados hoy: <span id="contador-validados">—</span></p>
     </div>
 
     <div class="validacion-container">
-      <!-- Buscador -->
-      <div class="busqueda-card">
-        <div class="validacion-header">
-          <h2>Buscar Inscripto</h2>
-          <p class="validacion-subtitle">Ingresá el DNI para verificar y validar</p>
+      <!-- input principal -->
+      <div class="busqueda-card input-principal-card">
+        <div class="input-group">
+          <i class="fas fa-id-card input-icon"></i>
+          <input
+            type="text"
+            id="dni-input"
+            placeholder="DNI o escanear QR"
+            autocomplete="off"
+            inputmode="numeric"
+            autofocus
+          />
         </div>
-        
-        <div class="busqueda-form">
-          <div class="input-group">
-            <i class="fas fa-id-card input-icon"></i>
-            <input
-              type="text"
-              id="dni-input"
-              placeholder="Número de DNI"
-              autocomplete="off"
-              inputmode="numeric"
-              maxlength="20"
-            />
-          </div>
-          <button id="btn-buscar" class="btn-buscar">
-            <i class="fas fa-search"></i> Buscar
-          </button>
-        </div>
-        <p id="input-error" class="input-error" hidden>
-          Ingresá un DNI para buscar.
-        </p>
+        <button id="btn-validar" class="btn-validar-principal">
+          <i class="fas fa-check"></i> VALIDAR
+        </button>
       </div>
 
       <!-- Estado de carga -->
       <div id="loading" class="loading" hidden>
         <div class="spinner"></div>
-        <p>Buscando inscripto...</p>
       </div>
 
-      <!-- Resultado: inscripto encontrado -->
-      <div id="resultado" class="resultado-card" hidden>
-        <i class="fas fa-user-check resultado-icon"></i>
-        <h2 id="nombre-completo"></h2>
-        
-        <!-- Badge ya validado -->
-        <div id="badge-validado" class="badge-validado" hidden>
-          <i class="fas fa-check-circle"></i>
-          <span>Inscripción Validada</span>
-          <span id="fecha-validacion" class="fecha-validacion"></span>
-        </div>
-
-        <!-- Botón validar -->
-        <button id="btn-validar" class="btn-validar" hidden>
-          <i class="fas fa-clipboard-check"></i> Validar Inscripción
-        </button>
-
-        <!-- Confirmación post-validación -->
-        <div id="confirmacion" class="confirmacion" hidden>
-          <i class="fas fa-check-circle confirmacion-icon"></i>
-          <p id="confirmacion-texto"></p>
+      <!-- Área de resultado: ÉXITO -->
+      <div id="resultado-exito" class="resultado-card resultado-exito" hidden>
+        <i class="fas fa-check-circle resultado-icon"></i>
+        <h2 id="nombre-resultado" class="nombre-resultado"></h2>
+        <div id="charlas-resultado" class="charlas-resultado"></div>
+        <div id="ya-validado-msg" class="ya-validado-msg" hidden>
+          <i class="fas fa-exclamation-triangle"></i> Ya validado previamente
         </div>
       </div>
 
-      <!-- Resultado: no encontrado -->
-      <div id="no-encontrado" class="no-encontrado-card" hidden>
-        <i class="fas fa-user-slash no-encontrado-icon"></i>
-        <p>No se encontró ningún inscripto con ese DNI.</p>
+      <!-- Área de resultado: ERROR -->
+      <div id="resultado-error" class="resultado-card resultado-error" hidden>
+        <i class="fas fa-times-circle resultado-icon"></i>
+        <p class="error-mensaje">DNI no encontrado</p>
       </div>
 
       <!-- Error de servidor -->
-      <div id="error-servidor" class="error-card" hidden>
-        <i class="fas fa-exclamation-triangle error-icon"></i>
-        <p id="error-mensaje">Error al comunicarse con el servidor.</p>
+      <div id="error-servidor" class="resultado-card resultado-error" hidden>
+        <i class="fas fa-exclamation-triangle resultado-icon"></i>
+        <p id="error-mensaje">Error de conexión</p>
       </div>
     </div>
 
     <div class="footer-info">
-      <p>Expo Formación UOCRA &copy; 2026</p>
-      <p><a href="/">Volver al inicio</a></p>
+      <p>Expo Formación UOCRA &copy; 2026 &nbsp;·&nbsp; <a href="/">Volver al inicio</a> &nbsp;·&nbsp; <a href="/estadisticas">Estadísticas</a></p>
     </div>
 
     <script src="../js/validacion.js"></script>

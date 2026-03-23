@@ -1,216 +1,184 @@
 /**
- * Lógica de la sección oculta de validación de inscriptos
- * Ruta: /admin-validacion
- * 
- * Endpoints consumidos:
- *   GET  /api/validacion/buscar?dni=XX  → busca inscripto por DNI
- *   PATCH /api/validacion/validar       → marca inscripto como validado
+ * Panel de Validación — Expo Formación UOCRA
+ * Optimizado para evento masivo con escáner QR
  */
 
 (function () {
   'use strict';
 
-  // Referencias DOM
-  const dniInput = document.getElementById('dni-input');
-  const btnBuscar = document.getElementById('btn-buscar');
-  const inputError = document.getElementById('input-error');
-  const loading = document.getElementById('loading');
-  const resultado = document.getElementById('resultado');
-  const nombreCompleto = document.getElementById('nombre-completo');
-  const badgeValidado = document.getElementById('badge-validado');
-  const fechaValidacion = document.getElementById('fecha-validacion');
-  const btnValidar = document.getElementById('btn-validar');
-  const confirmacion = document.getElementById('confirmacion');
-  const confirmacionTexto = document.getElementById('confirmacion-texto');
-  const noEncontrado = document.getElementById('no-encontrado');
-  const errorServidor = document.getElementById('error-servidor');
-  const errorMensaje = document.getElementById('error-mensaje');
+  const API_BASE = '/api/validacion';
+  const RESET_DELAY_EXITO = 4000;
+  const RESET_DELAY_ERROR = 3000;
 
-  // Estado actual del DNI buscado
-  let dniActual = '';
-  let resetTimer = null;
-  const VALIDAR_BUTTON_HTML = '<i class="fas fa-clipboard-check"></i> VALIDAR';
+  let isValidating = false;
+  let counterValidados = 0;
 
-  // Ocultar todas las secciones de resultado
-  function resetResultados() {
-    resultado.hidden = true;
-    noEncontrado.hidden = true;
+  const $ = id => document.getElementById(id);
+  const input = $('dni-input');
+  const btnValidar = $('btn-validar');
+  const loading = $('loading');
+  const resultadoExito = $('resultado-exito');
+  const resultadoError = $('resultado-error');
+  const errorServidor = $('error-servidor');
+
+  function mostrarLoading() {
+    loading.hidden = false;
+    resultadoExito.hidden = true;
+    resultadoError.hidden = true;
     errorServidor.hidden = true;
-    loading.hidden = true;
-    badgeValidado.hidden = true;
-    btnValidar.hidden = true;
-    confirmacion.hidden = true;
-    inputError.hidden = true;
-    dniInput.classList.remove('input-error-border');
-    nombreCompleto.textContent = '';
-    fechaValidacion.textContent = '';
-    confirmacionTexto.textContent = '';
-    errorMensaje.textContent = 'Error al comunicarse con el servidor.';
-    btnValidar.disabled = false;
-    btnValidar.innerHTML = VALIDAR_BUTTON_HTML;
   }
 
-  function limpiarResetPendiente() {
-    if (resetTimer) {
-      clearTimeout(resetTimer);
-      resetTimer = null;
+  function mostrarExito(data) {
+    loading.hidden = true;
+    resultadoError.hidden = true;
+    errorServidor.hidden = true;
+    resultadoExito.hidden = false;
+
+    $('nombre-resultado').textContent = `${data.nombre} ${data.apellido}`;
+    
+    const charlasContainer = $('charlas-resultado');
+    if (data.charlas && data.charlas.length > 0) {
+      charlasContainer.innerHTML = data.charlas.map(c => 
+        `<span class="charla-chip">${c.titulo} • ${c.horario}</span>`
+      ).join('');
+    } else {
+      charlasContainer.innerHTML = '<span class="charla-chip">Sin charlas</span>';
+    }
+
+    const yaValidadoMsg = $('ya-validado-msg');
+    yaValidadoMsg.hidden = !data.ya_validado;
+
+    if (!data.ya_validado) {
+      counterValidados++;
+      actualizarContador();
     }
   }
 
-  function prepararSiguienteValidacion() {
-    limpiarResetPendiente();
-    dniActual = '';
-    dniInput.value = '';
-    resetResultados();
-    dniInput.focus();
+  function mostrarError() {
+    loading.hidden = true;
+    resultadoExito.hidden = true;
+    errorServidor.hidden = true;
+    resultadoError.hidden = false;
   }
 
-  function programarSiguienteValidacion() {
-    limpiarResetPendiente();
-    resetTimer = setTimeout(() => {
-      prepararSiguienteValidacion();
-    }, 5000);
+  function mostrarErrorServidor(msg) {
+    loading.hidden = true;
+    resultadoExito.hidden = true;
+    resultadoError.hidden = true;
+    errorServidor.hidden = false;
+    $('error-mensaje').textContent = msg || 'Error de conexión';
   }
 
-  // Formatear fecha/hora para mostrar
-  function formatearFecha(isoString) {
-    if (!isoString) return '';
-    const fecha = new Date(isoString);
-    return fecha.toLocaleString('es-AR', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
+  function resetForm() {
+    loading.hidden = true;
+    resultadoExito.hidden = true;
+    resultadoError.hidden = true;
+    errorServidor.hidden = true;
+    if (input) input.value = '';
+    devolverFoco();
+  }
+
+  function devolverFoco() {
+    if (input) {
+      input.focus();
+      input.select();
+    }
+  }
+
+  function actualizarContador() {
+    const counter = $('contador-validados');
+    if (counter) {
+      counter.textContent = counterValidados;
+    }
+  }
+
+  async function cargarContadorInicial() {
+    try {
+      const res = await fetch('/api/stats');
+      if (res.ok) {
+        const data = await res.json();
+        if (data.resumen && data.resumen.validados !== undefined) {
+          counterValidados = data.resumen.validados;
+          actualizarContador();
+        }
+      }
+    } catch (e) {
+      console.warn('No se pudo cargar contador inicial');
+    }
+  }
+
+  async function validarDNI(dni) {
+    if (!dni || dni.length < 6) return;
+    if (isValidating) return;
+
+    isValidating = true;
+    mostrarLoading();
+    devolverFoco();
+
+    try {
+      const res = await fetch(`${API_BASE}/validar-qr`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ qr_data: dni })
+      });
+
+      const data = await res.json();
+
+      if (res.ok && data.ok) {
+        mostrarExito(data);
+        setTimeout(resetForm, RESET_DELAY_EXITO);
+      } else {
+        mostrarError();
+        setTimeout(resetForm, RESET_DELAY_ERROR);
+      }
+    } catch (err) {
+      console.error('Error de red:', err);
+      mostrarErrorServidor('Error de conexión');
+      setTimeout(resetForm, 2000);
+    } finally {
+      isValidating = false;
+    }
+  }
+
+  function init() {
+    cargarContadorInicial();
+    devolverFoco();
+
+    if (btnValidar) {
+      btnValidar.addEventListener('click', () => {
+        const value = input?.value?.trim() || '';
+        if (value) validarDNI(value);
+      });
+    }
+
+    if (input) {
+      input.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          const value = input.value.trim();
+          if (value) validarDNI(value);
+        }
+      });
+
+      input.addEventListener('input', () => {
+        if (resultadoExito.hidden === false || resultadoError.hidden === false) {
+          resetForm();
+        }
+      });
+    }
+
+    document.addEventListener('click', (e) => {
+      if (e.target === document.body || 
+          (e.target.tagName !== 'INPUT' && e.target.tagName !== 'BUTTON')) {
+        setTimeout(devolverFoco, 10);
+      }
     });
   }
 
-  // Buscar inscripto por DNI
-  async function buscarPorDNI() {
-    const dni = dniInput.value.trim();
-
-    limpiarResetPendiente();
-
-    // Validación de campo vacío
-    if (!dni) {
-      inputError.hidden = false;
-      dniInput.classList.add('input-error-border');
-      dniInput.focus();
-      return;
-    }
-
-    resetResultados();
-    dniActual = dni;
-
-    // Mostrar loading
-    loading.hidden = false;
-    btnBuscar.disabled = true;
-
-    try {
-      const response = await fetch(`/api/validacion/buscar?dni=${encodeURIComponent(dni)}`);
-      const data = await response.json();
-
-      loading.hidden = true;
-      btnBuscar.disabled = false;
-
-      if (response.ok && data.encontrado) {
-        // Inscripto encontrado
-        nombreCompleto.textContent = `${data.nombre} ${data.apellido}`;
-        resultado.hidden = false;
-
-        if (data.validado) {
-          // Ya validado previamente
-          badgeValidado.hidden = false;
-          fechaValidacion.textContent = data.validado_en
-            ? `— ${formatearFecha(data.validado_en)}`
-            : '';
-        } else {
-          // Pendiente de validación
-          btnValidar.hidden = false;
-        }
-      } else if (response.status === 404) {
-        // No encontrado
-        noEncontrado.hidden = false;
-      } else {
-        // Error del servidor
-        errorMensaje.textContent = data.error || 'Error al comunicarse con el servidor.';
-        errorServidor.hidden = false;
-      }
-    } catch (err) {
-      loading.hidden = true;
-      btnBuscar.disabled = false;
-      errorMensaje.textContent = 'No se pudo conectar con el servidor.';
-      errorServidor.hidden = false;
-    }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
   }
 
-  // Validar inscripción
-  async function validarInscripcion() {
-    if (!dniActual) return;
-
-    btnValidar.disabled = true;
-    btnValidar.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Validando...';
-
-    try {
-      const response = await fetch('/api/validacion/validar', {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ dni: dniActual })
-      });
-
-      const data = await response.json();
-
-      if (response.ok && data.ok) {
-        // Éxito: ocultar botón, mostrar confirmación
-        btnValidar.hidden = true;
-
-        confirmacionTexto.textContent = data.ya_validado
-          ? `${data.nombre} ${data.apellido} — Ya estaba validado.`
-          : `${data.nombre} ${data.apellido} — Inscripción validada correctamente.`;
-        confirmacion.hidden = false;
-
-        // Mostrar badge con fecha
-        badgeValidado.hidden = false;
-        fechaValidacion.textContent = data.validado_en
-          ? `— ${formatearFecha(data.validado_en)}`
-          : '';
-
-        programarSiguienteValidacion();
-      } else {
-        // Error
-        btnValidar.disabled = false;
-        btnValidar.innerHTML = VALIDAR_BUTTON_HTML;
-        errorMensaje.textContent = data.error || 'Error al validar la inscripción.';
-        errorServidor.hidden = false;
-      }
-    } catch (err) {
-      btnValidar.disabled = false;
-      btnValidar.innerHTML = VALIDAR_BUTTON_HTML;
-      errorMensaje.textContent = 'No se pudo conectar con el servidor.';
-      errorServidor.hidden = false;
-    }
-  }
-
-  // Event listeners
-  btnBuscar.addEventListener('click', buscarPorDNI);
-
-  dniInput.addEventListener('keydown', function (e) {
-    if (e.key === 'Enter') {
-      e.preventDefault();
-      buscarPorDNI();
-    }
-  });
-
-  // Limpiar error al escribir
-  dniInput.addEventListener('input', function () {
-    limpiarResetPendiente();
-    dniInput.value = dniInput.value.replace(/\D+/g, '');
-
-    if (inputError && !inputError.hidden) {
-      inputError.hidden = true;
-      dniInput.classList.remove('input-error-border');
-    }
-  });
-
-  btnValidar.addEventListener('click', validarInscripcion);
 })();

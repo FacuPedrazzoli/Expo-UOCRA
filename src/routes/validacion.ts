@@ -95,12 +95,20 @@ router.get("/buscar", async (req, res) => {
         logger.info(`[Validación] Búsqueda de inscripto por DNI: ${dni}`);
 
         const rows = await dbQuery(`
-            SELECT i.id, i.nombre, i.apellido,
-                    MAX(ii.fecha_ingreso) AS fecha_ingreso
+            SELECT 
+                i.id, i.nombre, i.apellido, i.dni,
+                MAX(ii.fecha_ingreso) AS fecha_ingreso,
+                COALESCE(
+                    json_agg(
+                        json_build_object('titulo', c.titulo, 'horario', c.horario, 'ubicacion', c.ubicacion)
+                    ) FILTER (WHERE c.id IS NOT NULL), '[]'
+                ) AS charlas
             FROM inscriptos i
             LEFT JOIN inscriptos_ingresos ii ON ii.inscriptos_id = i.id
+            LEFT JOIN inscriptos_charlas ic ON ic.inscriptos_id = i.id
+            LEFT JOIN charlas c ON c.id = ic.charlas_id
             WHERE i.dni = $1
-            GROUP BY i.id, i.nombre, i.apellido
+            GROUP BY i.id, i.nombre, i.apellido, i.dni
             LIMIT 1
         `, [dni]);
 
@@ -123,7 +131,8 @@ router.get("/buscar", async (req, res) => {
             nombre: inscripto.nombre,
             apellido: inscripto.apellido,
             validado,
-            validado_en: validadoEn
+            validado_en: validadoEn,
+            charlas: inscripto.charlas || []
         });
 
     } catch (error: any) {
@@ -153,7 +162,20 @@ router.patch("/validar", async (req, res) => {
         await client.query('BEGIN');
 
         const rows = await client.query(
-            "SELECT id, nombre, apellido FROM inscriptos WHERE dni = $1 LIMIT 1",
+            `SELECT i.id, i.nombre, i.apellido,
+                    MAX(ii.fecha_ingreso) AS fecha_ingreso,
+                    COALESCE(
+                        json_agg(
+                            json_build_object('titulo', c.titulo, 'horario', c.horario, 'ubicacion', c.ubicacion)
+                        ) FILTER (WHERE c.id IS NOT NULL), '[]'
+                    ) AS charlas
+            FROM inscriptos i
+            LEFT JOIN inscriptos_ingresos ii ON ii.inscriptos_id = i.id
+            LEFT JOIN inscriptos_charlas ic ON ic.inscriptos_id = i.id
+            LEFT JOIN charlas c ON c.id = ic.charlas_id
+            WHERE i.dni = $1
+            GROUP BY i.id, i.nombre, i.apellido
+            LIMIT 1`,
             [dni]
         );
 
@@ -166,13 +188,9 @@ router.patch("/validar", async (req, res) => {
         }
 
         const inscripto = rows.rows[0];
+        const charlas = inscripto.charlas || [];
         
-        const ingresoRows = await client.query(
-            "SELECT MAX(fecha_ingreso) AS fecha_ingreso FROM inscriptos_ingresos WHERE inscriptos_id = $1",
-            [inscripto.id]
-        );
-        
-        const fechaIngreso = ingresoRows.rows[0]?.fecha_ingreso || null;
+        const fechaIngreso = inscripto.fecha_ingreso || null;
         const validadoEn = fechaIngreso || null;
         const yaValidado = Boolean(fechaIngreso);
 
@@ -184,7 +202,8 @@ router.patch("/validar", async (req, res) => {
                 nombre: inscripto.nombre,
                 apellido: inscripto.apellido,
                 validado_en: validadoEn,
-                ya_validado: true
+                ya_validado: true,
+                charlas: charlas
             });
         }
 
@@ -204,7 +223,9 @@ router.patch("/validar", async (req, res) => {
             ok: true,
             nombre: inscripto.nombre,
             apellido: inscripto.apellido,
-            validado_en: ahora.toISOString()
+            validado_en: ahora.toISOString(),
+            ya_validado: false,
+            charlas: charlas
         });
 
     } catch (error: any) {
@@ -218,6 +239,125 @@ router.patch("/validar", async (req, res) => {
         res.status(500).json({
             ok: false,
             error: "Error interno al validar el inscripto"
+        });
+    } finally {
+        client?.release();
+    }
+});
+
+function normalizeQrData(qrData: string): string {
+    const cleaned = String(qrData || "").trim();
+    const digitsMatch = cleaned.match(/\d+/);
+    if (digitsMatch) {
+        return digitsMatch[0];
+    }
+    return cleaned;
+}
+
+router.post("/validar-qr", async (req, res) => {
+    let client: PoolClient | undefined;
+    try {
+        const { qr_data } = req.body;
+        
+        if (!qr_data) {
+            return res.status(400).json({
+                ok: false,
+                error: "El campo qr_data es obligatorio"
+            });
+        }
+
+        const dni = normalizeQrData(qr_data);
+        
+        if (!dni || dni.length < 6) {
+            return res.status(400).json({
+                ok: false,
+                error: "QR inválido: no se pudo extraer DNI"
+            });
+        }
+
+        logger.info(`[Validación QR] Procesando: ${qr_data} -> DNI: ${dni}`);
+
+        client = await getClient();
+        await client.query('BEGIN');
+
+        const rows = await client.query(
+            `SELECT i.id, i.nombre, i.apellido,
+                    MAX(ii.fecha_ingreso) AS fecha_ingreso,
+                    COALESCE(
+                        json_agg(
+                            json_build_object('titulo', c.titulo, 'horario', c.horario, 'ubicacion', c.ubicacion)
+                        ) FILTER (WHERE c.id IS NOT NULL), '[]'
+                    ) AS charlas
+            FROM inscriptos i
+            LEFT JOIN inscriptos_ingresos ii ON ii.inscriptos_id = i.id
+            LEFT JOIN inscriptos_charlas ic ON ic.inscriptos_id = i.id
+            LEFT JOIN charlas c ON c.id = ic.charlas_id
+            WHERE i.dni = $1
+            GROUP BY i.id, i.nombre, i.apellido
+            LIMIT 1`,
+            [dni]
+        );
+
+        if (!rows.rowCount || rows.rowCount === 0) {
+            await client.query('ROLLBACK');
+            return res.status(404).json({
+                ok: false,
+                error: "No se encontró ningún inscripto con ese DNI"
+            });
+        }
+
+        const inscripto = rows.rows[0];
+        const charlas = inscripto.charlas || [];
+        
+        const fechaIngreso = inscripto.fecha_ingreso || null;
+        const validadoEn = fechaIngreso || null;
+        const yaValidado = Boolean(fechaIngreso);
+
+        if (yaValidado) {
+            await client.query('COMMIT');
+            logger.info(`[Validación QR] Ya validado: ${inscripto.nombre} ${inscripto.apellido}`);
+            return res.json({
+                ok: true,
+                nombre: inscripto.nombre,
+                apellido: inscripto.apellido,
+                validado_en: validadoEn,
+                ya_validado: true,
+                charlas: charlas
+            });
+        }
+
+        const usuarioHabilitante = await resolveValidationUser(client);
+        const ahora = new Date();
+        
+        await client.query(
+            "INSERT INTO inscriptos_ingresos (inscriptos_id, fecha_ingreso, usuario_habilitante) VALUES ($1, $2, $3)",
+            [inscripto.id, ahora, usuarioHabilitante]
+        );
+
+        await client.query('COMMIT');
+
+        logger.info(`[Validación QR] Validado: ${inscripto.nombre} ${inscripto.apellido}`);
+
+        res.json({
+            ok: true,
+            nombre: inscripto.nombre,
+            apellido: inscripto.apellido,
+            validado_en: ahora.toISOString(),
+            ya_validado: false,
+            charlas: charlas
+        });
+
+    } catch (error: any) {
+        if (client) {
+            try {
+                await client.query('ROLLBACK');
+            } catch {
+            }
+        }
+        logger.error("[Validación QR] Error:", error);
+        res.status(500).json({
+            ok: false,
+            error: "Error interno al procesar el código QR"
         });
     } finally {
         client?.release();

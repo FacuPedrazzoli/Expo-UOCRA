@@ -403,3 +403,186 @@ h1, h2, h3 {
     padding: 1.5rem;
   }
 }
+
+/* ============================================
+   NUEVOS ESTILOS PARA PANEL OPERATIVO 2026
+   ============================================ */
+
+/* Contador de validados */
+.contador-validados {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 1.1rem;
+  color: #56bcb8;
+  margin-top: 0.5rem;
+}
+
+.contador-validados span {
+  font-weight: 700;
+  font-size: 1.3rem;
+}
+
+/* Input principal reducido */
+.input-principal-card {
+  padding: 1.5rem;
+}
+
+.input-principal-card .input-group {
+  flex: 1;
+}
+
+.input-principal-card #dni-input {
+  width: 100%;
+  padding: 1.2rem 1rem 1.2rem 3.5rem;
+  font-size: 2rem;
+  font-weight: 600;
+  border-radius: 12px;
+  text-align: center;
+  background: rgba(255,255,255,0.95);
+}
+
+.input-principal-card .input-icon {
+  font-size: 1.5rem;
+  left: 1.25rem;
+}
+
+.btn-validar-principal {
+  padding: 1.2rem 2rem;
+  background: linear-gradient(135deg, #2e7d32 0%, #43a047 100%);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 1.3rem;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 15px rgba(46, 125, 50, 0.4);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.btn-validar-principal:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(46, 125, 50, 0.5);
+}
+
+.btn-validar-principal:active {
+  transform: scale(0.98);
+}
+
+/* Resultado éxito */
+.resultado-exito {
+  background: rgba(0, 100, 50, 0.9);
+  border-left: 6px solid #4caf50;
+  animation: slideIn 150ms ease-out;
+}
+
+.resultado-exito .resultado-icon {
+  font-size: 4rem;
+  color: #4caf50;
+  margin-bottom: 1rem;
+}
+
+.nombre-resultado {
+  font-size: 2rem;
+  font-weight: 800;
+  color: white;
+  margin-bottom: 1rem;
+  font-family: 'Montserrat', sans-serif;
+}
+
+.charlas-resultado {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  justify-content: center;
+  margin-bottom: 1rem;
+}
+
+.charla-chip {
+  display: inline-block;
+  background: rgba(255,255,255,0.15);
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  color: white;
+}
+
+.ya-validado-msg {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  background: rgba(255, 152, 0, 0.2);
+  color: #ff9800;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+/* Resultado error */
+.resultado-error {
+  background: rgba(120, 0, 0, 0.9);
+  border-left: 6px solid #f44336;
+  animation: slideIn 150ms ease-out;
+}
+
+.resultado-error .resultado-icon {
+  font-size: 4rem;
+  color: #f44336;
+  margin-bottom: 0.5rem;
+}
+
+.resultado-error .error-mensaje {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: white;
+  font-family: 'Montserrat', sans-serif;
+}
+
+/* Animación de entrada */
+@keyframes slideIn {
+  from {
+    transform: translateY(-20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Loading minimo */
+.loading .spinner {
+  width: 40px;
+  height: 40px;
+  margin: 2rem auto;
+}
+
+/* Responsive nuevo layout */
+@media (max-width: 600px) {
+  .input-principal-card {
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .input-principal-card .input-group {
+    width: 100%;
+  }
+  
+  .btn-validar-principal {
+    width: 100%;
+    padding: 1rem;
+    font-size: 1.1rem;
+  }
+  
+  .input-principal-card #dni-input {
+    font-size: 1.5rem;
+    padding: 1rem;
+  }
+  
+  .nombre-resultado {
+    font-size: 1.5rem;
+  }
+}
