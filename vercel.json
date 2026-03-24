@@ -4,14 +4,44 @@
     {
       "src": "src/index.ts",
       "use": "@vercel/node"
+    },
+    {
+      "src": "public/**",
+      "use": "@vercel/static"
     }
   ],
   "routes": [
     {
+      "src": "/api/(.*)",
+      "dest": "src/index.ts"
+    },
+    {
+      "src": "/health",
+      "dest": "src/index.ts"
+    },
+    {
+      "src": "/admin-validacion",
+      "dest": "public/html/validacion.html"
+    },
+    {
+      "src": "/estadisticas",
+      "dest": "public/html/estadisticas.html"
+    },
+    {
+      "src": "/css/(.*)",
+      "dest": "public/css/$1"
+    },
+    {
+      "src": "/js/(.*)",
+      "dest": "public/js/$1"
+    },
+    {
+      "src": "/img/(.*)",
+      "dest": "public/img/$1"
+    },
+    {
       "src": "/(.*)",
-      "dest": "/src/index.ts"
+      "dest": "public/html/index.html"
     }
-  ],
-  "installCommand": "npm install",
-  "buildCommand": "npm run build"
+  ]
 }
