@@ -4,9 +4,12 @@ import { createApp } from './app';
 
 const app = createApp(true);
 
-const publicPath = process.env.VERCEL 
-  ? path.join(process.cwd(), 'public')
-  : path.join(__dirname, '../../public');
+const isVercel = !!process.env.VERCEL;
+const baseDir = isVercel 
+  ? path.join(process.cwd())  // /var/task or project root
+  : path.join(__dirname, '..');
+
+const publicPath = path.join(baseDir, 'public');
 
 app.use('/css', express.static(path.join(publicPath, 'css')));
 app.use('/js', express.static(path.join(publicPath, 'js')));

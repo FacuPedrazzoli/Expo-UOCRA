@@ -3,45 +3,16 @@
   "builds": [
     {
       "src": "src/index.ts",
-      "use": "@vercel/node"
-    },
-    {
-      "src": "public/**",
-      "use": "@vercel/static"
+      "use": "@vercel/node",
+      "config": {
+        "includeFiles": ["public/**"]
+      }
     }
   ],
   "routes": [
     {
-      "src": "/api/(.*)",
-      "dest": "src/index.ts"
-    },
-    {
-      "src": "/health",
-      "dest": "src/index.ts"
-    },
-    {
-      "src": "/admin-validacion",
-      "dest": "public/html/validacion.html"
-    },
-    {
-      "src": "/estadisticas",
-      "dest": "public/html/estadisticas.html"
-    },
-    {
-      "src": "/css/(.*)",
-      "dest": "public/css/$1"
-    },
-    {
-      "src": "/js/(.*)",
-      "dest": "public/js/$1"
-    },
-    {
-      "src": "/img/(.*)",
-      "dest": "public/img/$1"
-    },
-    {
       "src": "/(.*)",
-      "dest": "public/html/index.html"
+      "dest": "src/index.ts"
     }
   ]
 }
