@@ -1,0 +1,129 @@
+/* =====================================================
+   NAVBAR - Expo Formación UOCRA
+   Modern sticky navbar with blur effect
+   ===================================================== */
+
+/* Main Navigation */
+#main-nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: var(--z-sticky);
+  padding: var(--space-md) 0;
+  background: rgba(13, 27, 42, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(86, 188, 184, 0.15);
+  transition: all var(--transition-normal);
+}
+
+#main-nav.scrolled {
+  padding: var(--space-sm) 0;
+  background: rgba(13, 27, 42, 0.95);
+  box-shadow: var(--shadow-lg);
+}
+
+.nav-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: var(--space-lg);
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 var(--space-lg);
+}
+
+/* Nav Links */
+.nav-link {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-sm) var(--space-md);
+  color: rgba(255, 255, 255, 0.85);
+  font-family: var(--font-primary);
+  font-size: 0.9rem;
+  font-weight: 500;
+  text-decoration: none;
+  border-radius: var(--radius-md);
+  transition: all var(--transition-fast);
+}
+
+.nav-link i {
+  font-size: 1rem;
+  color: var(--accent);
+}
+
+.nav-link:hover,
+.nav-link.active {
+  color: white;
+  background: rgba(86, 188, 184, 0.15);
+}
+
+.nav-link.active {
+  color: var(--accent);
+}
+
+.nav-link.active i {
+  color: var(--accent);
+}
+
+/* Mobile Menu Toggle */
+.menu-toggle {
+  display: none;
+  position: absolute;
+  right: var(--space-lg);
+  top: 50%;
+  transform: translateY(-50%);
+  width: 40px;
+  height: 40px;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 1.5rem;
+  cursor: pointer;
+  border-radius: var(--radius-md);
+  transition: background var(--transition-fast);
+}
+
+.menu-toggle:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+/* Responsive */
+@media (max-width: 992px) {
+  .menu-toggle {
+    display: flex;
+  }
+
+  #main-nav .nav-container {
+    position: fixed;
+    top: 60px;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    flex-direction: column;
+    justify-content: flex-start;
+    padding: var(--space-xl);
+    background: rgba(13, 27, 42, 0.98);
+    transform: translateX(100%);
+    transition: transform var(--transition-normal);
+  }
+
+  #main-nav.active .nav-container {
+    transform: translateX(0);
+  }
+
+  .nav-link {
+    width: 100%;
+    padding: var(--space-md) var(--space-lg);
+    font-size: 1.1rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .nav-container {
+    padding: 0 var(--space-md);
+  }
+}

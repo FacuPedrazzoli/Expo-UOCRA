@@ -1,0 +1,298 @@
+/* =====================================================
+   CARDS - Expo Formación UOCRA
+   Modern card components
+   ===================================================== */
+
+/* Base Card */
+.card {
+  background: var(--card-bg);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-md);
+  overflow: hidden;
+  transition: all var(--transition-normal);
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+}
+
+/* Charla Card */
+.charla-card {
+  display: flex;
+  flex-direction: column;
+  padding: var(--space-lg);
+  background: var(--card-bg);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-lg);
+  transition: all var(--transition-normal);
+}
+
+.charla-card:hover {
+  border-color: var(--accent);
+  box-shadow: var(--shadow-md), 0 0 0 2px rgba(86, 188, 184, 0.2);
+}
+
+.charla-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: var(--space-md);
+}
+
+.charla-titulo {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--primary);
+  margin: 0;
+}
+
+.charla-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+  padding: var(--space-xs) var(--space-sm);
+  background: rgba(86, 188, 184, 0.15);
+  color: var(--accent);
+  font-size: 0.75rem;
+  font-weight: 600;
+  border-radius: var(--radius-full);
+}
+
+.charla-badge.disponible {
+  background: rgba(76, 175, 80, 0.15);
+  color: var(--success);
+}
+
+.charla-badge.lleno {
+  background: rgba(244, 67, 54, 0.15);
+  color: var(--error);
+}
+
+.charla-info {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-md);
+  font-size: 0.9rem;
+  color: var(--text-light);
+}
+
+.charla-info-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+}
+
+.charla-info-item i {
+  color: var(--accent);
+  font-size: 0.85rem;
+}
+
+.charla-cupos {
+  margin-top: var(--space-md);
+  padding-top: var(--space-md);
+  border-top: 1px solid var(--border-light);
+  font-size: 0.85rem;
+  color: var(--text-light);
+}
+
+.charla-cupos span {
+  font-weight: 600;
+  color: var(--accent);
+}
+
+.charla-cupos span.disponible {
+  color: var(--success);
+}
+
+.charla-cupos span.lleno {
+  color: var(--error);
+}
+
+/* Empresa Card */
+.empresa-card {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-lg);
+  background: var(--card-bg);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-lg);
+  transition: all var(--transition-normal);
+}
+
+.empresa-card:hover {
+  border-color: var(--accent);
+  transform: scale(1.03);
+  box-shadow: var(--shadow-md);
+}
+
+.empresa-card img {
+  max-width: 100%;
+  max-height: 60px;
+  object-fit: contain;
+  filter: grayscale(20%);
+  transition: filter var(--transition-fast);
+}
+
+.empresa-card:hover img {
+  filter: grayscale(0%);
+}
+
+/* Stand Card */
+.stand-card {
+  padding: var(--space-lg);
+  background: var(--card-bg);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-lg);
+  transition: all var(--transition-normal);
+}
+
+.stand-card:hover {
+  border-color: var(--accent);
+  box-shadow: var(--shadow-md);
+}
+
+.stand-numero {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  background: var(--accent);
+  color: var(--bg-darker);
+  font-family: var(--font-primary);
+  font-size: 1rem;
+  font-weight: 700;
+  border-radius: var(--radius-md);
+  margin-bottom: var(--space-sm);
+}
+
+.stand-nombre {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--primary);
+  margin-bottom: var(--space-xs);
+}
+
+.stand-rubro {
+  font-size: 0.85rem;
+  color: var(--text-light);
+}
+
+/* Competencia Card */
+.competencia-card {
+  padding: var(--space-xl);
+  background: var(--card-bg);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-xl);
+  transition: all var(--transition-normal);
+}
+
+.competencia-card:hover {
+  border-color: var(--accent);
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+}
+
+.competencia-icon {
+  width: 56px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, var(--accent) 0%, var(--secondary) 100%);
+  border-radius: var(--radius-lg);
+  margin-bottom: var(--space-md);
+  font-size: 1.5rem;
+  color: var(--bg-darker);
+}
+
+.competencia-titulo {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--primary);
+  margin-bottom: var(--space-sm);
+}
+
+.competencia-descripcion {
+  font-size: 0.95rem;
+  color: var(--text-light);
+  line-height: 1.6;
+}
+
+.competencia-meta {
+  display: flex;
+  gap: var(--space-lg);
+  margin-top: var(--space-md);
+  padding-top: var(--space-md);
+  border-top: 1px solid var(--border-light);
+  font-size: 0.85rem;
+  color: var(--text-light);
+}
+
+.competencia-meta-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+}
+
+.competencia-meta-item i {
+  color: var(--accent);
+}
+
+/* Stat Card */
+.stat-card {
+  padding: var(--space-xl);
+  background: var(--card-bg);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-md);
+  text-align: center;
+  transition: all var(--transition-normal);
+}
+
+.stat-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+}
+
+.stat-card-icon {
+  width: 64px;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, var(--accent) 0%, var(--secondary) 100%);
+  border-radius: var(--radius-lg);
+  margin: 0 auto var(--space-md);
+  font-size: 1.75rem;
+  color: var(--bg-darker);
+}
+
+.stat-card-value {
+  font-family: var(--font-primary);
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: var(--primary);
+  line-height: 1;
+  margin-bottom: var(--space-xs);
+}
+
+.stat-card-label {
+  font-size: 0.95rem;
+  color: var(--text-light);
+}
+
+/* Loading State */
+.card-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-2xl);
+  color: var(--text-light);
+}
+
+.card-loading i {
+  margin-right: var(--space-sm);
+  animation: spin 1s linear infinite;
+}

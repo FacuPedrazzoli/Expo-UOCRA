@@ -1,0 +1,237 @@
+/* =====================================================
+   RESPONSIVE - Expo Formación UOCRA
+   Mobile-first responsive design
+   ===================================================== */
+
+/* Extra Small (phones) */
+@media (max-width: 375px) {
+  :root {
+    --space-3xl: 2.5rem;
+  }
+
+  h1 { font-size: 2rem; }
+  h2 { font-size: 1.75rem; }
+  h3 { font-size: 1.4rem; }
+
+  .container {
+    padding: 0 var(--space-md);
+  }
+}
+
+/* Small (larger phones) */
+@media (min-width: 376px) and (max-width: 575px) {
+  h1 { font-size: 2.25rem; }
+  h2 { font-size: 1.875rem; }
+}
+
+/* Medium (tablets) */
+@media (min-width: 576px) and (max-width: 767px) {
+  h1 { font-size: 2.5rem; }
+  h2 { font-size: 2rem; }
+}
+
+/* Large (small laptops) */
+@media (min-width: 768px) and (max-width: 991px) {
+  h1 { font-size: 2.75rem; }
+}
+
+/* Extra Large (desktops) */
+@media (min-width: 992px) and (max-width: 1199px) {
+  .container {
+    max-width: 960px;
+  }
+}
+
+/* Extra Extra Large (large desktops) */
+@media (min-width: 1400px) {
+  .container {
+    max-width: 1320px;
+  }
+}
+
+/* Grid System Overrides */
+@media (max-width: 767px) {
+  .grid-2,
+  .grid-3,
+  .grid-4 {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  .grid-3,
+  .grid-4 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Spacing Adjustments */
+@media (max-width: 575px) {
+  .section {
+    padding: var(--space-2xl) 0;
+  }
+
+  .section-pt {
+    padding-top: var(--space-2xl);
+  }
+
+  .section-pb {
+    padding-bottom: var(--space-2xl);
+  }
+
+  .gap-lg {
+    gap: var(--space-md);
+  }
+
+  .gap-xl {
+    gap: var(--space-lg);
+  }
+}
+
+/* Hide on Mobile */
+@media (max-width: 767px) {
+  .hide-mobile {
+    display: none !important;
+  }
+}
+
+/* Hide on Desktop */
+@media (min-width: 768px) {
+  .hide-desktop {
+    display: none !important;
+  }
+}
+
+/* Text Alignment */
+@media (max-width: 575px) {
+  .text-center-mobile {
+    text-align: center;
+  }
+
+  .text-left-mobile {
+    text-align: left;
+  }
+
+  .text-right-mobile {
+    text-align: right;
+  }
+}
+
+/* Flex Direction */
+@media (max-width: 575px) {
+  .flex-col-mobile {
+    flex-direction: column;
+  }
+
+  .flex-col-reverse-mobile {
+    flex-direction: column-reverse;
+  }
+}
+
+/* Margins */
+@media (max-width: 575px) {
+  .mb-0-mobile { margin-bottom: 0 !important; }
+  .mb-1-mobile { margin-bottom: var(--space-sm) !important; }
+  .mb-2-mobile { margin-bottom: var(--space-md) !important; }
+  .mb-3-mobile { margin-bottom: var(--space-lg) !important; }
+  .mb-4-mobile { margin-bottom: var(--space-xl) !important; }
+  .mb-5-mobile { margin-bottom: var(--space-2xl) !important; }
+
+  .mt-0-mobile { margin-top: 0 !important; }
+  .mt-1-mobile { margin-top: var(--space-sm) !important; }
+  .mt-2-mobile { margin-top: var(--space-md) !important; }
+  .mt-3-mobile { margin-top: var(--space-lg) !important; }
+  .mt-4-mobile { margin-top: var(--space-xl) !important; }
+  .mt-5-mobile { margin-top: var(--space-2xl) !important; }
+}
+
+/* Container Queries Support */
+@container (max-width: 400px) {
+  .card {
+    padding: var(--space-md);
+  }
+}
+
+/* Touch-friendly targets */
+@media (max-width: 767px) {
+  a,
+  button,
+  input,
+  select,
+  textarea {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  button,
+  .btn {
+    padding: var(--space-md) var(--space-lg);
+  }
+
+  input,
+  select,
+  textarea {
+    padding: var(--space-md);
+    font-size: 16px; /* Prevents zoom on iOS */
+  }
+}
+
+/* Safe Area Insets for notched phones */
+@supports (padding: max(0px)) {
+  .container {
+    padding-left: max(var(--space-lg), env(safe-area-inset-left));
+    padding-right: max(var(--space-lg), env(safe-area-inset-right));
+  }
+
+  #main-nav {
+    padding-top: max(var(--space-md), env(safe-area-inset-top));
+  }
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* High Contrast Mode */
+@media (prefers-contrast: high) {
+  :root {
+    --border-color: #000;
+    --border-light: #333;
+  }
+
+  .card {
+    border: 2px solid var(--primary);
+  }
+}
+
+/* Print Styles */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+
+  a[href]::after {
+    content: " (" attr(href) ")";
+  }
+
+  body {
+    font-size: 12pt;
+    line-height: 1.5;
+  }
+
+  h1, h2, h3, h4 {
+    page-break-after: avoid;
+  }
+
+  .card {
+    break-inside: avoid;
+  }
+}

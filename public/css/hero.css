@@ -1,0 +1,211 @@
+/* =====================================================
+   HERO SECTION - Expo Formación UOCRA
+   Modern hero with gradient and animations
+   ===================================================== */
+
+.hero {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: calc(60px + var(--space-3xl)) var(--space-lg) var(--space-3xl);
+  background: linear-gradient(135deg, var(--bg-darker) 0%, var(--bg-dark) 50%, var(--primary) 100%);
+  overflow: hidden;
+}
+
+/* Background Pattern */
+.hero::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: 
+    radial-gradient(circle at 20% 80%, rgba(86, 188, 184, 0.15) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(86, 188, 184, 0.1) 0%, transparent 40%),
+    linear-gradient(45deg, transparent 48%, rgba(86, 188, 184, 0.03) 50%, transparent 52%);
+  background-size: 100% 100%, 100% 100%, 60px 60px;
+  pointer-events: none;
+}
+
+/* Content */
+.hero-content {
+  position: relative;
+  z-index: 1;
+  text-align: center;
+  max-width: 900px;
+  animation: fadeInUp 0.8s ease-out;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Logo */
+.hero-logo {
+  width: 180px;
+  height: auto;
+  margin: 0 auto var(--space-xl);
+  animation: fadeInUp 0.8s ease-out 0.2s backwards;
+}
+
+/* Subtitle */
+.hero-antetitulo {
+  display: inline-block;
+  margin-bottom: var(--space-md);
+  padding: var(--space-sm) var(--space-lg);
+  background: rgba(86, 188, 184, 0.2);
+  border: 1px solid rgba(86, 188, 184, 0.3);
+  border-radius: var(--radius-full);
+  color: var(--accent);
+  font-family: var(--font-primary);
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  animation: fadeInUp 0.8s ease-out 0.4s backwards;
+}
+
+/* Title */
+.hero-title {
+  margin-bottom: var(--space-xl);
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  font-weight: 800;
+  color: white;
+  line-height: 1.15;
+  text-shadow: 0 2px 20px rgba(0, 0, 0, 0.3);
+  animation: fadeInUp 0.8s ease-out 0.6s backwards;
+}
+
+.hero-title span {
+  color: var(--accent);
+  position: relative;
+}
+
+.hero-title span::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background: var(--accent);
+  border-radius: var(--radius-full);
+}
+
+/* Info Items */
+.hero-info {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-xl);
+  margin-bottom: var(--space-2xl);
+  animation: fadeInUp 0.8s ease-out 0.8s backwards;
+}
+
+.hero-info-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 1.1rem;
+}
+
+.hero-info-item i {
+  color: var(--accent);
+  font-size: 1.3rem;
+}
+
+/* CTA Button */
+.hero-cta {
+  animation: fadeInUp 0.8s ease-out 1s backwards;
+}
+
+.btn-inscribirme-hero {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-md) var(--space-2xl);
+  background: linear-gradient(135deg, var(--accent) 0%, var(--secondary) 100%);
+  color: var(--bg-darker);
+  font-family: var(--font-primary);
+  font-size: 1.1rem;
+  font-weight: 700;
+  text-decoration: none;
+  border-radius: var(--radius-full);
+  box-shadow: 0 8px 30px rgba(86, 188, 184, 0.4);
+  transition: all var(--transition-normal);
+}
+
+.btn-inscribirme-hero:hover {
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 12px 40px rgba(86, 188, 184, 0.5);
+  color: var(--bg-darker);
+}
+
+.btn-inscribirme-hero i {
+  font-size: 1rem;
+}
+
+/* Blocked button state */
+.btn-inscribirme-hero.btn-bloqueado {
+  background: rgba(86, 188, 184, 0.3);
+  color: var(--accent);
+  pointer-events: none;
+  box-shadow: none;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .hero {
+    padding-top: calc(80px + var(--space-2xl));
+    min-height: auto;
+    padding-bottom: var(--space-2xl);
+  }
+
+  .hero-logo {
+    width: 140px;
+  }
+
+  .hero-title {
+    font-size: 2rem;
+  }
+
+  .hero-info {
+    flex-direction: column;
+    gap: var(--space-md);
+  }
+
+  .hero-info-item {
+    justify-content: center;
+  }
+
+  .btn-inscribirme-hero {
+    padding: var(--space-md) var(--space-xl);
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .hero-logo {
+    width: 120px;
+  }
+
+  .hero-antetitulo {
+    font-size: 0.75rem;
+    padding: var(--space-xs) var(--space-md);
+  }
+
+  .hero-title {
+    font-size: 1.75rem;
+  }
+}

@@ -1,0 +1,88 @@
+/* =====================================================
+   CSS VARIABLES - Expo Formación UOCRA
+   Keep the exact same colors as before
+   ===================================================== */
+:root {
+  /* Primary Colors - MUST STAY SAME */
+  --primary: #124565;
+  --primary-dark: #0d3650;
+  --primary-light: #1a5a80;
+  
+  /* Secondary Colors */
+  --secondary: #25848d;
+  --secondary-dark: #1e6b74;
+  --secondary-light: #2f9ba3;
+  
+  /* Accent Colors */
+  --accent: #56bcb8;
+  --accent-hover: #68caca;
+  --accent-light: #7dd4d1;
+  
+  /* Background Colors */
+  --bg-primary: #f0f8fa;
+  --bg-secondary: #e8f4f7;
+  --bg-dark: #1a1a2e;
+  --bg-darker: #0d1b2a;
+  
+  /* Card & Surface */
+  --card-bg: #ffffff;
+  --card-bg-alt: #f8fbfc;
+  
+  /* Text Colors */
+  --text-primary: #124565;
+  --text-secondary: #333333;
+  --text-light: #666666;
+  --text-muted: #888888;
+  --text-inverse: #ffffff;
+  
+  /* Border Colors */
+  --border-color: #e0e8ec;
+  --border-light: #f0f4f6;
+  
+  /* Status Colors */
+  --success: #4caf50;
+  --error: #f44336;
+  --warning: #ff9800;
+  --info: #2196f3;
+  
+  /* Shadows */
+  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.08);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.12);
+  --shadow-xl: 0 16px 48px rgba(0, 0, 0, 0.15);
+  
+  /* Typography */
+  --font-primary: 'Montserrat', sans-serif;
+  --font-secondary: 'Roboto', sans-serif;
+  
+  /* Spacing */
+  --space-xs: 0.25rem;
+  --space-sm: 0.5rem;
+  --space-md: 1rem;
+  --space-lg: 1.5rem;
+  --space-xl: 2rem;
+  --space-2xl: 3rem;
+  --space-3xl: 4rem;
+  
+  /* Border Radius */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-2xl: 24px;
+  --radius-full: 9999px;
+  
+  /* Transitions */
+  --transition-fast: 150ms ease;
+  --transition-normal: 250ms ease;
+  --transition-slow: 400ms ease;
+  
+  /* Z-index layers */
+  --z-dropdown: 100;
+  --z-sticky: 200;
+  --z-fixed: 300;
+  --z-modal-backdrop: 400;
+  --z-modal: 500;
+  --z-popover: 600;
+  --z-tooltip: 700;
+}

@@ -1,0 +1,259 @@
+/* =====================================================
+   FORMS - Expo Formación UOCRA
+   Modern form with floating labels
+   ===================================================== */
+
+.form-container {
+  max-width: 700px;
+  margin: 0 auto;
+  padding: var(--space-2xl);
+  background: var(--card-bg);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-lg);
+}
+
+.form-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  margin-bottom: var(--space-xl);
+  padding-bottom: var(--space-lg);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.form-header i {
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, var(--accent) 0%, var(--secondary) 100%);
+  border-radius: var(--radius-md);
+  font-size: 1.25rem;
+  color: var(--bg-darker);
+}
+
+.form-header h3 {
+  margin: 0;
+  font-size: 1.5rem;
+  color: var(--primary);
+}
+
+/* Form Rows */
+.form-row {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-lg);
+  margin-bottom: var(--space-lg);
+}
+
+.form-row-full {
+  margin-bottom: var(--space-lg);
+}
+
+/* Form Group */
+.form-group {
+  position: relative;
+}
+
+/* Labels */
+.form-group label {
+  display: block;
+  margin-bottom: var(--space-sm);
+  font-family: var(--font-primary);
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--primary);
+}
+
+.form-group .required {
+  color: var(--error);
+}
+
+/* Input Styles */
+.form-group input,
+.form-group select,
+.form-group textarea {
+  width: 100%;
+  padding: var(--space-md) var(--space-lg);
+  background: var(--bg-secondary);
+  border: 2px solid transparent;
+  border-radius: var(--radius-lg);
+  font-size: 1rem;
+  color: var(--text-secondary);
+  transition: all var(--transition-fast);
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  background: var(--card-bg);
+  border-color: var(--accent);
+  box-shadow: 0 0 0 4px rgba(86, 188, 184, 0.15);
+}
+
+.form-group input::placeholder,
+.form-group textarea::placeholder {
+  color: var(--text-muted);
+}
+
+/* Input Error State */
+.form-group input.error,
+.form-group select.error {
+  border-color: var(--error);
+  background: rgba(244, 67, 54, 0.05);
+}
+
+.form-group input.error:focus {
+  box-shadow: 0 0 0 4px rgba(244, 67, 54, 0.15);
+}
+
+/* Error Message */
+.form-group .error-message {
+  display: none;
+  margin-top: var(--space-xs);
+  font-size: 0.8rem;
+  color: var(--error);
+}
+
+.form-group.has-error .error-message {
+  display: block;
+}
+
+/* Form Hint */
+.form-hint {
+  margin-bottom: var(--space-sm);
+  font-size: 0.85rem;
+  color: var(--text-light);
+}
+
+/* Select */
+.form-group select {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23666' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right var(--space-md) center;
+  padding-right: var(--space-2xl);
+  cursor: pointer;
+}
+
+.form-group select option {
+  padding: var(--space-sm);
+}
+
+/* Checkbox */
+.checkbox-label {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-md);
+  cursor: pointer;
+  user-select: none;
+}
+
+.checkbox-label input[type="checkbox"] {
+  width: 20px;
+  height: 20px;
+  margin-top: 2px;
+  accent-color: var(--accent);
+  cursor: pointer;
+}
+
+.checkbox-label span:not(.checkmark) {
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+/* Charlas Container */
+.charlas-checkbox-container {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-md);
+  max-height: 300px;
+  overflow-y: auto;
+  padding: var(--space-md);
+  background: var(--bg-secondary);
+  border-radius: var(--radius-lg);
+}
+
+.charla-checkbox-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-sm) var(--space-md);
+  background: var(--card-bg);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.charla-checkbox-item:hover {
+  background: var(--accent-light);
+}
+
+.charla-checkbox-item input {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--accent);
+}
+
+.charla-checkbox-item span {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
+/* Charlas Badges */
+.charlas-seleccionadas {
+  margin-bottom: var(--space-md);
+  padding: var(--space-md);
+  background: var(--bg-secondary);
+  border-radius: var(--radius-lg);
+}
+
+.charlas-seleccionadas-texto {
+  display: block;
+  margin-bottom: var(--space-sm);
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--primary);
+}
+
+.charlas-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+}
+
+.charla-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+  padding: var(--space-xs) var(--space-sm);
+  background: var(--accent);
+  color: var(--bg-darker);
+  font-size: 0.8rem;
+  font-weight: 600;
+  border-radius: var(--radius-full);
+}
+
+.charlas-badges-empty {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+/* Responsive */
+@media (max-width: 576px) {
+  .form-container {
+    padding: var(--space-lg);
+  }
+
+  .form-row {
+    grid-template-columns: 1fr;
+    gap: var(--space-md);
+  }
+
+  .charlas-checkbox-container {
+    grid-template-columns: 1fr;
+  }
+}

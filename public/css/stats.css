@@ -1,0 +1,127 @@
+/* =====================================================
+   STATS SECTION - Expo Formación UOCRA
+   Modern animated counters
+   ===================================================== */
+
+.stats-section {
+  background: linear-gradient(135deg, var(--bg-dark) 0%, var(--bg-darker) 100%);
+  padding: var(--space-3xl) 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.stats-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    radial-gradient(circle at 10% 90%, rgba(86, 188, 184, 0.1) 0%, transparent 40%),
+    radial-gradient(circle at 90% 10%, rgba(86, 188, 184, 0.08) 0%, transparent 40%);
+  pointer-events: none;
+}
+
+.stats-container {
+  position: relative;
+  z-index: 1;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 var(--space-lg);
+  text-align: center;
+}
+
+.stats-title {
+  margin-bottom: var(--space-2xl);
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: white;
+  text-align: center;
+}
+
+.stats-title span {
+  color: var(--accent);
+}
+
+/* Stats Grid */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-xl);
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: var(--space-xl);
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(86, 188, 184, 0.15);
+  border-radius: var(--radius-xl);
+  transition: all var(--transition-normal);
+}
+
+.stat-item:hover {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(86, 188, 184, 0.3);
+  transform: translateY(-4px);
+}
+
+.stat-icon {
+  width: 56px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, var(--accent) 0%, var(--secondary) 100%);
+  border-radius: var(--radius-lg);
+  margin-bottom: var(--space-md);
+  font-size: 1.5rem;
+  color: var(--bg-darker);
+}
+
+.stat-number {
+  font-family: var(--font-primary);
+  font-size: 3rem;
+  font-weight: 800;
+  color: white;
+  line-height: 1;
+  margin-bottom: var(--space-sm);
+}
+
+.stat-label {
+  font-size: 0.95rem;
+  color: rgba(255, 255, 255, 0.7);
+  text-align: center;
+}
+
+/* Responsive */
+@media (max-width: 992px) {
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 576px) {
+  .stats-section {
+    padding: var(--space-2xl) 0;
+  }
+
+  .stats-title {
+    font-size: 2rem;
+  }
+
+  .stats-grid {
+    grid-template-columns: 1fr;
+    gap: var(--space-md);
+  }
+
+  .stat-item {
+    padding: var(--space-lg);
+  }
+
+  .stat-number {
+    font-size: 2.5rem;
+  }
+}
