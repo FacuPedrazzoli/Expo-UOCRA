@@ -18,7 +18,10 @@
 @import 'animations.css';
 @import 'responsive.css';
 
-/* 3. Legacy/Additional Styles */
+/* 3. Polish & Fixes */
+@import 'polish.css';
+
+/* 4. Legacy/Additional Styles */
 /* These will be gradually migrated or replaced */
 
 /* Wave Separators */

@@ -56,6 +56,7 @@
   --font-secondary: 'Roboto', sans-serif;
   
   /* Spacing */
+  --space-2xs: 0.125rem;
   --space-xs: 0.25rem;
   --space-sm: 0.5rem;
   --space-md: 1rem;
@@ -63,6 +64,7 @@
   --space-xl: 2rem;
   --space-2xl: 3rem;
   --space-3xl: 4rem;
+  --space-4xl: 6rem;
   
   /* Border Radius */
   --radius-sm: 4px;

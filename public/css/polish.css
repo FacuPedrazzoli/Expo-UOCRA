@@ -1,0 +1,382 @@
+/* =====================================================
+   UI POLISH - Expo Formación UOCRA
+   Fixes for visual bugs and final polish
+   ===================================================== */
+
+/* =====================================================
+   1. NAVBAR FIXES
+   ===================================================== */
+
+/* Ensure navbar has proper height */
+#main-nav {
+  height: 60px;
+}
+
+.nav-container {
+  height: 100%;
+  align-items: center;
+}
+
+/* Better mobile menu transition */
+#main-nav .nav-container {
+  overflow-y: auto;
+}
+
+/* Nav link padding fix */
+.nav-link {
+  padding: var(--space-sm) var(--space-md);
+  white-space: nowrap;
+}
+
+/* =====================================================
+   2. HERO FIXES
+   ===================================================== */
+
+/* Fix hero bottom spacing */
+.hero {
+  padding-bottom: var(--space-4xl);
+}
+
+/* Fix hero info spacing */
+.hero-info {
+  margin-top: var(--space-lg);
+}
+
+/* =====================================================
+   3. FORMS FIXES
+   ===================================================== */
+
+/* Form input height consistency */
+.form-group input,
+.form-group select {
+  min-height: 48px;
+  line-height: 1.5;
+}
+
+/* Better focus ring */
+.form-group input:focus,
+.form-group select:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(86, 188, 184, 0.25);
+}
+
+/* Form row spacing fix */
+.form-row + .form-row {
+  margin-top: var(--space-md);
+}
+
+/* =====================================================
+   4. CARDS FIXES
+   ===================================================== */
+
+/* Card grid spacing */
+.charlas-checkbox-container,
+.competiciones-grid,
+.stands-grid,
+.empresas-logos-wrapper {
+  gap: var(--space-lg);
+}
+
+/* Card hover transition fix */
+.charla-card,
+.empresa-card,
+.stand-card,
+.competencia-card {
+  will-change: transform, box-shadow;
+}
+
+/* =====================================================
+   5. SECTIONS FIXES
+   ===================================================== */
+
+/* Section padding consistency */
+.bienvenida-section,
+.charlas-section,
+.galeria-section,
+.competiciones-section,
+.inscripcion-section {
+  padding: var(--space-3xl) 0;
+}
+
+/* Section header spacing */
+.section-header {
+  margin-bottom: var(--space-2xl);
+}
+
+.section-header h2 {
+  margin-bottom: var(--space-md);
+}
+
+/* =====================================================
+   6. FOOTER FIXES
+   ===================================================== */
+
+footer {
+  padding-bottom: var(--space-lg);
+}
+
+/* Footer links spacing */
+.footer-links li {
+  margin-bottom: var(--space-sm);
+}
+
+/* =====================================================
+   7. CTA STICKY FIX
+   ===================================================== */
+
+.cta-sticky {
+  padding: var(--space-md) var(--space-xl);
+  gap: var(--space-xl);
+}
+
+.cta-sticky-text {
+  font-size: 1rem;
+}
+
+/* =====================================================
+   8. NOTIFICATIONS FIX
+   ===================================================== */
+
+.notification-container {
+  top: 70px;
+  right: var(--space-md);
+  padding: var(--space-md);
+  max-width: 350px;
+}
+
+/* =====================================================
+   9. RESPONSIVE FIXES
+   ===================================================== */
+
+/* Better tablet layout */
+@media (max-width: 992px) {
+  .charlas-checkbox-container {
+    grid-template-columns: 1fr;
+  }
+  
+  .competiciones-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Better mobile layout */
+@media (max-width: 576px) {
+  .section-header h2 {
+    font-size: 1.75rem;
+  }
+  
+  .competiciones-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .empresas-titulo-principal {
+    font-size: 1.75rem;
+  }
+  
+  .form-header {
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .form-header i {
+    margin: 0 auto;
+  }
+}
+
+/* =====================================================
+   10. OVERLAY FIXES (Coming Soon)
+   ===================================================== */
+
+.overlay-proximamente {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  min-height: auto;
+  border-radius: inherit;
+}
+
+.overlay-proximamente-contenido {
+  margin: var(--space-lg);
+}
+
+/* =====================================================
+   11. ANIMATION CONSISTENCY
+   ===================================================== */
+
+/* Use consistent transition variables */
+a,
+button,
+input,
+select,
+.card,
+.charla-card,
+.empresa-card {
+  transition: all var(--transition-normal);
+}
+
+/* Smooth hover effects */
+.hover-lift {
+  transition: transform var(--transition-normal), box-shadow var(--transition-normal);
+}
+
+/* =====================================================
+   12. VISUAL CONSISTENCY
+   ===================================================== */
+
+/* Consistent border radius */
+input,
+select,
+textarea,
+button,
+.card {
+  border-radius: var(--radius-lg);
+}
+
+/* Consistent shadows */
+.card,
+.form-container {
+  box-shadow: var(--shadow-lg);
+}
+
+/* Consistent button padding */
+.btn-primary,
+.btn-secondary,
+.btn-submit {
+  padding: var(--space-md) var(--space-xl);
+}
+
+/* =====================================================
+   13. ACCESSIBILITY IMPROVEMENTS
+   ===================================================== */
+
+/* Better focus states */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* Remove outline for mouse users */
+button:focus:not(:focus-visible),
+input:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* =====================================================
+   14. FOOTER RESPONSIVE
+   ===================================================== */
+
+@media (max-width: 768px) {
+  .footer-main {
+    grid-template-columns: 1fr;
+    text-align: center;
+  }
+  
+  .footer-bottom {
+    flex-direction: column;
+    gap: var(--space-md);
+    text-align: center;
+  }
+  
+  .footer-social {
+    justify-content: center;
+  }
+}
+
+/* =====================================================
+   15. CHATAS TABLE FIXES
+   ===================================================== */
+
+.charlas-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-2xl);
+  color: var(--text-light);
+}
+
+.charlas-loading i {
+  margin-right: var(--space-sm);
+}
+
+.charlas-nota {
+  margin-top: var(--space-lg);
+  padding: var(--space-md);
+  background: var(--bg-secondary);
+  border-radius: var(--radius-lg);
+  font-size: 0.9rem;
+  color: var(--text-light);
+  text-align: center;
+}
+
+.charlas-nota i {
+  color: var(--accent);
+  margin-right: var(--space-sm);
+}
+
+/* =====================================================
+   16. BIENVENIDA SECTION FIXES
+   ===================================================== */
+
+.bienvenida-section {
+  padding: var(--space-3xl) 0;
+}
+
+.bienvenida-accent {
+  display: none;
+}
+
+.bienvenida-dos-columnas {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-2xl);
+}
+
+@media (max-width: 768px) {
+  .bienvenida-dos-columnas {
+    grid-template-columns: 1fr;
+    gap: var(--space-xl);
+  }
+}
+
+/* =====================================================
+   17. WAVE SEPARATOR FIXES
+   ===================================================== */
+
+.wave-separator {
+  line-height: 0;
+  font-size: 0;
+}
+
+.wave-separator svg {
+  display: block;
+  width: 100%;
+  height: 60px;
+}
+
+/* =====================================================
+   18. COMPETITION BUTTONS FIX
+   ===================================================== */
+
+.categorias-buttons {
+  margin-bottom: var(--space-2xl);
+}
+
+.btn-categoria {
+  padding: var(--space-sm) var(--space-lg);
+  font-size: 0.9rem;
+}
+
+@media (max-width: 480px) {
+  .categorias-buttons {
+    gap: var(--space-xs);
+  }
+  
+  .btn-categoria {
+    padding: var(--space-xs) var(--space-md);
+    font-size: 0.8rem;
+  }
+}
