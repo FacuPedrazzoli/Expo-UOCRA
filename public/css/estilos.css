@@ -4234,3 +4234,55 @@ svg {
   }
 }
 
+/* ============================================
+   OVERLAY BOTÓN HERO - Block Button
+   ============================================ */
+/* 
+   =================================================================
+   PARA QUITAR ESTE BLOQUEO: Elimina el elemento 
+   <div class="overlay-proximamente-btn"> del HTML (index.html)
+   ================================================================= 
+*/
+
+/* ============================================
+   OVERLAY NAV LINK CHARLAS - Block Nav
+   ============================================ */
+/* 
+   =================================================================
+   PARA QUITAR ESTE BLOQUEO: Elimina el elemento 
+   <div class="overlay-proximamente-nav"> del HTML (index.html)
+   ================================================================= 
+*/
+
+.nav-container {
+  position: relative;
+}
+
+.overlay-proximamente-nav {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 80px;
+  height: 40px;
+  z-index: 100;
+  background: rgba(86, 188, 184, 0.2);
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.overlay-proximamente-nav::after {
+  content: '¡Próximamente!';
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #56bcb8;
+  white-space: nowrap;
+}
+
+a.nav-link[href="#charlas"] {
+  visibility: hidden;
+}
+
