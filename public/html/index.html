@@ -38,27 +38,11 @@
       <a href="#hero" class="nav-link"><i class="fas fa-home"></i> Inicio</a>
       <a href="#bienvenida" class="nav-link"><i class="fas fa-info-circle"></i> Bienvenida</a>
       <a href="#empresas" class="nav-link"><i class="fas fa-building"></i> Empresas</a>
-      <!-- 
-          =================================================================
-          PARA QUITAR EL BLOQUEO DEL NAV LINK CHARLAS: Elimina este elemento completo
-          <div class="overlay-proximamente-nav">...</div>
-          ================================================================= 
-        -->
-        <div class="overlay-proximamente-nav">
-          <div class="overlay-proximamente-contenido">
-            <div class="overlay-icono">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <circle cx="12" cy="12" r="10"></circle>
-                <polyline points="12 6 12 12 16 14"></polyline>
-              </svg>
-            </div>
-            <h3 class="overlay-titulo">¡Muy Pronto!</h3>
-            <p class="overlay-subtitulo">Muy pronto</p>
-          </div>
-        </div>
-        <a href="#charlas" class="nav-link nav-link-bloqueado">
-          <i class="fas fa-clock"></i> Charlas
-</a>
+      <!-- PROVISORIO_PROXIMAMENTE - INICIO - NAV CHARLAS NORMAL -->
+      <a href="#charlas" class="nav-link">
+        <i class="fas fa-chalkboard-teacher"></i> Charlas
+      </a>
+      <!-- PROVISORIO_PROXIMAMENTE - FIN - NAV CHARLAS NORMAL -->
       <a href="#muestras" class="nav-link"><i class="fas fa-map-marker-alt"></i> Muestras</a>
       <a href="#competiciones" class="nav-link"><i class="fas fa-trophy"></i> Competiciones</a>
       <a href="#inscripcion" class="nav-link"><i class="fas fa-clipboard-list"></i> Inscripción</a>
@@ -85,9 +69,19 @@
         </div>
       </div>
       <div class="hero-cta">
-        <a href="#inscripcion" class="btn-inscribirme-hero btn-bloqueado">
-          <i class="fas fa-clock"></i> Próximamente
-        </a>
+        <!-- PROVISORIO_PROXIMAMENTE - INICIO - BOTON HERO -->
+        <button 
+          class="btn-inscribirme-hero btn-proximamente-hero" 
+          disabled 
+          aria-label="Inscripciones próximamente disponibles"
+          title="Las inscripciones aún no están abiertas">
+          <span class="btn-prox-icono">
+            <i class="fas fa-hourglass-half"></i>
+          </span>
+          <span class="btn-prox-texto">Próximamente</span>
+          <span class="btn-prox-badge">Inscripciones abiertas pronto</span>
+        </button>
+        <!-- PROVISORIO_PROXIMAMENTE - FIN - BOTON HERO -->
       </div>
     </div>
   </section>
@@ -254,16 +248,13 @@
         <div class="section-divider"></div>
       </div>
       <div id="charlas-tabla-container" class="table-responsive">
-        <!-- 
-          =================================================================
-          PARA QUITAR EL BLOQUEO DE CHARLAS: Elimina este elemento completo
-          <div class="overlay-proximamente">...</div>
-          ================================================================= 
-        -->
-        <div class="overlay-proximamente">
+        <!-- PROVISORIO_PROXIMAMENTE - INICIO - OVERLAY CHARLAS -->
+        <div class="overlay-proximamente overlay-proximamente-charlas">
           <div class="overlay-proximamente-contenido">
             <div class="overlay-icono">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" 
+                   fill="none" stroke="currentColor" stroke-width="2" 
+                   stroke-linecap="round" stroke-linejoin="round">
                 <path d="M5 22h14"></path>
                 <path d="M5 2h14"></path>
                 <path d="M17 22v-4.172a2 2 0 0 0-.586-1.414L12 12l-4.414 4.414A2 2 0 0 0 7 17.828V22"></path>
@@ -271,9 +262,13 @@
               </svg>
             </div>
             <h3 class="overlay-titulo">¡Muy Pronto!</h3>
-            <p class="overlay-subtitulo">La grilla de charlas se revelará a la brevedad.<br>¡Mantenete atento!</p>
+            <p class="overlay-subtitulo">
+              La grilla de charlas se revelará a la brevedad.<br>
+              <span style="font-size:0.9em; opacity:0.7;">¡Mantenete atento!</span>
+            </p>
           </div>
         </div>
+        <!-- PROVISORIO_PROXIMAMENTE - FIN - OVERLAY CHARLAS -->
         <div class="charlas-loading">
           <i class="fas fa-spinner fa-spin"></i> Cargando charlas...
         </div>

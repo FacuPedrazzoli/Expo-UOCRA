@@ -4392,3 +4392,97 @@ a.nav-link[href="#charlas"] {
   color: #56bcb8;
 }
 
+/* PROVISORIO_PROXIMAMENTE - INICIO - ESTILOS BOTON HERO */
+.btn-proximamente-hero {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 16px 48px;
+  background: rgba(86, 188, 184, 0.12);
+  color: rgba(255, 255, 255, 0.5);
+  font-family: 'Montserrat', sans-serif;
+  font-size: 1.1rem;
+  font-weight: 600;
+  border: 2px solid rgba(86, 188, 184, 0.3);
+  border-radius: 50px;
+  cursor: not-allowed;
+  pointer-events: none;
+  opacity: 0.75;
+  transition: none;
+  box-shadow: none;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.btn-prox-icono {
+  font-size: 1.4rem;
+  color: rgba(86, 188, 184, 0.6);
+  animation: proximamente-spin 4s linear infinite;
+}
+
+.btn-prox-texto {
+  font-size: 1rem;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.6);
+  letter-spacing: 0.15em;
+}
+
+.btn-prox-badge {
+  font-size: 0.7rem;
+  font-weight: 400;
+  color: rgba(86, 188, 184, 0.5);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+@keyframes proximamente-spin {
+  0%   { transform: rotate(0deg); }
+  80%  { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .btn-prox-icono { animation: none; }
+}
+
+/* PROVISORIO_PROXIMAMENTE - INICIO - ESTILOS OVERLAY CHARLAS */
+.overlay-proximamente-charlas {
+  border-radius: 12px;
+  min-height: 280px;
+}
+
+.overlay-proximamente-charlas .overlay-proximamente-contenido {
+  padding: 2.5rem 2rem;
+  max-width: 420px;
+}
+
+.overlay-proximamente-charlas .overlay-titulo {
+  font-size: 2rem;
+  margin-bottom: 0.75rem;
+}
+
+.overlay-proximamente-charlas .overlay-subtitulo {
+  font-size: 1.05rem;
+  line-height: 1.7;
+}
+
+.overlay-proximamente-charlas .overlay-icono {
+  width: 72px;
+  height: 72px;
+  margin-bottom: 1.25rem;
+}
+
+.overlay-proximamente-charlas .overlay-icono svg {
+  width: 34px;
+  height: 34px;
+}
+
+/* PROVISORIO_PROXIMAMENTE - LINEA NEUTRALIZADA - descomentar para ocultar charlas */
+a.nav-link[href="#charlas"] {
+  /* visibility: hidden; */
+}
+
+/* PROVISORIO_PROXIMAMENTE - FIN - ESTILOS BOTON HERO */
+
