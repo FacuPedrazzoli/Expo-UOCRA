@@ -5,18 +5,39 @@
       "src": "src/index.ts",
       "use": "@vercel/node",
       "config": {
-        "includeFiles": ["public/**"]
+        "includeFiles": [
+          "public/**",
+          "public/html/**",
+          "public/css/**",
+          "public/js/**",
+          "public/img/**"
+        ]
       }
     }
   ],
   "routes": [
     {
+      "src": "/css/(.*)",
+      "headers": { "cache-control": "public, max-age=604800, immutable" },
+      "dest": "/src/index.ts"
+    },
+    {
+      "src": "/js/(.*)",
+      "headers": { "cache-control": "public, max-age=604800, immutable" },
+      "dest": "/src/index.ts"
+    },
+    {
+      "src": "/img/(.*)",
+      "headers": { "cache-control": "public, max-age=604800, immutable" },
+      "dest": "/src/index.ts"
+    },
+    {
       "src": "/api/(.*)",
-      "dest": "src/index.ts"
+      "dest": "/src/index.ts"
     },
     {
       "src": "/(.*)",
-      "dest": "src/index.ts"
+      "dest": "/src/index.ts"
     }
   ]
 }

@@ -5,7 +5,6 @@ import { config } from './config/env';
 import {
     requestLogger,
     errorHandler,
-    unknownEndpoint,
     securityHeaders,
     requestTimeout,
 } from './utils/middleware';
@@ -45,7 +44,6 @@ export function createApp(isServerless = false): Express {
     app.use('/api/stats', statsRouter);
 
     app.use(errorHandler);
-    app.use(unknownEndpoint);
 
     return app;
 }
